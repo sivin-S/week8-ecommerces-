@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <style>
+        body {
+            font-family:  sans-serif;
+            background-color: #eef7ff;
+        }
+        .sidebar {
+            background-color: #4D869C;
+            color: #eef7ff;
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            overflow-y: auto;
+            border: 3px solid  #4D869C;
+            padding: 15px 10px;
+        }
+        .sidebar .nav-link {
+            margin-bottom: 15px;
+            padding: 12px 12px;
+            text-align: center;
+        }
+        .sidebar .nav-link.active {
+            background-color: #eef7ff;
+            color: #4D869C;
+            border-radius: 12px;
+        }
+
+         .in-active{
+            border: 3px solid  #eef7ff;
+            color: #eef7ff !important;
+            border-radius: 12px;
+        }
+
+        /* .sidebar .nav-link:hover {
+            background-color: #495057;
+            border-radius: 5px;
+        } */
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #eef7ff;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .category-header {
+            margin-bottom: 20px;
+        }
+        .category-header h2 {
+            font-size: 1.5rem;
+        }
+        .category {
+            background-color: #eef7ff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .add-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .add-form input {
+            flex: 1;
+        }
+        input[type="search"]{
+           color: #4D869C;
+           padding: 12px 12px;
+           margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+     <!-- flash message -->
+     <%# if (locals.successMessage && locals.successMessage.length > 0) { %>
+        <!-- <div id="successAlert" class="alert alert-success" role="alert"
+        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+        >
+          <%# = locals.successMessage %>
+        </div> -->
+      <%# } %>
+      
+      <% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+        <div id="errorAlert" class="alert alert-danger" role="alert"
+        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+        >
+          <%= locals.errorMessage %>
+        </div>
+      <% } %>
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+            <div class="mb-4 px-3 text-center" >
+                <i class="fas fa-user-circle"></i> Admin Dashboard
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/userList"><i class="fas fa-users"></i> Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/orderList"><i class="fas fa-list"></i> Order list</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/paymentMethods"><i class="fas fa-credit-card"></i> Payment</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/salesReport"><i class="fas fa-chart-bar"></i> Report</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin/categories"><i class="fas fa-folder"></i> Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/orderStatus"><i class="fas fa-truck"></i> Orders Status</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/transactionHistory"><i class="fas fa-history"></i> Transaction history</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/addMensProduct"><i class="bi bi-bag-plus-fill"></i> Add mens product</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/addWomensProduct"><i class="bi bi-bag-plus-fill"></i> Womens product</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i> Coupons history</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link in-active" href="/admin/notifications"><i class="fas fa-bell"></i> Notifications</a>
+                </li>
+            </ul>
+            <div class="mt-5 px-3">
+                <a href="/admin/logout"><button class="btn btn-outline-light w-100" style="padding: 12px;background-color: #EEF7FF;color: #4D869C;margin-top: -20px;">LOGOUT</button></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="ms-sm-auto  px-md-4 main-content  p-5" style="width: 80%;">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2" style="color: #4D869C;">Dashboard / Category list</h1>
+        </div>
+
+        <div class="category" style="border:1px solid #4D869C;margin-bottom: 50px;">
+            <!-- Mens Category -->
+            <div class="category-header d-flex justify-content-between align-items-center">
+                <h2 style="color: #4D869C;">Mens</h2>
+                <button class="btn btn-pink" onclick="toggleAddForm('mens')"  style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">Add New Category</button>
+            </div>
+           <form action="/admin/category/add" method="post">
+                <div class="add-form" id="mensAddForm" style="display: none;">
+                    <!-- <input type="text"  name="category" id="mensNewCategory" class="form-control" placeholder="New category name"> -->
+                    <select class="form-select mb-3" aria-label="Default select example" name="category">
+                        <!-- <option selected>Category</option> -->
+                        <option value="sneakers">Sneakers</option>
+                        <option value="running">Running</option>
+                        <option value="trainingAndGym">Training and Gym</option>
+                        <option value="basketBall">Basketball</option>
+                        <option value="football">Football</option>
+                        <option value="motorSport">Motor sport</option>
+                      </select>
+                    <input type="text" name="gender" value="mens" hidden id="mensNewCategory" class="form-control" placeholder="New category name">
+                    <button class="btn btn-pink" type="submit"  onclick="addCategory('mensTable', 'mensNewCategory')"  style="height: 37px;border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">Add</button>
+                </div>
+           </form>
+            <input type="search" style="color: #4D869C;" class="form-control mt-3" id="mensSearch" onkeyup="searchTable('mensTable', 'mensSearch')" placeholder="Search for categories..">
+            <div class="table-responsive mt-3" style="height: 150px;">
+                <table class="table table-hover" id="mensTable" style="color: #4D869C !important;">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                <!-- Mens Category Table -->
+
+
+                <tbody>
+                    <% mensCategory.forEach(function(data,index){ %>
+                      <tr>
+                        <td>
+                          <span class="category-name"><%=data.name %></span>
+                          <form action="/admin/editCategory" method="post" class="edit-form" style="display: none;">
+                            <input type="text" name="newName" value="<%=data.name %>" required>
+                            <input type="hidden" name="oldName" value="<%=data.name %>">
+                            <input type="hidden" name="gender" value="mens">
+                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                          </form>
+                        </td>
+                        <td>
+                            <a href="/admin/softDeleteCategory/<%=encodeURIComponent(data._id) %>">
+                                <button class="btn btn-pink" style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;"><%=(data.deleted===true)?"unhide":"hide" %></button>
+                              </a>
+                          <button class="btn  edit-btn" onclick="toggleEditForm(this)" style="border: 1px solid #4D869C;color: #4D869C;">Edit</button>
+                        </td>
+                      </tr>
+                    <% }) %>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- Womens Category -->
+        <div class="category" style="border:1px solid #4D869C !important;color: #4D869C;">
+            <div class="category-header d-flex justify-content-between align-items-center">
+                <h2>Womens</h2>
+                <button class="btn in-active" onclick="toggleAddForm('womens')" style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">Add New Category</button>
+            </div>
+            <form action="/admin/category/add" method="post">
+                <div class="add-form" id="womensAddForm" style="display: none;">
+                    <!-- <input type="text" id="womensNewCategory" name="category" class="form-control" placeholder="New category name"> -->
+                    <select class="form-select mb-3" aria-label="Default select example" name="category">
+                        <!-- <option selected>Category</option> -->
+                        <option value="sneakers">Sneakers</option>
+                        <option value="running">Running</option>
+                        <option value="trainingAndGym">Training and Gym</option>
+                        <option value="basketBall">Basketball</option>
+                        <option value="football">Football</option>
+                        <option value="motorSport">Motor sport</option>
+                      </select>
+                    <input type="text" hidden name="gender" value="womens" id="womensNewCategory" name="category" class="form-control" placeholder="New category name">
+                    <button type="submit" class="btn" onclick="addCategory('womensTable', 'womensNewCategory')"  style="height: 37px;border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">Add</button>
+                </div>
+            </form>
+            <input type="search" style="color: #4D869C;" class="form-control mt-3" id="womensSearch" onkeyup="searchTable('womensTable', 'womensSearch')" placeholder="Search for categories..">
+            <div class="table-responsive mt-3" style="height: 150px;">
+                <table class="table table-hover" id="womensTable" style="color: #4D869C !important;">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                   
+                    <!-- For womens table -->
+                  <tbody>
+                    <% womensCategory.forEach(function(data,index){ %>
+                      <tr>
+                        <td>
+                          <span class="category-name"><%=data.name %></span>
+                          <form action="/admin/editCategory" method="post" class="edit-form" style="display: none;">
+                            <input type="text" name="newName" value="<%=data.name %>" required>
+                            <input type="hidden" name="oldName" value="<%=data.name %>">
+                            <input type="hidden" name="gender" value="womens">
+                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                          </form>
+                        </td>
+                        <td>
+                          <a href="/admin/softDeleteCategory/<%=encodeURIComponent(data._id) %>">
+                            <button class="btn btn-pink" style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;"><%=(data.deleted===true)?"unhide":"hide" %></button>
+                          </a>
+                          <button class="btn  edit-btn" onclick="toggleEditForm(this)" style="border: 1px solid #4D869C;color: #4D869C;">Edit</button>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                     
+  
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+
+      function toggleAddForm(gender) {
+           var form = document.getElementById(gender + 'AddForm');
+           if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'flex';
+         } else {
+            form.style.display = 'none';
+          }
+      }
+
+      function toggleEditForm(button) {
+             var row = button.closest('tr');
+             var nameSpan = row.querySelector('.category-name');
+             var editForm = row.querySelector('.edit-form');
+             
+             if (editForm.style.display === 'none' || editForm.style.display === '') {
+                 nameSpan.style.display = 'none';
+                 editForm.style.display = 'block';
+                 button.textContent = 'Cancel';
+             } else {
+                 nameSpan.style.display = 'inline';
+                 editForm.style.display = 'none';
+                 button.textContent = 'Edit';
+             }
+      }
+
+
+
+
+        function searchTable(tableId, inputId) {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById(inputId);
+            filter = input.value.toLowerCase();
+            table = document.getElementById(tableId);
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        function checkDuplicate(tableId, newCategory) {
+             var table = document.getElementById(tableId);
+              var rows = table.getElementsByTagName("tr");
+              for (var i = 1; i < rows.length; i++) {
+                    var categoryName = rows[i].getElementsByTagName("td")[0].innerText.toLowerCase();
+              if (categoryName === newCategory.toLowerCase()) {
+                    return true;
+                   }
+                }
+             return false;
+           }
+
+
+    
+
+        function toggleEditForm(button) {
+            var row = button.closest('tr');
+            var nameSpan = row.querySelector('.category-name');
+            var editForm = row.querySelector('.edit-form');
+            
+            if (editForm.style.display === 'none' || editForm.style.display === '') {
+                nameSpan.style.display = 'none';
+                editForm.style.display = 'block';
+                button.textContent = 'Cancel';
+            } else {
+                nameSpan.style.display = 'inline';
+                editForm.style.display = 'none';
+                button.textContent = 'Edit';
+            }
+        }
+
+         // Function to hide an  (flash message) element
+         function hideElement(elementId) {
+          const element = document.getElementById(elementId);
+          if (element) {
+            setTimeout(() => {
+              element.style.transition = 'opacity 0.5s ease-out';
+              element.style.opacity = '0';
+              setTimeout(() => {
+                element.style.display = 'none';
+              }, 500);
+            }, 2000);
+          }
+        }
+      
+        // Hide alerts
+        hideElement('successAlert');
+        hideElement('errorAlert');
+
+    </script>
+</body>
+</html>

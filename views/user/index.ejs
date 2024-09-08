@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wish List</title>
+
+    <link rel="shortcut icon" href="img/fav.png">
+
+    <!-- CSS links -->
+    <link rel="stylesheet" href="/css/linearicons.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/owl.carousel.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/nouislider.min.css">
+    <link rel="stylesheet" href="/css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="/css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script defer src="/js/vendor/jquery-2.2.4.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	<script defer src="/js/vendor/bootstrap.min.js"></script>
+	<script defer src="/js/jquery.ajaxchimp.min.js"></script>
+	<script defer src="/js/jquery.nice-select.min.js"></script>
+	<script defer src="/js/jquery.sticky.js"></script>
+	<script defer src="/js/nouislider.min.js"></script>
+	<script defer src="/js/countdown.js"></script>
+	<script defer src="/js/jquery.magnific-popup.min.js"></script>
+	<script defer src="/js/owl.carousel.min.js"></script>
+	<script defer src="/js/main.js"></script>
+   
+</head>
+
+<body>
+
+	 <!-- flash message  -->
+	 <% if (locals.successMessage && locals.successMessage.length > 0) { %>
+        <div id="successAlert" class="alert alert-success" role="alert"
+        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+        >
+          <%= locals.successMessage %>
+        </div>
+      <% } %>
+      
+      <% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+        <div id="errorAlert" class="alert alert-danger" role="alert"
+        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+        >
+          <%= locals.errorMessage %>
+        </div>
+      <% } %>
+
+	<!-- Start Header Area -->
+	<header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="/"><img src="img/logo.png" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto align-items-center justify-content-center">
+							<li class="nav-item active"><a class="nav-link" href="/" style="color: #ff6c00;">Home</a></li>
+							<li class="nav-item">
+								<a href="/shop" class="nav-link" 
+								 aria-expanded="false" style="color: #ff6c00;">Shop</a>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="/contact" style="color: #ff6c00;">Contact</a></li>
+							<li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag" style="font-size: 1.3rem;color: #ff6c00;"></span></a></li>
+							<li class="nav-item d-none">
+								<button class="search" style="border: none;outline: none;background-color: transparent;"><span class="lnr lnr-magnifier" id="searchBar" style="font-size: 1.3rem;color: #ff6c00;"></span></button>
+							</li>
+							<li class="nav-item">
+								<a href="/wishlist" class="nav-link" 
+								 aria-expanded="false"><span class="bi bi-heart-fill" style="font-size: 1.3rem;color: #ff6c00;"></span></a>
+							</li>
+							<li class="nav-item">
+								 <button style="font-size: 1.2rem;
+							padding: 10px 15px;
+							border-radius: 27px;
+							border: none;
+							background-image: linear-gradient(90deg, #ffba00 0%, #ff6c00 100%) !important;
+							outline: none;"><a href="/orderhistory" style="color:#ffff;">Order history</a></button>
+							</li>
+							<li class="nav-item mx-3">
+								<a href="/profile" class="nav-link"
+								 aria-expanded="false"><button class="btn-primary" style="font-size: 2.5rem;border: none;outline: none; background-color: transparent;"><i class="bi bi-person-circle" style="color: #ff6c00;"></i></button></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- <div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between">
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div> -->
+	</header>
+	<!-- End Header Area -->
+
+	<!-- start banner Area -->
+	<section class="banner-area">
+		<div class="container">
+			<div class="row fullscreen align-items-center justify-content-start">
+				<div class="col-lg-12">
+					<div class="active-banner-slider owl-carousel">
+						<!-- Single Slide -->
+						<div class="row single-slide align-items-center d-flex">
+							<div class="col-lg-5 col-md-6">
+								<div>
+									<h1>Puma <br> New Collection!</h1>
+									<div class="add-bag d-flex align-items-center">
+										<a class="bi bi-bag" href="/shop" style="font-size: 2.5rem;color: #ff6c00;"></a>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-7">
+								<div class="banner-img">
+									<img class="img-fluid" src="img/banner/banner-img.png" alt="Banner Image">
+								</div>
+							</div>
+						</div>
+						<!-- Single Slide -->
+						<div class="row single-slide align-items-center d-flex">
+							<div class="col-lg-5 col-md-6">
+								<div>
+									<h1>Adidas <br> New Collection!</h1>
+									<div class="add-bag d-flex align-items-center">
+										<a class="bi bi-bag" href="/shop" style="font-size: 2.5rem;color: #ff6c00;"></a>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-7">
+								<div class="banner-img">
+									<img class="img-fluid" src="img/banner/banner-img.png" alt="Banner Image">
+								</div>
+							</div>
+						</div>
+						<!-- Single Slide -->
+						<div class="row single-slide align-items-center d-flex">
+							<div class="col-lg-5 col-md-6">
+								<div>
+									<h1>Nike <br> New Collection!</h1>
+									<div class="add-bag d-flex align-items-center">
+										<a class="bi bi-bag" href="/shop" style="font-size: 2.5rem;color: #ff6c00;"></a>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-7">
+								<div class="banner-img">
+									<img class="img-fluid" src="img/banner/banner-img.png" alt="Banner Image">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End banner Area -->
+
+	<!-- start features Area -->
+	<section class="features-area section_gap">
+		<div class="container">
+			<div class="row features-inner">
+				<!-- Single Features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="img/features/f-icon1.png" alt="Free Delivery">
+						</div>
+						<h6>Free Delivery</h6>
+						<p>Free Shipping on all orders</p>
+					</div>
+				</div>
+				<!-- Single Features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="img/features/f-icon2.png" alt="No Return Policy">
+						</div>
+						<h6>No Return Policy</h6>
+						<p>Free Shipping on all orders</p>
+					</div>
+				</div>
+				<!-- Single Features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="img/features/f-icon3.png" alt="24/7 Support">
+						</div>
+						<h6>24/7 Support</h6>
+						<p>Free Shipping on all orders</p>
+					</div>
+				</div>
+				<!-- Single Features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="img/features/f-icon4.png" alt="Secure Payment">
+						</div>
+						<h6>Secure Payment</h6>
+						<p>Free Shipping on all orders</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- end features Area -->
+
+	<!-- Start category Area -->
+	<section class="category-area">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-8 col-md-12">
+					<div class="row">
+						<div class="col-lg-8 col-md-8">
+							<div class="single-deal">
+								<div class="overlay"></div>
+								<img class="img-fluid w-100" src="img/category/c1.jpg" alt="Category Image">
+								<a href="img/category/c1.jpg" class="img-pop-up" target="_blank">
+									<div class="deal-details">
+										<h6 class="deal-title">Sneaker for Sports</h6>
+									</div>
+								</a>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4">
+							<div class="single-deal">
+								<div class="overlay"></div>
+								<img class="img-fluid w-100" src="img/category/c2.jpg" alt="Category Image">
+								<a href="img/category/c2.jpg" class="img-pop-up" target="_blank">
+									<div class="deal-details">
+										<h6 class="deal-title">Sneaker for Sports</h6>
+									</div>
+								</a>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4">
+							<div class="single-deal">
+								<div class="overlay"></div>
+								<img class="img-fluid w-100" src="img/category/c3.jpg" alt="Category Image">
+								<a href="img/category/c3.jpg" class="img-pop-up" target="_blank">
+									<div class="deal-details">
+										<h6 class="deal-title">Product for Couple</h6>
+									</div>
+								</a>
+							</div>
+						</div>
+						<div class="col-lg-8 col-md-8">
+							<div class="single-deal">
+								<div class="overlay"></div>
+								<img class="img-fluid w-100" src="img/category/c4.jpg" alt="Category Image">
+								<a href="img/category/c4.jpg" class="img-pop-up" target="_blank">
+									<div class="deal-details">
+										<h6 class="deal-title">Sneaker for Sports</h6>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="single-deal">
+						<div class="overlay"></div>
+						<img class="img-fluid w-100" src="img/category/c5.jpg" alt="Category Image">
+						<a href="img/category/c5.jpg" class="img-pop-up" target="_blank">
+							<div class="deal-details">
+								<h6 class="deal-title">Sneaker for Sports</h6>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End category Area -->
+	<% if(products ){%>
+		
+	<!-- start product Area -->
+	<section class="owl-carousel active-product-area section_gap">
+		<!-- single product slide -->
+		<div class="single-product-slider">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-6 text-center">
+						<div class="section-title">
+							<h1>Latest Products</h1>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					
+					<!-- loop start -->
+					<% products.forEach(function(product, index) { %>
+						<% if (product?.deleted === false) { %>
+							<div class="col-lg-3 col-md-6 shadow-sm">
+								<div class="single-product">
+									<a href="/productDetails/<%= encodeURIComponent(product?._id) %>">
+										<img class="img-fluid" src="<%= product.variants[0]?.imageUrls[1] %>" alt="img">
+									</a>
+									<div class="product-details">
+										<h6><%= product?.name %></h6>
+										<div class="price">
+											<h6>₹<%= product.price %></h6>
+											<h6 class="l-through">₹<%= product.price + 5000 %></h6>
+										</div>
+										<div class="prd-bottom">
+											<form action="/addToCart" method="POST" class="social-info  w-100 d-flex flex-wrap align-content-center justify-content-between" 
+											style="height: 150px;"
+											>
+												<input type="hidden" name="productId" value="<%= encodeURIComponent(product?._id) %>">
+												<input type="hidden" name="name" value="<%= product.name %>">
+												<input type="hidden" name="price" value="<%= product.price %>">
+												<input type="hidden" name="brand" value="<%= product.brand %>">
+												<input type="hidden" name="gender" value="<%= product.gender %>">
+												<div style="margin: 10px;width: 60px;">
+													<label for="variantSize" style="display: block;">Size:</label>
+													<select name="variantSize" id="variantSize" style="width: 50%; padding: 5px;" required>
+														<% product.variants.forEach(function(variant) { %>
+															<option value="<%= variant.size %>"><%= variant.size %></option>
+														<% }); %>
+													</select>
+												</div>
+												<div style="margin: 10px;width: 60px;">
+													<label for="variantColor" style="display: block;">Color:</label>
+													<select name="variantColor" id="variantColor" style="width: 50%; padding: 5px;" required>
+														<% product.variants.forEach(function(variant) { %>
+															<option value="<%= variant.color %>"><%= variant.color %></option>
+														<% }); %>
+													</select>
+													<!-- image sending hidden -->
+													<% product.variants.forEach(function(variant) { %>
+														<input type="hidden" name="variantImageUrls" value="<%= variant.imageUrls.join(',') %>">
+													<% }); %>
+												</div>
+												<div style="margin-top: 12px;width: 60px;">
+													<label for="qty" style="display: block;">Quantity:</label>
+													<input type="number" name="qty" id="qty" value="1" min="1" max="<%= Math.min(...product.variants.map(v => v.stock)) %>" style="width: 100%; padding: 5px;" required>
+												</div>
+												<div style="margin-top: 12px;width: 100%; " class="d-flex">
+													<button type="submit" class="add-to-cart-btn px-3" style="background-color: transparent !important; outline: none !important; border: none;">
+														<span class="ti-bag"></span>
+														<!-- <p class="hover-text">add to cart</p> -->
+													</button>
+												
+													<a href="/wishlist/add/<%= encodeURIComponent(product?._id) %>" class="social-info">
+														<span class="lnr lnr-heart"></span>
+														<p class="hover-text">Wishlist</p>
+													</a>
+												</div>
+											</form>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						<% } %>
+					<% }) %>
+ <!-- loop end  -->
+				
+				</div>
+			</div>
+		</div>
+		<!-- single product slide -->
+		<div class="single-product-slider">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-6 text-center">
+						<div class="section-title">
+							<h1>Latest Products</h1>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					
+					<!-- loop start -->
+					<% products.forEach(function(product, index) { %>
+						<% if (product?.deleted === false) { %>
+							<div class="col-lg-3 col-md-6 shadow-sm">
+								<div class="single-product">
+									<a href="/productDetails/<%= encodeURIComponent(product?._id) %>">
+										<img class="img-fluid" src="<%= product.variants[0]?.imageUrls[1] %>" alt="img">
+									</a>
+									<div class="product-details">
+										<h6><%= product?.name %></h6>
+										<div class="price">
+											<h6>₹<%= product.price %></h6>
+											<h6 class="l-through">₹<%= product.price + 5000 %></h6>
+										</div>
+										<div class="prd-bottom">
+											<form action="/addToCart" method="POST" class="social-info  w-100 d-flex flex-wrap align-content-center justify-content-between" 
+											style="height: 150px;"
+											>
+												<input type="hidden" name="productId" value="<%= encodeURIComponent(product?._id) %>">
+												<input type="hidden" name="name" value="<%= product.name %>">
+												<input type="hidden" name="price" value="<%= product.price %>">
+												<input type="hidden" name="brand" value="<%= product.brand %>">
+												<input type="hidden" name="gender" value="<%= product.gender %>">
+												<div style="margin: 10px;width: 60px;">
+													<label for="variantSize" style="display: block;">Size:</label>
+													<select name="variantSize" id="variantSize" style="width: 50%; padding: 5px;" required>
+														<% product.variants.forEach(function(variant) { %>
+															<option value="<%= variant.size %>"><%= variant.size %></option>
+														<% }); %>
+													</select>
+												</div>
+												<div style="margin: 10px;width: 60px;">
+													<label for="variantColor" style="display: block;">Color:</label>
+													<select name="variantColor" id="variantColor" style="width: 50%; padding: 5px;" required>
+														<% product.variants.forEach(function(variant) { %>
+															<option value="<%= variant.color %>"><%= variant.color %></option>
+														<% }); %>
+													</select>
+												</div>
+												<div style="margin-top: 12px;width: 60px;">
+													<label for="qty" style="display: block;">Quantity:</label>
+													<input type="number" name="qty" id="qty" value="1" min="1" max="<%= Math.min(...product.variants.map(v => v.stock)) %>" style="width: 100%; padding: 5px;" required>
+												</div>
+												<div style="margin-top: 12px;width: 100%; " class="d-flex">
+													<button type="submit" class="add-to-cart-btn px-3" style="background-color: transparent !important; outline: none !important; border: none;">
+														<span class="ti-bag"></span>
+														<!-- <p class="hover-text">add to cart</p> -->
+													</button>
+												
+													<a href="/wishlist/add/<%= encodeURIComponent(product?._id) %>" class="social-info">
+														<span class="lnr lnr-heart"></span>
+														<p class="hover-text">Wishlist</p>
+													</a>
+												</div>
+											</form>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						<% } %>
+					<% }) %>
+ <!-- loop end  -->
+				
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- end product Area -->
+	  
+	<% } %>
+	<!-- Start exclusive deal Area -->
+	<section class="exclusive-deal-area">
+		<div class="container-fluid">
+			<div class="row justify-content-center align-items-center">
+				<div class="col-lg-6 no-padding exclusive-left">
+					<div class="row clock_sec clockdiv" id="clockdiv">
+						<div class="col-lg-12">
+							<h1>Exclusive Hot Deal Ends Soon!</h1>
+							<p>Who are in extremely love with eco friendly system.</p>
+						</div>
+						<div class="col-lg-12">
+							<div class="row clock-wrap">
+								<div class="col clockinner1 clockinner">
+									<h1 class="days">150</h1>
+									<span class="smalltext">Days</span>
+								</div>
+								<div class="col clockinner clockinner1">
+									<h1 class="hours">23</h1>
+									<span class="smalltext">Hours</span>
+								</div>
+								<div class="col clockinner clockinner1">
+									<h1 class="minutes">47</h1>
+									<span class="smalltext">Mins</span>
+								</div>
+								<div class="col clockinner clockinner1">
+									<h1 class="seconds">59</h1>
+									<span class="smalltext">Secs</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<a href="" class="primary-btn">Shop Now</a>
+				</div>
+				<div class="col-lg-6 no-padding exclusive-right">
+					<div class="active-exclusive-product-slider">
+						<!-- single exclusive carousel -->
+						<div class="single-exclusive-slider">
+							<img class="img-fluid" src="img/product/e-p1.png" alt="">
+							<div class="product-details">
+								<div class="price">
+									<h6>₹15000.00</h6>
+									<h6 class="l-through">₹21000.00</h6>
+								</div>
+								<h4>addidas New Hammer sole
+									for Sports person</h4>
+								<div class="add-bag d-flex align-items-center justify-content-center">
+									<a class="bi bi-bag" href="/shop" style="font-size: 2.5rem;color: #ff6c00;"></a>
+								</div>
+							</div>
+						</div>
+						<!-- single exclusive carousel -->
+						<div class="single-exclusive-slider">
+							<img class="img-fluid" src="img/product/e-p1.png" alt="">
+							<div class="product-details">
+								<div class="price">
+									<h6>₹15000.00</h6>
+									<h6 class="l-through">₹21000.00</h6>
+								</div>
+								<h4>addidas New Hammer sole
+									for Sports person</h4>
+								<div class="add-bag d-flex align-items-center justify-content-center">
+									<a class="bi bi-bag" href="/shop" style="font-size: 2.5rem;color: #ff6c00;"></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End exclusive deal Area -->
+
+	<!-- Start brand Area -->
+	<section class="brand-area section_gap">
+		<div class="container">
+			<div class="row">
+				<a class="col single-img" href="#">
+					<img class="img-fluid d-block mx-auto" src="img/brand/1.png" alt="">
+				</a>
+				<a class="col single-img" href="#">
+					<img class="img-fluid d-block mx-auto" src="img/brand/2.png" alt="">
+				</a>
+				<a class="col single-img" href="#">
+					<img class="img-fluid d-block mx-auto" src="img/brand/3.png" alt="">
+				</a>
+			</div>
+		</div>
+	</section>
+	<!-- End brand Area -->
+
+
+
+	<!-- start footer Area -->
+	<footer class="footer-area section_gap">
+		<div class="container">
+			<div class="row ">
+				<div class="col-6">
+					<div class="single-footer-widget mail-chimp">
+						<h6 class="mb-20">Brand</h6>
+						<ul class="instafeed d-flex flex-wrap">
+							<li><img src="img/brand/img1.jpg" alt=""></li>
+							<li><img src="img/brand/img2.jpg" alt=""></li>
+							<li><img src="img/brand/img3.jpg" alt=""></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-6  d-flex justify-content-end align-content-center">
+					<div class="single-footer-widget  w-50">
+						<h6>Follow Us</h6>
+						<p>Let us be social</p>
+						<div class="footer-social d-flex align-items-center">
+							<a href="#"><i class="fa fa-facebook"></i></a>
+							<a href="#"><i class="fa fa-twitter"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer-bottom d-flex justify-content-center align-items-center flex-wrap">
+				<p class="footer-text m-0">
+Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script> 
+</p>
+			</div>
+		</div>
+	</footer>
+	<!-- End footer Area -->
+
+	<script src="/js/vendor/jquery-2.2.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+	 crossorigin="anonymous"></script>
+	<script src="/js/vendor/bootstrap.min.js"></script>
+	<script src="/js/jquery.ajaxchimp.min.js"></script>
+	<script src="/js/jquery.nice-select.min.js"></script>
+	<script src="/js/jquery.sticky.js"></script>
+	<script src="/js/nouislider.min.js"></script>
+	<script src="/js/countdown.js"></script>
+	<script src="/js/jquery.magnific-popup.min.js"></script>
+	<script src="/js/owl.carousel.min.js"></script>
+	<!--gmaps Js-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="/js/gmaps.min.js"></script>
+	<script src="/js/main.js"></script>
+
+	<script>
+		  // Function to hide an  (flash message) element 
+		  function hideElement(elementId) {
+          const element = document.getElementById(elementId);
+          if (element) {
+            setTimeout(() => {
+              element.style.transition = 'opacity 0.5s ease-out';
+              element.style.opacity = '0';
+              setTimeout(() => {
+                element.style.display = 'none';
+              }, 500);
+            }, 2000);
+          }
+        }
+      
+        // Hide alerts
+        hideElement('successAlert');
+        hideElement('errorAlert');
+	</script>
+	<!-- <script>
+        $(document).ready(function () {
+            // Show search input box when search button is clicked
+            $('#searchBar').on('click', function (e) {
+                e.preventDefault();
+                $('#search_input_box').slideToggle();
+                $('#search_input').focus();
+            });
+
+            // Hide search input box when close button is clicked
+            $('#close_search').on('click', function (e) {
+                e.preventDefault();
+                $('#search_input_box').slideUp();
+            });
+
+            // Handle search form submission
+            $('#search_input_box form').on('submit', function (e) {
+                e.preventDefault();
+                var query = $('#search_input').val();
+                alert('Search for: ' + query);
+                // You can add your search logic here
+            });
+        });
+    </script> -->
+</body>
+
+</html>

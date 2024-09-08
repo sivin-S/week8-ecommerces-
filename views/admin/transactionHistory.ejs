@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <style>
+        body {
+             font-family:  sans-serif;
+             background-color: #eef7ff;
+         }
+         .sidebar {
+             background-color: #4D869C;
+             color: #eef7ff;
+             height: 100vh;
+             position: fixed;
+             width: 280px;
+             overflow-y: auto;
+             border: 3px solid  #4D869C;
+             padding: 15px 10px;
+         }
+         .sidebar .nav-link {
+             margin-bottom: 15px;
+             padding: 12px 12px;
+             text-align: center;
+         }
+ 
+         .search-bar {
+             max-width: 300px;
+             margin-bottom: 20px;
+         }
+ 
+         .in-active{
+             border: 3px solid  #eef7ff;
+             color: #eef7ff !important;
+             border-radius: 12px;
+         }
+ 
+         .sidebar .nav-link.active {
+             background-color: #eef7ff;
+             color: #4D869C;
+             border-radius: 12px;
+         }
+         .main-content {
+             margin-left: 250px;
+             padding: 20px;
+         } 
+       
+         .table-responsive {
+             overflow-x: auto;
+         }
+         .search-bar {
+             max-width: 300px;
+             margin-bottom: 20px;
+         }
+         .user-list-header {
+             background-color: #4D869C;
+             color: #eef7ff;
+             padding: 10px;
+             border-radius: 5px 5px 0 0;
+         }
+         .search-input {
+             padding: 5px 10px;
+             border: none;
+             border-radius: 5px;
+             margin-left: 10px;
+         }
+ 
+ 
+         input[type="search"]{
+            color: #4D869C;
+            padding: 12px 12px;
+            margin-top: 5px;
+            border: 1px solid #4D869C;
+            outline: #4D869C;
+         }
+ 
+     </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="mb-4 px-3">
+                        <i class="fas fa-user-circle"></i> Admin Dashboard
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/userList"><i class="fas fa-users"></i> Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/orderList"><i class="fas fa-list"></i> Order list</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/paymentMethods"><i class="fas fa-credit-card"></i> Payment</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/salesReport"><i class="fas fa-chart-bar"></i> Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/categories"><i class="fas fa-folder"></i> Category</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/orderStatus"><i class="fas fa-truck"></i> Orders Status</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/transactionHistory"><i class="fas fa-history"></i> Transaction history</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/addMensProduct"><i class="bi bi-bag-plus-fill"></i> Add mens product</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/addWomensProduct"><i class="bi bi-bag-plus-fill"></i> Womens product</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i> Coupons history</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/notifications"><i class="fas fa-bell"></i> Notifications</a>
+                        </li>
+                    </ul>
+                    <div class="mt-5 px-3">
+                        <a href="/admin/logout"><button class="btn btn-outline-light w-100" style="padding: 12px;background-color: #EEF7FF;color: #4D869C;margin-top: -20px;">LOGOUT</button></a>
+                    </div>
+                </div>
+            </nav>
+            <!-- Main content -->
+            <main  class="ms-sm-auto  px-md-4 main-content  p-5" style="width: 80%;">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+                style="border-bottom-color: #4D869C !important;"
+                >
+                    <h1 class="h2" style="color: #4D869C;">Dashboard / Transaction history</h1>
+                </div>
+                <div class="bg-white p-4 rounded shadow-sm">
+                    <div class="user-list-header d-flex" style="height: 100px;">
+                        <h2>Transaction History</h2>
+                        <div class="search-bar ms-auto">
+                            <input type="search" class="search-input" id="orderSearch" placeholder="Search for transactions.." onkeyup="searchTable()">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="orderTable" style="color: #4D869C;">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Recipient</th>
+                                    <th>Product ID</th>
+                                    <th>Date</th>
+                                    <th>Paid Amount</th>
+                                    <th>Quantity</th>
+                                    <th>Status (Pending/Success)</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- <tr>
+                                    <td>1</td>
+                                    <td><img src="/mnt/data/Transaction history.png" alt="Image" width="50"></td>
+                                    <td>Null</td>
+                                    <td>Null</td>
+                                    <td><span class="badge">FAILED</span></td>
+                                    <td>Null</td>
+                                    <td>Null</td>
+                                    <td><button class="btn btn-outline-danger">Clear All</button></td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function searchTable() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("orderSearch");
+            filter = input.value.toLowerCase();
+            table = document.getElementById("orderTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

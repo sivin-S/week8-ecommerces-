@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step Heaven</title>
+
+    <link rel="shortcut icon" href="img/fav.png">
+  
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="css/linearicons.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/nouislider.min.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+ <!-- flash message -->
+   <% if (locals?.err) { %>
+    <div id="errorAlert" class="alert alert-danger" role="alert"
+    style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+    >
+      <%= locals?.err %>
+    </div>
+  <% } %>
+
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Register Account</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="/login">login<span class="lnr lnr-arrow-right"></span></a>
+                        <p>Register</p>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!--================Login Box Area =================-->
+    <section class="login_box_area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="login_box_img h-100">
+                        <div class="row hover flex-column align-content-center justify-content-center">
+                            <button style="font-size: 1.2rem; padding: 18px 80px; border-radius: 27px; border: none; background-image: linear-gradient(90deg, #ffba00 0%, #ff6c00 100%) !important; outline: none;">
+                                <a href="/login" style="color:#ffff;">Login</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login_form_inner">
+                        <form class="row login_form" action="/signup" method="post" id="contactForm">
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="name" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'" required>
+                                <div class="invalid-feedback" id="nameError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" required>
+                                <div class="invalid-feedback" id="emailError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required>
+                                <div class="invalid-feedback" id="passwordError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="number" class="form-control" id="age" name="age" placeholder="Age" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Age'" required>
+                                <div class="invalid-feedback" id="passwordError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="gender" name="gender" placeholder="Gender" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Gender'" required>
+                                <div class="invalid-feedback" id="passwordError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="number" class="form-control" id="phone" name="phone" placeholder="Phone" onfocus="this.placeholder = ''" onblur="this.placeholder = 'PhoneNo.'" required>
+                                <div class="invalid-feedback" id="phoneError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="country" name="country" placeholder="Country" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Country'" required>
+                                <div class="invalid-feedback" id="countryError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="number" class="form-control" min="0" id="postCode" name="zip" placeholder="Post Code" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Post Code'" required>
+                                <div class="invalid-feedback" id="postCodeError"></div>
+                            </div> 
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="state" name="state" placeholder="State" onfocus="this.placeholder = ''" onblur="this.placeholder = 'State'" required>
+                                <div class="invalid-feedback" id="stateError"></div>
+                            </div> 
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="landMark" name="landmark" placeholder="Land Mark" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Land Mark'" required>
+                                <div class="invalid-feedback" id="landMarkError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Locality'" required>
+                                <div class="invalid-feedback" id="localityError"></div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <button type="submit" value="submit" class="primary-btn" style="border-radius: 30px;padding: 7px 0;">Sign Up</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================End Login Box Area =================-->
+
+    <!-- Start Footer Area -->
+    <footer class="footer-area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <div class="single-footer-widget mail-chimp">
+                        <h6 class="mb-20">Brand</h6>
+                        <ul class="instafeed d-flex flex-wrap">
+                            <li><img src="img/i1.jpg" alt="Image 1"></li>
+                            <li><img src="img/i2.jpg" alt="Image 2"></li>
+                            <li><img src="img/i3.jpg" alt="Image 3"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-6 d-flex justify-content-end align-content-center">
+                    <div class="single-footer-widget w-50">
+                        <h6>Follow Us</h6>
+                        <p>Let us be social</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer Area -->
+	 <script>
+		document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('contactForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const phoneInput = document.getElementById('phone');
+    const countryInput = document.getElementById('country');
+    const postCodeInput = document.getElementById('postCode');
+    const stateInput = document.getElementById('state');
+    const landMarkInput = document.getElementById('landMark');
+    const localityInput = document.getElementById('locality');
+
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const phoneError = document.getElementById('phoneError');
+    const countryError = document.getElementById('countryError');
+    const postCodeError = document.getElementById('postCodeError');
+    const stateError = document.getElementById('stateError');
+    const landMarkError = document.getElementById('landMarkError');
+    const localityError = document.getElementById('localityError');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let isValid = true;
+
+        // Validate name
+        if (validator.isEmpty(nameInput.value)) {
+            isValid = false;
+            nameError.textContent = 'Name is required';
+            nameInput.classList.add('is-invalid');
+        } else {
+            nameError.textContent = '';
+            nameInput.classList.remove('is-invalid');
+        }
+
+        // Validate email
+        if (!validator.isEmail(emailInput.value)) {
+            isValid = false;
+            emailError.textContent = 'Invalid email';
+            emailInput.classList.add('is-invalid');
+        } else {
+            emailError.textContent = '';
+            emailInput.classList.remove('is-invalid');
+        }
+
+        // Validate password
+        if (validator.isEmpty(passwordInput.value)) {
+            isValid = false;
+            passwordError.textContent = 'Password is required';
+            passwordInput.classList.add('is-invalid');
+        } else {
+            passwordError.textContent = '';
+            passwordInput.classList.remove('is-invalid');
+        }
+
+        // Validate phone
+        if (!validator.isMobilePhone(phoneInput.value, 'any')) {
+            isValid = false;
+            phoneError.textContent = 'Invalid phone number';
+            phoneInput.classList.add('is-invalid');
+        } else {
+            phoneError.textContent = '';
+            phoneInput.classList.remove('is-invalid');
+        }
+
+        // Validate country
+        if (validator.isEmpty(countryInput.value)) {
+            isValid = false;
+            countryError.textContent = 'Country is required';
+            countryInput.classList.add('is-invalid');
+        } else {
+            countryError.textContent = '';
+            countryInput.classList.remove('is-invalid');
+        }
+
+        // Validate post code
+        if (!validator.isPostalCode(postCodeInput.value, 'any')) {
+            isValid = false;
+            postCodeError.textContent = 'Invalid post code';
+            postCodeInput.classList.add('is-invalid');
+        } else {
+            postCodeError.textContent = '';
+            postCodeInput.classList.remove('is-invalid');
+        }
+
+        // Validate state
+        if (validator.isEmpty(stateInput.value)) {
+            isValid = false;
+            stateError.textContent = 'State is required';
+            stateInput.classList.add('is-invalid');
+        } else {
+            stateError.textContent = '';
+            stateInput.classList.remove('is-invalid');
+        }
+
+        // Validate land mark
+        if (validator.isEmpty(landMarkInput.value)) {
+            isValid = false;
+            landMarkError.textContent = 'Land mark is required';
+            landMarkInput.classList.add('is-invalid');
+        } else {
+            landMarkError.textContent = '';
+            landMarkInput.classList.remove('is-invalid');
+        }
+
+        // Validate locality
+        if (validator.isEmpty(localityInput.value)) {
+            isValid = false;
+            localityError.textContent = 'Locality is required';
+            localityInput.classList.add('is-invalid');
+        } else {
+            localityError.textContent = '';
+            localityInput.classList.remove('is-invalid');
+        }
+
+        if (isValid) {
+            form.submit();
+        }
+    });
+});
+
+// flash message popup
+function hideElement(elementId){
+    const element = document.getElementById(elementId);
+    if(element){
+        setTimeout(()=>{
+            element.style.transition="opacity 0.5s ease-out";
+            element.style.opacity='0';
+            setTimeout(()=>{
+                element.style.display="none";
+            },500)
+        },2000)
+    }
+}
+    // Hide alerts
+    hideElement('successAlert');
+        hideElement('errorAlert');
+	 </script>
+
+    <!-- JS Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
+    <script defer src="js/vendor/jquery-2.2.4.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script defer src="js/vendor/bootstrap.min.js"></script>
+    <script defer src="js/jquery.ajaxchimp.min.js"></script>
+    <script defer src="js/jquery.nice-select.min.js"></script>
+    <script defer src="js/jquery.sticky.js"></script>
+    <script defer src="js/nouislider.min.js"></script>
+    <script defer src="js/countdown.js"></script>
+    <script defer src="js/jquery.magnific-popup.min.js"></script>
+    <script defer src="js/owl.carousel.min.js"></script>
+    <script defer src="js/main.js"></script>
+</body>
+</html>

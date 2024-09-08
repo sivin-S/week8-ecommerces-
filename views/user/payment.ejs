@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Methods</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header-bg {
+            background: linear-gradient(to bottom right, #FF6600, #FFA500);
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+        }
+        .payment-option {
+            background-color: white;
+            border: 1px solid #dee2e6;
+        }
+        .payment-option img {
+            max-width: 100px;
+            height: auto;
+        }
+
+     .buttonMod {
+    outline: none;
+    border: none;
+    padding: 12px 0;
+    width: 275px;
+    margin-left: 17px;
+    background-color: #ff9000;
+    color: #fff;
+}
+div{
+    border-color: #ff9000 !important;
+    border-radius: 12px;
+}
+
+    </style>
+</head>
+<body>
+    <header class="header-bg text-white py-4 mb-4">
+        <div class="container">
+            <h1 class="mb-0">Payment methods</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="row justify-content-center my-5">
+            <div class="col-md-8">
+                <div class="card border border-5" style="border-color: #ff9000 !important;">
+                    <div class="card-body bg-light">
+                        <p class="text-warning mb-4">Payment Methods Supported</p>
+                        <form action="/payment" method="post">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <input type="hidden" name="paymentMethod" value="COD">
+                                    <img src="/img/svg/cash-on-delivery.png" alt="COD" class="me-3" style="max-width: 30px;">
+                                    <span class="w-100"><p>COD</p></span>
+                                </div>
+                                <button class="btn btn-success" type="submit">Pay</button>
+                            </div>
+                        </form>
+                        <form action="/payment" method="post">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <input type="hidden" name="paymentMethod" value="Online">
+                                    <img src="/img/svg/razorpay-logo-removebg-preview.png" alt="Razorpay" class="me-3">
+                                    <span class="w-100"><p>online payment</p></span>
+                                </div>
+                                <button class="btn btn-success" type="submit">Pay</button>
+                            </div>
+                        </form>
+                            
+                        <form action="/payment" method="post">
+                            <div class="payment-option d-flex justify-content-between align-items-center p-3 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <input type="hidden" name="paymentMethod" value="Wallet">
+                                    <img src="/img/svg/wallet-solid.svg" alt="Wallet" class="me-3" style="max-width: 30px;">
+                                    <span class="w-100"><p>wallet payment</p></span>
+                                </div>
+                                <button class="btn btn-success" type="submit">Pay</button>
+                            </div>
+                        </form>
+                           
+
+    
+                            <div class="text-end mt-4">
+                                <button class="btn buttonMod">Home</button>
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

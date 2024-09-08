@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+
+    <link rel="shortcut icon" href="img/fav.png">
+
+    <!-- CSS links -->
+    <link rel="stylesheet" href="/css/linearicons.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/owl.carousel.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/nouislider.min.css">
+    <link rel="stylesheet" href="/css/ion.rangeSlider.css" />
+    <link rel="stylesheet" href="/css/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script defer src="/js/vendor/jquery-2.2.4.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	<script defer src="/js/vendor/bootstrap.min.js"></script>
+	<script defer src="/js/jquery.ajaxchimp.min.js"></script>
+	<script defer src="/js/jquery.nice-select.min.js"></script>
+	<script defer src="/js/jquery.sticky.js"></script>
+	<script defer src="/js/nouislider.min.js"></script>
+	<script defer src="/js/countdown.js"></script>
+	<script defer src="/js/jquery.magnific-popup.min.js"></script>
+	<script defer src="/js/owl.carousel.min.js"></script>
+	<script defer src="/js/main.js"></script>
+   
+</head>
+
+<body>
+ <!-- flash message -->
+ <% if (locals.successMessage && locals.successMessage.length > 0) { %>
+    <div id="successAlert" class="alert alert-success" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <%= locals.successMessage %>
+    </div>
+<% } %>
+
+<% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+    <div id="errorAlert" class="alert alert-danger" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <%= locals.errorMessage %>
+    </div>
+<% } %>
+
+    <!-- Start Header Area -->
+    <header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="/"><img src="img/logo.png" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto align-items-center justify-content-center">
+							<li class="nav-item active"><a class="nav-link" href="/" style="color: #ff6c00;">Home</a></li>
+							<li class="nav-item">
+								<a href="/shop" class="nav-link" 
+								 aria-expanded="false" style="color: #ff6c00;">Shop</a>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="/contact" style="color: #ff6c00;">Contact</a></li>
+							<li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag" style="font-size: 1.3rem;color: #ff6c00;"></span></a></li>
+							<li class="nav-item">
+								<button class="search" style="border: none;outline: none;background-color: transparent;"><span class="lnr lnr-magnifier" id="search" style="font-size: 1.3rem;color: #ff6c00;"></span></button>
+							</li>
+							<li class="nav-item">
+								<a href="/wishlist" class="nav-link" 
+								 aria-expanded="false"><span class="bi bi-heart-fill" style="font-size: 1.3rem;color: #ff6c00;"></span></a>
+							</li>
+							<li class="nav-item">
+								 <button style="font-size: 1.2rem;
+							padding: 10px 15px;
+							border-radius: 27px;
+							border: none;
+							background-image: linear-gradient(90deg, #ffba00 0%, #ff6c00 100%) !important;
+							outline: none;"><a href="/orderhistory" style="color:#ffff;">Order history</a></button>
+							</li>
+							<li class="nav-item mx-3">
+								<a href="/profile" class="nav-link"
+								 aria-expanded="false"><button class="btn-primary" style="font-size: 2.5rem;border: none;outline: none; background-color: transparent;"><i class="bi bi-person-circle" style="color: #ff6c00;"></i></button></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between">
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div>
+	</header>
+    <!-- End Header Area -->
+
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Shopping Cart</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="/">check out<span class="lnr lnr-arrow-right"></span></a>
+                        <p>Cart</p>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!--================Cart Area =================-->
+
+
+    <section class="cart_area">
+        <div class="container">
+            <div class="cart_inner">
+                <div class="table-responsive">
+                    <% if (cart) { %>
+                      
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                            </thead>
+                           
+                            <form action="/updateCart" method="post" id="updateCartForm">
+                            <tbody id="cart-items">
+                                <% cart.items.forEach(function(data,index){ %>
+                                <tr>
+                                    <td>
+                                        <div class="media">
+                                            <div class="d-flex">
+                                                <img class="img-fluid" src="<%= data.product.variants[0]?.imageUrls[0] %>" width="100" height="100" alt="img">
+                                            </div>
+                                            <div class="media-body">
+                                                <p><%=data.product.name %></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h5>₹<%=data.product.price %></h5>
+                                    </td>
+                                    <td>
+                                        <div class="product_count">
+                                            <% if (data.product.variants[0] && data.product.variants[0].stock) { %>
+                                                <input type="text" name="qty" class="qty" value="<%=data.quantity  %>" title="Quantity:" readonly>
+                                                <input type="text" name="productId"  value="<%=data.product._id %>" hidden>
+                                                <input type="hidden" name="updatedQuantities" id="updatedQuantities">
+                                                <button onclick="changeQuantity(this, 1, <%= data.product.variants[0].stock %>)" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                                                <button onclick="changeQuantity(this, -1, <%= data.product.variants[0].stock %>)" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+                                            <% } else { %>
+                                                <p>Stock information unavailable..........</p>
+                                            <% } %>
+                                        </div>
+                                    </td>                                    
+                                    <td>
+                                        <h5 class="item-total">₹<%=data.product.price %></h5>
+                                    </td>
+                                    <td>
+                                        <a href="/removeProductFromCart/<%=encodeURIComponent(data.product._id)%>" style="text-decoration: none;color:red;border: 1px solid red;padding: 12px 20px;">Remove</a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                <tr>
+                                    <td>
+                                      <h5>Subtotal</h5>
+                                    </td>
+                                    <td>
+                                      <h5 id="subtotal">₹<%= cart.totalAmount.toFixed(2) %></h5>
+                                      <input type="hidden" name="totalAmount" id="subtotals" value="<%= cart.totalAmount %>">
+                                    </td>
+                                  </tr>
+                                  
+                                <tr class="out_button_area">
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="checkout_btn_inner d-flex align-items-center">
+                                            <a class="gray_btn" href="/shop">Continue Shopping</a>
+                                            <button class="primary-btn" type="submit" style="border: none;outline: none;">Proceed to checkout</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                           </form>
+                       
+                        </table>
+                   
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <h2>Your cart is empty</h2>
+                            <p>Looks like you haven't added any items to your cart yet.</p>
+                            <a href="/shop" class="primary-btn mt-3">Start Shopping</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+
+    <!--================End Cart Area =================-->
+
+    <!-- start footer Area -->
+    <footer class="footer-area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <div class="single-footer-widget mail-chimp">
+                        <h6 class="mb-20">Brand</h6>
+                        <ul class="instafeed d-flex flex-wrap">
+                            <li><img src="img/i1.jpg" alt=""></li>
+                            <li><img src="img/i2.jpg" alt=""></li>
+                            <li><img src="img/i3.jpg" alt=""></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-6 d-flex justify-content-end align-content-center">
+                    <div class="single-footer-widget  w-50">
+                        <h6>Follow Us</h6>
+                        <p>Let us be social</p>
+                        <div class="footer-social d-flex align-items-center">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom d-flex justify-content-center align-items-center flex-wrap">
+                <p class="footer-text m-0">
+                    Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- End footer Area -->
+
+    <!-- Custom Script for Search and Quantity -->
+    <script>
+        document.getElementById('search-icon').addEventListener('click', function() {
+            document.getElementById('search_input_box').style.display = 'block';
+            document.getElementById('search_input').focus();
+        });
+
+        document.getElementById('close_search').addEventListener('click', function() {
+            document.getElementById('search_input_box').style.display = 'none';
+        });
+
+        document.addEventListener('click', function(event) {
+            var searchInputBox = document.getElementById('search_input_box');
+            if (!searchInputBox.contains(event.target) && event.target !== document.getElementById('search-icon')) {
+                searchInputBox.style.display = 'none';
+            }
+        });
+
+        //quantity
+        function changeQuantity(button, increment,maxStock) {
+            var input = button.parentElement.querySelector('.qty');
+            var currentValue = parseInt(input.value, 10);
+            if (!isNaN(currentValue)) {
+                let newValue = currentValue + increment;
+                newValue = Math.min(Math.max(1, newValue),maxStock);
+                input.value= newValue;
+                updateTotal(button);
+            }
+        }
+
+        
+    function updateTotal(button) {
+        var row = button.closest('tr');
+        var quantity = parseInt(row.querySelector('.qty').value, 10);
+        var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
+        var total = quantity * price;
+        row.querySelector('.item-total').textContent = '₹' + total.toFixed(2);
+        updateSubtotal();
+    }
+
+    function updateSubtotal() {
+  var rows = document.querySelectorAll('#cart-items tr:not(:last-child):not(:nth-last-child(2))');
+  var subtotal = 0;
+  rows.forEach(function(row) {
+    var quantity = parseInt(row.querySelector('.qty').value, 10);
+    var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
+    subtotal += quantity * price;
+  });
+  document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
+  document.getElementById('subtotals').value = subtotal.toFixed(2);
+}
+
+       
+
+    // Call updateSubtotal initially to set the correct value
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSubtotal();
+    });
+
+
+        
+        // Function to hide flash messages
+function hideFlashMessages() {
+    const successAlert = document.getElementById('successAlert');
+    const errorAlert = document.getElementById('errorAlert');
+
+    if (successAlert) {
+        setTimeout(() => {
+            successAlert.style.display = 'none';
+        }, 5000);
+    }
+
+    if (errorAlert) {
+        setTimeout(() => {
+            errorAlert.style.display = 'none';
+        }, 5000);
+    }
+}
+
+// Call the function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', hideFlashMessages);
+
+
+
+document.getElementById('updateCartForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  var updatedQuantities = [];
+  var rows = document.querySelectorAll('#cart-items tr:not(:last-child):not(:nth-last-child(2))');
+  
+  rows.forEach(function(row) {
+    var productId = row.querySelector('input[name="productId"]').value;
+    var quantity = row.querySelector('.qty').value;
+    updatedQuantities.push({ productId: productId, quantity: quantity });
+  });
+
+  document.getElementById('updatedQuantities').value = JSON.stringify(updatedQuantities);
+  
+  this.submit();
+});
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
