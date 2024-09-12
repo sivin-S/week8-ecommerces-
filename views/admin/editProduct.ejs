@@ -67,7 +67,10 @@
                 </div>
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender</label>
-                    <input type="text" class="form-control" id="gender" name="gender" value="<%= locals.productDetails.gender %>" readonly>
+                    <select class="form-select" id="gender" aria-label="Default select example" name="gender">
+                        <option selected  value="<%= locals.productDetails.gender %>"><%= locals.productDetails.gender %></option>
+                        <option value="<%= (locals.productDetails.gender === "mens")?'womens':'mens' %>"><%= (locals.productDetails.gender === "mens")?'womens':'mens' %></option>
+                      </select>
                 </div>
                 <div class="mb-3">
                     <label for="brand" class="form-label">Brand</label>
@@ -113,14 +116,29 @@
                                     <label for="stock-<%= variantIndex %>" class="form-label">Stock</label>
                                     <input type="number" class="form-control" id="stock-<%= variantIndex %>" name="variants[<%= variantIndex %>][stock]" value="<%= variant.stock %>" min="1" required>
                                 </div>
+
                                 <% for (let i = 0; i < 3; i++) { %>
                                     <div class="mb-3">
                                         <label for="variantImage<%= i + 1 %>-<%= variantIndex %>" class="form-label">Image <%= i + 1 %></label>
-                                        <input type="file" class="form-control variant-image" id="variantImage<%= i + 1 %>-<%= variantIndex %>" name="variants[<%= variantIndex %>][images]" accept="image/*" data-variant="<%= variantIndex %>" data-index="<%= i %>">
+                                        <input type="file" class="form-control variant-image" id="variantImage<%= i + 1 %>-<%= variantIndex %>" name="variants[<%= variantIndex %>][images][<%= i %>]" accept="image/*" data-variant="<%= variantIndex %>" data-index="<%= i %>">
+                                        <label class="file-name-label" for="variantImage<%= i + 1 %>-<%= variantIndex %>">
+                                            <% if (variant.imageUrls && variant.imageUrls[i]) { %>
+                                                Current file: <%= path.basename(variant.imageUrls[i]) %>
+                                            <% } else { %>
+                                                No file selected
+                                            <% } %>
+                                        </label>
                                     </div>
                                 <% } %>
+                                
+                                
+                                
+                                
+                                
+
                                 <div class="preview-container" id="previewContainer-<%= variantIndex %>">
                                     <% variant.imageUrls.forEach(function(url, imageIndex) { %>
+                                        <input type="hidden" name="variants[<%= variantIndex %>][existingImages][<%= imageIndex %>]" value="<%= url %>">
                                         <div class="preview-wrapper" data-variant="<%= variantIndex %>" data-index="<%= imageIndex %>">
                                             <img class="img-preview" src="<%= url %>" alt="Image Preview <%= imageIndex + 1 %>">
                                             <button type="button" class="remove-preview btn btn-danger btn-sm">×</button>
@@ -220,50 +238,92 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.body.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-preview')) {
-                    const wrapper = e.target.closest('.preview-wrapper');
-                    const variantIndex = wrapper.getAttribute('data-variant');
-                    const imageIndex = wrapper.getAttribute('data-index');
-                    document.getElementById(`variantImage${parseInt(imageIndex) + 1}-${variantIndex}`).value = '';
-                    wrapper.remove();
-                }
-            });
+        if (e.target.classList.contains('remove-preview')) {
+            const wrapper = e.target.closest('.preview-wrapper');
+            const variantIndex = wrapper.getAttribute('data-variant');
+            const imageIndex = wrapper.getAttribute('data-index');
+            document.getElementById(`variantImage${parseInt(imageIndex) + 1}-${variantIndex}`).value = '';
+            wrapper.remove();
+        }
+    });
 
-            document.body.addEventListener('change', function(e) {
-                if (e.target.classList.contains('variant-image')) {
-                    previewImage(e.target);
-                }
-            });
+    document.body.addEventListener('change', function(e) {
+        if (e.target.classList.contains('variant-image')) {
+            previewImage(e.target);
+        }
+    });
 
-            document.getElementById('addVariantBtn').addEventListener('click', function() {
-                const variantsContainer = document.getElementById('variants-container');
-                const newVariantSection = document.createElement('div');
-                newVariantSection.className = 'variant-section mb-4';
-                newVariantSection.innerHTML = `
-                    <h3>Variant ${variantCount + 1}</h3>
-                    <div class="mb-3">
-                        <label for="color-${variantCount}" class="form-label">Color</label>
-                        <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="size-${variantCount}" class="form-label">Size</label>
-                        <input type="text" class="form-control" id="size-${variantCount}" name="variants[${variantCount}][size]" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="stock-${variantCount}" class="form-label">Stock</label>
-                        <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1" required>
-                    </div>
-                    <% for (let i = 0; i < 3; i++) { %>
-                        <div class="mb-3">
-                            <label for="variantImage${i + 1}-${variantCount}" class="form-label">Image ${i + 1}</label>
-                            <input type="file" class="form-control variant-image" id="variantImage${i + 1}-${variantCount}" name="variants[${variantCount}][images]" accept="image/*" data-variant="${variantCount}" data-index="${i}">
-                        </div>
-                    <% } %>
-                    <div class="preview-container" id="previewContainer-${variantCount}"></div>
-                `;
-                variantsContainer.appendChild(newVariantSection);
-                variantCount++;
-            });
+
+
+
+          
+
+
+
+
+    const fileInputs = document.querySelectorAll('.variant-image');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            const fileName = e.target.files[0].name;
+            const label = e.target.nextElementSibling;
+            if (label && label.tagName === 'LABEL') {
+                label.textContent = fileName;
+            } else {
+                const newLabel = document.createElement('label');
+                newLabel.textContent = fileName;
+                newLabel.classList.add('mt-2', 'd-block');
+                e.target.parentNode.insertBefore(newLabel, e.target.nextSibling);
+            }
+        });
+    });
+
+
+
+
+       
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+    document.getElementById('addVariantBtn').addEventListener('click', function() {
+        const variantsContainer = document.getElementById('variants-container');
+        const newVariantSection = document.createElement('div');
+        newVariantSection.className = 'variant-section mb-4';
+        newVariantSection.innerHTML = `
+            <h3>Variant ${variantCount + 1}</h3>
+            <div class="mb-3">
+                <label for="color-${variantCount}" class="form-label">Color</label>
+                <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]" required>
+            </div>
+            <div class="mb-3">
+                <label for="size-${variantCount}" class="form-label">Size</label>
+                <input type="text" class="form-control" id="size-${variantCount}" name="variants[${variantCount}][size]" required>
+            </div>
+            <div class="mb-3">
+                <label for="stock-${variantCount}" class="form-label">Stock</label>
+                <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1" required>
+            </div>
+            ${[...Array(3)].map((_, i) => `
+                <div class="mb-3">
+                    <label for="variantImage${i + 1}-${variantCount}" class="form-label">Image ${i + 1}</label>
+                    <input type="file" class="form-control variant-image" id="variantImage${i + 1}-${variantCount}" name="variants[${variantCount}][images][${i}]" accept="image/*" data-variant="${variantCount}" data-index="${i}">
+                </div>
+            `).join('')}
+            <div class="preview-container" id="previewContainer-${variantCount}"></div>
+        `;
+        variantsContainer.appendChild(newVariantSection);
+        variantCount++;
+    });
         });
 
         document.getElementById('cropButton').addEventListener('click', function() {
@@ -299,78 +359,6 @@
                 cropperModal.hide();
             }, 'image/jpeg');
         });
-        document.getElementById('addVariantBtn').addEventListener('click', function() {
-    const variantsContainer = document.getElementById('variants-container');
-    const newVariantSection = document.createElement('div');
-    newVariantSection.className = 'variant-section mb-4';
-    newVariantSection.innerHTML = `
-        <h3>Variant ${variantCount + 1}</h3>
-        <div class="mb-3">
-            <label for="color-${variantCount}" class="form-label">Color</label>
-            <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]" required>
-        </div>
-        <div class="mb-3">
-            <label for="size-${variantCount}" class="form-label">Size</label>
-            <input type="text" class="form-control" id="size-${variantCount}" name="variants[${variantCount}][size]" required>
-        </div>
-        <div class="mb-3">
-            <label for="stock-${variantCount}" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1" required>
-        </div>
-        ${[...Array(3)].map((_, i) => `
-            <div class="mb-3">
-                <label for="variantImage${i + 1}-${variantCount}" class="form-label">Image ${i + 1}</label>
-                <input type="file" class="form-control variant-image" id="variantImage${i + 1}-${variantCount}" name="variants[${variantCount}][images]" accept="image/*" data-variant="${variantCount}" data-index="${i}">
-            </div>
-        `).join('')}
-        <div class="preview-container" id="previewContainer-${variantCount}"></div>
-    `;
-    variantsContainer.appendChild(newVariantSection);
-    variantCount++;
-});
-document.body.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-preview')) {
-        const wrapper = e.target.closest('.preview-wrapper');
-        const variantIndex = wrapper.getAttribute('data-variant');
-        const imageIndex = wrapper.getAttribute('data-index');
-        document.getElementById(`variantImage${parseInt(imageIndex) + 1}-${variantIndex}`).value = '';
-        wrapper.remove();
-    }
-});
-document.getElementById('cropButton').addEventListener('click', function() {
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob(function(blob) {
-        const url = URL.createObjectURL(blob);
-        const variantIndex = currentFileInput.dataset.variant;
-        const imageIndex = currentFileInput.dataset.index;
-        const previewContainer = document.getElementById(`previewContainer-${variantIndex}`);
-        const previewWrapper = document.createElement('div');
-        previewWrapper.className = 'preview-wrapper';
-        previewWrapper.innerHTML = `
-            <img class="img-preview" src="${url}" alt="Cropped Image Preview">
-            <button type="button" class="remove-preview btn btn-danger btn-sm">×</button>
-        `;
-
-        const existingPreview = previewContainer.querySelector(`[data-index="${imageIndex}"]`);
-        if (existingPreview) {
-            existingPreview.remove();
-        }
-
-        previewWrapper.setAttribute('data-variant', variantIndex);
-        previewWrapper.setAttribute('data-index', imageIndex);
-        previewContainer.appendChild(previewWrapper);
-
-        const croppedFile = new File([blob], currentFileInput.files[0].name, { type: 'image/jpeg' });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(croppedFile);
-        currentFileInput.files = dataTransfer.files;
-
-        cropper.destroy();
-        const cropperModal = bootstrap.Modal.getInstance(document.getElementById('cropperModal'));
-        cropperModal.hide();
-    }, 'image/jpeg');
-});
-
     </script>
 </body>
 </html>

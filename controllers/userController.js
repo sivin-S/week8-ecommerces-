@@ -174,24 +174,81 @@ exports.removeFromWishlist = async (req, res) => {
 
 exports.getOrderHistory = async (req, res) => {
     try {
-        const checkOut = await Checkout.aggregate([
-            { $unwind: "$cart.items" },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: "cart.items.product",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            }
-        ]);
+        const checkOut = await Checkout.find({})
+            .populate('user')
+            .populate('address')
+            .populate({
+                path: 'cart.items.product',
+                model: 'Product'  
+            });
 
+        console.log("checkOut >>>>>>>>>>>>>>>>>>>>>");
+    //    console.log(checkOut);
+       
+       
         res.render("orderHistory.ejs", { checkOut });
     } catch (err) {
         console.log(err);
         res.redirect("/orderhistory");
     }
 };
+
+exports.getOrderOneHistory = async(req,res)=>{
+   try{
+    const  checkout = await Checkout.findById(req.params.id)
+              .populate('user')
+              .populate('address')
+              .populate({
+                path: 'cart.items.product',
+                model: 'Product'
+              })
+    
+    // console.log("checkout >>>>>>>>>>>");
+    // console.log(checkout);
+    
+    res.render('checkOutDetails.ejs',{checkout})
+
+   }catch(err){
+      console.log(err);
+      res.redirect("/orderhistory")
+   }
+}
+
+
+exports.getOrderCancel = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const updatedCheckout = await Checkout.findByIdAndUpdate(
+            orderId,
+            { $set: { orderStatus: 'Cancelled' } },
+            { new: true }
+        ).populate('cart.items.product');
+
+        if (!updatedCheckout) {
+            return res.status(404).send('Order not found');
+        }
+
+        for (const item of updatedCheckout.cart.items) {
+            await Product.findOneAndUpdate(
+                { 
+                    _id: item.product._id, 
+                    'variants.color': item.variant.color, 
+                    'variants.size': item.variant.size 
+                },
+                { $inc: { 'variants.$.stock': item.quantity } }
+            );
+        }
+
+        console.log('Updated order:', updatedCheckout);
+        res.redirect('/orderhistory');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/orderhistory');
+    }
+};
+
+
+
 
 exports.getCheckout = async (req, res) => {
     try {
@@ -216,6 +273,19 @@ exports.checkout = async (req, res) => {
             return res.redirect('/cart');
         }
 
+        for (const item of cart.items) {
+            const product = await Product.findById(item.product._id);
+            const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
+            
+            if (!variant || variant.stock < item.quantity) {
+                req.flash('error', `Not enough stock for ${product.name} (${item.variant.color}, ${item.variant.size})`);
+                return res.redirect('/cart');
+            }
+
+            variant.stock -= item.quantity;
+            await product.save();
+        }
+
         const checkout = new Checkout({
             user: userId,
             cart: cart,
@@ -227,13 +297,7 @@ exports.checkout = async (req, res) => {
 
         await checkout.save();
 
-        for (const item of cart.items) {
-            await Product.findOneAndUpdate(
-                { _id: item.product._id, 'variants.color': item.variant.color, 'variants.size': item.variant.size },
-                { $inc: { 'variants.$.stock': -item.quantity } }
-            );
-        }
-
+        // Clear the cart
         await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [], totalAmount: 0 } });
 
         req.flash('success', 'Checkout successful');
@@ -244,6 +308,21 @@ exports.checkout = async (req, res) => {
         res.redirect('/cart');
     }
 };
+
+exports.loginUserPage = (req, res)=> {
+    if (req.session.userStatus) {
+        res.redirect("/");
+    } else {
+        res.setHeader('Cache-Control', 'no-store');
+        res.render('login.ejs');
+    }
+}
+
+
+
+
+
+
 
 exports.addToCartFromWishlist = async (req, res) => {
     try {
@@ -310,6 +389,7 @@ exports.addToCartFromWishlist = async (req, res) => {
         res.redirect('/cart');
     }
 };
+
 
 exports.addAddress = async (req, res) => {
     try {

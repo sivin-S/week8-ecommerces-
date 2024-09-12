@@ -122,6 +122,10 @@
             transition: opacity 0.5s ease-out;
         }
     </style>
+
+
+  <!-- validator js  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.7.0/validator.min.js"></script>
     <!-- script  -->
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
@@ -157,9 +161,205 @@
             // Hide alerts ()........
             hideElement('successAlert');
             hideElement('errorAlert');
-        });
-    </script>
 
+
+
+
+    // Validation for edit address forms
+    document.querySelectorAll('form[action="/editAddress"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            const phone = this.querySelector('input[name="phone"]').value;
+            const zip = this.querySelector('input[name="zip"]').value;
+            const age = this.querySelector('input[name="age"]').value;
+            const username = this.querySelector('input[name="username"]').value;
+            const gender = this.querySelector('select[name="gender"]').value;
+            const country = this.querySelector('input[name="country"]').value;
+            const landmark = this.querySelector('input[name="landmark"]').value;
+            const locality = this.querySelector('input[name="locality"]').value;
+            const state = this.querySelector('input[name="state"]').value;
+            
+            if (!validator.isMobilePhone(phone, 'any')) {
+                alert('Please enter a valid phone number.');
+                isValid = false;
+            }
+
+            if (!validator.isPostalCode(zip, 'any')) {
+                alert('Please enter a valid zip code.');
+                isValid = false;
+            }
+
+            if (!validator.isInt(age, { min: 18, max: 100 })) {
+                alert('Please enter a valid age between 18 and 100.');
+                isValid = false;
+            }
+
+            if (!validator.isAlpha(username, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid username.');
+                isValid = false;
+            }
+
+            if (!validator.isAlpha(gender, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid gender.');
+                isValid = false;
+            }
+            if (!validator.isAlpha(country, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid country.');
+                isValid = false;
+            }
+            if (!validator.isAlpha(landmark, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid landmark.');
+                isValid = false;
+            }
+            if (!validator.isAlpha(locality, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid locality.');
+                isValid = false;
+            }
+            if (!validator.isAlpha(state, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid state.');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                console.log('Form is valid, submitting...');
+                this.submit();
+            } else {
+                console.log('Form is invalid, not submitting.');
+            }
+        });
+    });
+
+    // Validation for add address form
+    const addAddressForm = document.querySelector('form[action="/addAddress"]');
+    console.log("called");
+    
+    if (addAddressForm) {
+        
+        addAddressForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            const phone = this.querySelector('input[name="phone"]').value;
+            const zip = this.querySelector('input[name="zip"]').value;
+            const country = this.querySelector('input[name="country"]').value;
+            const landmark = this.querySelector('input[name="landmark"]').value;
+            const locality = this.querySelector('input[name="locality"]').value;
+            const state = this.querySelector('input[name="state"]').value;
+            
+            if (!validator.isMobilePhone(phone, 'any')) {
+                alert('Please enter a valid phone number.');
+                isValid = false;
+            }
+
+            if (!validator.isPostalCode(zip, 'any')) {
+                alert('Please enter a valid zip code.');
+                isValid = false;
+            }
+
+            if (!validator.isAlpha(locality, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid locality.');
+                isValid = false;
+            }
+
+            if (!validator.isAlpha(state, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid state.');
+                isValid = false;
+            }
+
+            if (!validator.isAlpha(country, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid country.');
+                isValid = false;
+            }
+            if (!validator.isAlpha(landmark, 'en-US', {ignore: ' '})) {
+                alert('Please enter a valid landmark.');
+                isValid = false;
+            }
+         
+           
+            
+            if (isValid) {
+                console.log('Form is valid, submitting...');
+                this.submit();
+            } else {
+                console.log('Form is invalid, not submitting.');
+            }
+        });
+
+
+
+    }
+
+    // Validation for reset password form
+    const resetPasswordForm = document.querySelector('form[action="/resetPassword"]');
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            const newPassword = this.querySelector('input[name="newPassword"]').value;
+            const confirmPassword = this.querySelector('input[name="confirmPassword"]').value;
+            
+            if (!validator.isLength(newPassword, {min: 8})) {
+                alert('Password must be at least 8 characters long.');
+                isValid = false;
+            }
+            
+            if (!validator.equals(newPassword, confirmPassword)) {
+                alert('New password and confirm password do not match.');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                console.log('Form is valid, submitting...');
+                this.submit();
+            } else {
+                console.log('Form is invalid, not submitting.');
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        });
+
+
+
+            
+           
+
+
+
+
+
+    </script>
+  
 </head>
 
 <body>
@@ -218,7 +418,7 @@
                         </label>
                     </div>
                     <div class="form-floating mb-3 form-floatingFour">
-                        <input type="text" name="country" id="country" class="form-control shadow-none"
+                        <input type="text" name="gender" id="gender" class="form-control shadow-none"
                             value="<%=userData?.gender %>" placeholder="gender" readonly>
                         <label for="country">
                             <p>Gender</p>
@@ -239,7 +439,7 @@
         </div>
     </div>
 
-    <!-- multiple address show modal -->
+    <!-- multiple address edit address modal -->
     <div class="modal fade" id="addressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="addressModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -260,15 +460,21 @@
                                 </div>
                                 <div class="py-3 row">
                                     <input type="hidden" class="py-3 mb-3 rounded shadow" value="<%=index%>" name="index">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.username %>" name="username">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.age %>" name="age">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.gender %>" name="gender">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>" name="state">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>" name="zip">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>" name="phone">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>" name="locality">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>" name="country">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>" name="landmark">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.username %>" name="username" placeholder="username">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.age %>" name="age" placeholder="age">
+                                    <!-- <input type="text" class="py-3 mb-3 rounded shadow" value="<%# = userData?.gender %>" name="gender"> -->
+                                    <select class="form-select py-3 mb-3 rounded shadow" aria-label="Default select example" name="gender" id="editGender" style="border:1px solid #ff9000 !important;color: #ff9000;">
+                                        <option selected><%= userData?.gender %></option>
+                                        <option value="<%=( userData?.gender === "male") ? "female" : "male" %>">
+                                            <%=( userData?.gender === "male") ? "female" : "male" %>
+                                        </option>                                        
+                                      </select>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>" name="state" placeholder="state">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>" name="zip" placeholder="zip">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>" name="phone" placeholder="phone">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>" name="locality" placeholder="locality">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>" name="country" placeholder="country">
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>" name="landmark" placeholder="landmark">
                                 </div>
                             </div>
                         </form>
@@ -389,6 +595,17 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
 </body>
 
 </html>

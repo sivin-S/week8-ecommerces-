@@ -24,11 +24,11 @@
 <body>
 
  <!-- flash message -->
-   <% if (locals?.err) { %>
+   <% if (locals?.errorMessage) { %>
     <div id="errorAlert" class="alert alert-danger" role="alert"
     style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
     >
-      <%= locals?.err %>
+      <%=locals?.errorMessage %>
     </div>
   <% } %>
 
@@ -65,47 +65,52 @@
                     <div class="login_form_inner">
                         <form class="row login_form" action="/signup" method="post" id="contactForm">
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="name" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'" required>
+                                <input type="text" class="form-control" id="name" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
                                 <div class="invalid-feedback" id="nameError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" required>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
                                 <div class="invalid-feedback" id="emailError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
                                 <div class="invalid-feedback" id="passwordError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="number" class="form-control" id="age" name="age" placeholder="Age" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Age'" required>
-                                <div class="invalid-feedback" id="passwordError"></div>
+                                <input type="number" class="form-control" id="ageInput" name="age" placeholder="Age" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Age'">
+                                <div class="invalid-feedback" id="ageError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="gender" name="gender" placeholder="Gender" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Gender'" required>
-                                <div class="invalid-feedback" id="passwordError"></div>
-                            </div>
+                                <select class="form-select form-control" aria-label="Default select example" id="genderInput" name="gender">
+                                    <option value="" selected disabled>Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="invalid-feedback" id="genderError"></div>
+                            </div>                            
                             <div class="col-md-12 form-group">
-                                <input type="number" class="form-control" id="phone" name="phone" placeholder="Phone" onfocus="this.placeholder = ''" onblur="this.placeholder = 'PhoneNo.'" required>
+                                <input type="number" class="form-control" id="phone" name="phone" placeholder="Phone" onfocus="this.placeholder = ''" onblur="this.placeholder = 'PhoneNo.'">
                                 <div class="invalid-feedback" id="phoneError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="country" name="country" placeholder="Country" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Country'" required>
+                                <input type="text" class="form-control" id="country" name="country" placeholder="Country" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Country'">
                                 <div class="invalid-feedback" id="countryError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="number" class="form-control" min="0" id="postCode" name="zip" placeholder="Post Code" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Post Code'" required>
+                                <input type="number" class="form-control" min="0" id="postCode" name="zip" placeholder="Post Code" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Post Code'">
                                 <div class="invalid-feedback" id="postCodeError"></div>
                             </div> 
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="state" name="state" placeholder="State" onfocus="this.placeholder = ''" onblur="this.placeholder = 'State'" required>
+                                <input type="text" class="form-control" id="state" name="state" placeholder="State" onfocus="this.placeholder = ''" onblur="this.placeholder = 'State'">
                                 <div class="invalid-feedback" id="stateError"></div>
                             </div> 
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="landMark" name="landmark" placeholder="Land Mark" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Land Mark'" required>
+                                <input type="text" class="form-control" id="landMark" name="landmark" placeholder="Land Mark" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Land Mark'">
                                 <div class="invalid-feedback" id="landMarkError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Locality'" required>
+                                <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Locality'">
                                 <div class="invalid-feedback" id="localityError"></div>
                             </div>
                             <div class="col-md-12 form-group">
@@ -143,19 +148,22 @@
         </div>
     </footer>
     <!-- End Footer Area -->
-	 <script>
-		document.addEventListener('DOMContentLoaded', function () {
+	
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('contactForm');
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const ageInput = document.getElementById('ageInput');
     const phoneInput = document.getElementById('phone');
     const countryInput = document.getElementById('country');
     const postCodeInput = document.getElementById('postCode');
     const stateInput = document.getElementById('state');
     const landMarkInput = document.getElementById('landMark');
     const localityInput = document.getElementById('locality');
-
+    const genderInput = document.getElementById('genderInput');
+    const genderError = document.getElementById('genderError');
     const nameError = document.getElementById('nameError');
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
@@ -171,14 +179,41 @@
 
         let isValid = true;
 
+        // Regex patterns
+        const namePattern = /^[a-zA-Z]+$/; // Only letters, no spaces
+        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
+        const phonePattern = /^[0-9]{10}$/; // Exactly 10 digits
+        const postCodePattern = /^[0-9]{5,6}$/; // 5 or 6 digits
+        const textPattern = /^[a-zA-Z0-9,.'-]{3,}$/; // Letters, numbers, and some punctuation, no spaces
+
         // Validate name
-        if (validator.isEmpty(nameInput.value)) {
+        if (!namePattern.test(nameInput.value)) {
             isValid = false;
-            nameError.textContent = 'Name is required';
+            nameError.textContent = 'Invalid name. Only letters are allowed, no spaces.';
             nameInput.classList.add('is-invalid');
         } else {
             nameError.textContent = '';
             nameInput.classList.remove('is-invalid');
+        }
+
+        // Validate gender
+        if (genderInput.value === "") {
+            isValid = false;
+            genderError.textContent = 'Please select a gender';
+            genderInput.classList.add('is-invalid');
+        } else {
+            genderError.textContent = '';
+            genderInput.classList.remove('is-invalid');
+        }
+
+        // Validate age
+        if (ageInput.value === "") {
+            isValid = false;
+            ageError.textContent = 'Please select an age';
+            ageInput.classList.add('is-invalid');
+        } else {
+            ageError.textContent = '';
+            ageInput.classList.remove('is-invalid');
         }
 
         // Validate email
@@ -192,9 +227,9 @@
         }
 
         // Validate password
-        if (validator.isEmpty(passwordInput.value)) {
+        if (!passwordPattern.test(passwordInput.value)) {
             isValid = false;
-            passwordError.textContent = 'Password is required';
+            passwordError.textContent = 'Password must be at least 8 characters long and contain at least one letter and one number.';
             passwordInput.classList.add('is-invalid');
         } else {
             passwordError.textContent = '';
@@ -202,9 +237,9 @@
         }
 
         // Validate phone
-        if (!validator.isMobilePhone(phoneInput.value, 'any')) {
+        if (!phonePattern.test(phoneInput.value)) {
             isValid = false;
-            phoneError.textContent = 'Invalid phone number';
+            phoneError.textContent = 'Invalid phone number. Must be 10 digits.';
             phoneInput.classList.add('is-invalid');
         } else {
             phoneError.textContent = '';
@@ -212,9 +247,9 @@
         }
 
         // Validate country
-        if (validator.isEmpty(countryInput.value)) {
+        if (!textPattern.test(countryInput.value)) {
             isValid = false;
-            countryError.textContent = 'Country is required';
+            countryError.textContent = 'Invalid country name. No spaces allowed.';
             countryInput.classList.add('is-invalid');
         } else {
             countryError.textContent = '';
@@ -222,9 +257,9 @@
         }
 
         // Validate post code
-        if (!validator.isPostalCode(postCodeInput.value, 'any')) {
+        if (!postCodePattern.test(postCodeInput.value)) {
             isValid = false;
-            postCodeError.textContent = 'Invalid post code';
+            postCodeError.textContent = 'Invalid post code. Must be 5 or 6 digits.';
             postCodeInput.classList.add('is-invalid');
         } else {
             postCodeError.textContent = '';
@@ -232,9 +267,9 @@
         }
 
         // Validate state
-        if (validator.isEmpty(stateInput.value)) {
+        if (!textPattern.test(stateInput.value)) {
             isValid = false;
-            stateError.textContent = 'State is required';
+            stateError.textContent = 'Invalid state name. No spaces allowed.';
             stateInput.classList.add('is-invalid');
         } else {
             stateError.textContent = '';
@@ -242,9 +277,9 @@
         }
 
         // Validate land mark
-        if (validator.isEmpty(landMarkInput.value)) {
+        if (!textPattern.test(landMarkInput.value)) {
             isValid = false;
-            landMarkError.textContent = 'Land mark is required';
+            landMarkError.textContent = 'Invalid land mark. No spaces allowed.';
             landMarkInput.classList.add('is-invalid');
         } else {
             landMarkError.textContent = '';
@@ -252,9 +287,9 @@
         }
 
         // Validate locality
-        if (validator.isEmpty(localityInput.value)) {
+        if (!textPattern.test(localityInput.value)) {
             isValid = false;
-            localityError.textContent = 'Locality is required';
+            localityError.textContent = 'Invalid locality. No spaces allowed.';
             localityInput.classList.add('is-invalid');
         } else {
             localityError.textContent = '';
@@ -280,10 +315,11 @@ function hideElement(elementId){
         },2000)
     }
 }
-    // Hide alerts
-    hideElement('successAlert');
-        hideElement('errorAlert');
-	 </script>
+// Hide alerts
+hideElement('successAlert');
+hideElement('errorAlert');
+
+    </script>
 
     <!-- JS Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>

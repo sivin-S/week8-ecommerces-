@@ -6,7 +6,8 @@ const mongoose = require("mongoose");
 
 const {
     isUserLogin,
-    preventAutoLogin
+    preventAutoLogin,
+    preventUserAutoLogin,
 } = require("../middleware");
 
 const userController = require("../controllers/userController");
@@ -30,11 +31,13 @@ router.get("/wishlist", isUserLogin, userController.getWishlist);
 router.get("/wishlist/add/:productId", isUserLogin, userController.addToWishlist);
 router.get("/wallet", isUserLogin, (req, res) => res.render("wallet.ejs"));
 router.get("/orderhistory", isUserLogin, userController.getOrderHistory);
+router.get("/orderhistory/details/:id", isUserLogin, userController.getOrderOneHistory);
+router.get("/cancelOrder/:id", isUserLogin, userController.getOrderCancel);
 router.get("/shop", productController.getShop);
 router.get("/checkOut", isUserLogin, userController.getCheckout);
 router.get("/contact", isUserLogin, (req, res) => res.render("contact.ejs"));
 router.get("/profile", isUserLogin, userController.getProfile);
-router.get("/login", preventAutoLogin, (req, res) => res.render("login.ejs"));
+router.get("/login", preventUserAutoLogin, userController.loginUserPage);
 router.get("/signup", (req, res) => res.render("signup.ejs"));
 router.get("/logout", authController.logout);
 

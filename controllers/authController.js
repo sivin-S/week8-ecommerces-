@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const passport = require("passport");
 const User = require("../model/dbUserSchema");
 const sendMail = require("../mailer");
+const Address = require("../model/addressSchema");
 
 const generateOtp = () => {
   return crypto.randomBytes(3).toString("hex");
@@ -10,13 +11,29 @@ const generateOtp = () => {
 
 exports.googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
 
-exports.googleAuthCallback = passport.authenticate("google", { failureRedirect: "/login" }), async (req, res) => {
-  req.session.email = req.user.email;
-  const user = await User.find({ email: req.session.email });
-  req.session.userStatus = true;
-  req.session.userId = user[0]._id;
-  res.redirect("/");
-};
+exports.googleAuthCallback = [
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  async (req, res) => {
+    try {
+      req.session.email = req.user.email;
+      const user = await User.findOne({ email: req.session.email });
+      if (user) {
+        req.session.userStatus = true;
+        req.session.userId = user._id;
+        res.redirect("/");
+      } else {
+        // Handle case where user is not found
+        req.flash('error', "User not found");
+        res.redirect('/login');
+      }
+    } catch (error) {
+      console.error("Error in Google auth callback:", error);
+      req.flash('error', "An error occurred during authentication");
+      res.redirect('/login');
+    }
+  }
+];
+
 
 exports.login = async (req, res) => {
   try {
@@ -41,8 +58,11 @@ exports.login = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const isUserExist = await User.findOne({ email: req.body.email });
+    
     if (isUserExist) {
-      return res.status(400).render("signup.ejs", { err: "User already exists" });
+      req.flash('error', "User already exists");
+      console.log(isUserExist);
+      return res.redirect('/signup');
     } else {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const address = new Address({
@@ -74,6 +94,7 @@ exports.signup = async (req, res) => {
     }
   } catch (err) {
     console.error("Error during signup:", err);
+    req.flash('error', err.message);
     res.status(307).redirect("/signup");
   }
 };

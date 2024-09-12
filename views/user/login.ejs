@@ -99,10 +99,12 @@
                         <h3>Log in to enter</h3>
                         <form class="row login_form" action="/login" method="post" id="contactForm" novalidate="novalidate">
                             <div class="col-md-12 form-group">
-                                <input type="email" class="form-control" id="name" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+                                <div class="invalid-feedback" id="emailError"></div>
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="password" class="form-control" id="name" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+                                <div class="invalid-feedback" id="passwordError"></div>
                             </div>
                             <div class="col-md-12 form-group">
                             </div>
@@ -174,6 +176,44 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
         // Hide alerts
         hideElement('successAlert');
         hideElement('errorAlert');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('contactForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                let isValid = true;
+
+                // Validate email
+                if (!validator.isEmail(emailInput.value)) {
+                    isValid = false;
+                    emailError.textContent = 'Invalid email';
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailError.textContent = '';
+                    emailInput.classList.remove('is-invalid');
+                }
+
+                // Validate password
+                if (validator.isEmpty(passwordInput.value)) {
+                    isValid = false;
+                    passwordError.textContent = 'Password is required';
+                    passwordInput.classList.add('is-invalid');
+                } else {
+                    passwordError.textContent = '';
+                    passwordInput.classList.remove('is-invalid');
+                }
+
+                if (isValid) {
+                    form.submit();
+                }
+            });
+        });
       </script>
 </body>
 </html>

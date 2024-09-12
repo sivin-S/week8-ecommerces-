@@ -21,118 +21,157 @@
 </head>
 
 <style>
-      .containerMod {
-    height: 100vh;
-    width: 100%;
-    background-color: #4D869C;
-}
+    .containerMod {
+        height: 100vh;
+        width: 100%;
+        background-color: #4D869C;
+    }
 
-.rowMod-1 {
-    /* form */
-    width: 350px;
-    height: 390px;
-    background-color: #eef7ff;
-}
+    .rowMod-1 {
+        /* form */
+        width: 350px;
+        height: 390px;
+        background-color: #eef7ff;
+    }
 
-.rowMod-1>.colMod-1 {
-    width: 100%;
-    height: 88px;
-    text-align: center;
-}
+    .rowMod-1>.colMod-1 {
+        width: 100%;
+        height: 88px;
+        text-align: center;
+    }
 
-.rowMod-1>.colMod-1>span>.icon-1 {
-    margin-top: 25px;
-}
+    .rowMod-1>.colMod-1>span>.icon-1 {
+        margin-top: 25px;
+    }
 
-.rowMod-1> form > .colMod-2 {
-    width: 100%;
-    height: 142px;
-    padding: 0 20px;
-}
+    .rowMod-1> form > .colMod-2 {
+        width: 100%;
+        height: 142px;
+        padding: 0 20px;
+    }
 
-input[type='email'] {
-    color: #4D869C !important;
-    border: 1px solid #4D869C !important;
-    background-color: #eef7ff !important;
-}
+    input[type='email'] {
+        color: #4D869C !important;
+        border: 1px solid #4D869C !important;
+        background-color: #eef7ff !important;
+    }
 
-input[type='password'] {
-    color: #4D869C !important;
-    border: 1px solid #4D869C !important;
-    background-color: #eef7ff !important;
-}
+    input[type='password'] {
+        color: #4D869C !important;
+        border: 1px solid #4D869C !important;
+        background-color: #eef7ff !important;
+    }
 
-body {
-    font-family: sans-serif;
-}
+    body {
+        font-family: sans-serif;
+    }
 
+    p {
+        color: #4D869C;
+    }
 
+    .rowMod-1> form > .colMod-3 {
+        width: 100%;
+        height: 140px;
+        padding: 5px 25px;
+    }
 
-p {
-    color: #4D869C;
-}
+    .rowMod-1> form > .colMod-3>button {
+        outline: none;
+        border: none;
+        padding: 12px 0;
+        width: 230px;
+        margin-left: 30px;
+        background-color: #4D869C;
+        color: #EEF7FF;
+    }
 
-.rowMod-1> form > .colMod-3 {
-    width: 100%;
-    height: 140px;
-    padding: 5px 25px;
-}
+    .rowMod-1> form .colMod-3>.link1 {
+        font-size: 0.90rem;
+        margin-bottom: 10px;
+    }
 
-.rowMod-1> form > .colMod-3>button {
-    outline: none;
-    border: none;
-    padding: 12px 0;
-    width: 230px;
-    margin-left: 30px;
-    background-color: #4D869C;
-    color: #EEF7FF;
-}
-
-.rowMod-1> form .colMod-3>.link1 {
-    font-size: 0.90rem;
-    margin-bottom: 10px;
-}
-
-.rowMod-1> form .colMod-3>.link2 {
-    text-align: center;
-    font-size: 0.70rem;
-}
-
-  
+    .rowMod-1> form .colMod-3>.link2 {
+        text-align: center;
+        font-size: 0.70rem;
+    }
 </style>
 
 <body>
-    
     <!-- user login page -->
     <div class="main">
-        <div class="container-fluid  containerMod d-flex align-items-center justify-content-center">
-            <div class="row  rowMod-1 flex-column  rounded-4">
+        <div class="container-fluid containerMod d-flex align-items-center justify-content-center">
+            <div class="row rowMod-1 flex-column rounded-4">
                 <div class="col-4 colMod-1 w-100">
                     <span><i class="fa-solid fa-user fa-3x icon-1" style="color: #4D869C;"></i></span>
                 </div>
-              <form action="/admin/login" method="post">
-                  <div class="col-4 colMod-2 w-100">
-                    <div class="form-floating form-floatingOne mt-3 mb-4">
-                        <input type="email"  id="email" required name="email" class="form-control shadow-none"  id="floatingInput" placeholder="email">
-                        <label for="floatingInput">
-                            <p>Email address</p>
-                        </label>
+                <form id="adminLoginForm" action="/admin/login" method="post">
+                    <div class="col-4 colMod-2 w-100">
+                        <div class="form-floating form-floatingOne mt-3 mb-4">
+                            <input type="email" id="email" name="email" class="form-control shadow-none" placeholder="email">
+                            <label for="floatingInput">
+                                <p>Email address</p>
+                            </label>
+                            <div class="invalid-feedback" id="emailError"></div>
+                        </div>
+                        <div class="form-floating form-floatingTwo">
+                            <input type="password" name="password" id="password" class="form-control shadow-none" placeholder="Password">
+                            <label for="floatingPassword">
+                                <p>Password</p>
+                            </label>
+                            <div class="invalid-feedback" id="passwordError"></div>
+                        </div>
                     </div>
-                    <div class="form-floating form-floatingTwo">
-                        <input type="password" name="password" required id="password" class="form-control  shadow-none" id="floatingPassword"
-                            placeholder="Password">
-                        <label for="floatingPassword">
-                            <p>Password</p>
-                        </label>
+                    <div class="col-4 colMod-3 w-100 d-flex flex-column justify-content-evenly">
+                        <button id="submitButton" type="submit" class="rounded-4">login</button>
                     </div>
-                </div>
-                <div class="col-4  colMod-3 w-100 d-flex flex-column justify-content-evenly">
-                    <button id="submitButton"  type="submit" class="rounded-4">login</button>
-                </div>
-              </form>
+                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('adminLoginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                console.log(validator.isEmail(emailInput.value));
+                let isValid = true;
+
+                // Validate email
+                if (!validator.isEmail(emailInput.value)) {
+                    isValid = false;
+                    emailError.textContent = 'Invalid email';
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailError.textContent = '';
+                    emailInput.classList.remove('is-invalid');
+                }
+
+                // Validate password
+                if (validator.isEmpty(passwordInput.value)) {
+                    isValid = false;
+                    passwordError.textContent = 'Password is required';
+                    passwordInput.classList.add('is-invalid');
+                } else {
+                    passwordError.textContent = '';
+                    passwordInput.classList.remove('is-invalid');
+                }
+
+                if (isValid) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+
+    <!-- JS Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
 </body>
 
 </html>

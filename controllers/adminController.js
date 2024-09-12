@@ -182,10 +182,11 @@ async function editProductPage(req, res) {
     try {
         const categories = await Category.find({});
         const productDetails = await Product.findById(req.params.id).populate('category');
-        // console.log("categories =>"+categories);
-        // console.log("productDetails =>"+productDetails);
+        console.log("categories"+categories);
+        console.log("productDetails"+productDetails);
+    
         
-        res.render('editProduct.ejs', { productDetails, categories });
+        res.render('editProduct.ejs', { productDetails, categories,path });
     } catch (err) {
         console.error('Error fetching product details:', err);
         res.redirect('/admin');
@@ -250,10 +251,40 @@ async function checkOutStatus(req, res) {
 async function editCategory(req, res) {
     try {
         const { oldName, newName, gender } = req.body;
-        await Category.updateOne({ name: oldName }, { $set: { name: newName, gender } });
+
+        if (gender !== "mens" && gender !== "womens") {
+            req.flash('error', "Invalid gender. Must be 'mens' or 'womens'.");
+            return res.redirect('/admin/categories');
+        }
+
+
+        const existingCategory = await Category.findOne({ 
+            name: newName, 
+            gender: gender,
+            _id: { $ne: req.params.id } 
+        });
+
+        if (existingCategory) {
+            req.flash('error', "Category with this name already exists for this gender!");
+            return res.redirect('/admin/categories');
+        }
+
+        const updatedCategory = await Category.findOneAndUpdate(
+            { name: oldName },
+            { $set: { name: newName, gender } },
+            { new: true }
+        );
+
+        if (!updatedCategory) {
+            req.flash('error', "Category not found.");
+            return res.redirect('/admin/categories');
+        }
+
+        req.flash('success', "Category updated successfully!");
         res.redirect('/admin/categories');
     } catch (err) {
         console.error('Error editing category:', err);
+        req.flash('error', "An error occurred while editing the category.");
         res.redirect('/admin/categories');
     }
 }
@@ -285,13 +316,11 @@ async function editProduct(req, res) {
         const productId = req.params.id;
         const { productName, price, gender, category, descriptionOfProduct, brand } = req.body;
 
-        // Find the existing product
         const existingProduct = await Product.findById(productId);
         if (!existingProduct) {
             return res.status(404).send('Product not found');
         }
 
-        // Update product details
         existingProduct.name = productName;
         existingProduct.description = descriptionOfProduct;
         existingProduct.price = price;
@@ -303,41 +332,48 @@ async function editProduct(req, res) {
 
         for (let i = 0; i < variants.length; i++) {
             const variant = variants[i];
-            const variantImages = [];
+            let variantImages = [];
 
-            // Process new images
-            if (req.files && req.files[`variants[${i}][images]`]) {
-                const images = Array.isArray(req.files[`variants[${i}][images]`])
-                    ? req.files[`variants[${i}][images]`]
-                    : [req.files[`variants[${i}][images]`]];
 
-                for (let file of images) {
-                    if (file) {
+            if (existingProduct.variants[i] && existingProduct.variants[i].imageUrls) {
+                variantImages = [...existingProduct.variants[i].imageUrls];
+            }
+
+         
+            if (req.files) {
+                for (let j = 0; j < 3; j++) { 
+                    const fileKey = `variants[${i}][images][${j}]`;
+                    if (req.files[fileKey]) {
+                        const file = req.files[fileKey];
                         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                         const fileName = file.name + '-' + uniqueSuffix + path.extname(file.name);
                         const filePath = path.join(__dirname, '..', 'uploads', 'img', fileName);
 
                         await file.mv(filePath);
-                        variantImages.push(`/uploads/img/${fileName}`);
+                        const newImageUrl = `/uploads/img/${fileName}`;
+                        
+
+                        variantImages[j] = newImageUrl;
                     }
                 }
             }
 
-            // Add existing images if any
-            if (variant.existingImages) {
-                variantImages.push(...variant.existingImages.filter(url => url));
-            }
-
-            // Update or add the variant
             if (existingProduct.variants[i]) {
                 existingProduct.variants[i].color = variant.color;
                 existingProduct.variants[i].size = variant.size;
                 existingProduct.variants[i].stock = variant.stock;
                 existingProduct.variants[i].imageUrls = variantImages;
             } else {
-                existingProduct.variants.push({ color: variant.color, size: variant.size, stock: variant.stock, imageUrls: variantImages });
+                existingProduct.variants.push({ 
+                    color: variant.color, 
+                    size: variant.size, 
+                    stock: variant.stock, 
+                    imageUrls: variantImages 
+                });
             }
         }
+
+        existingProduct.variants = existingProduct.variants.slice(0, variants.length);
 
         await existingProduct.save();
         res.redirect('/admin');
@@ -347,7 +383,9 @@ async function editProduct(req, res) {
     }
 }
 
-// Helper function to parse variants from the request body
+
+
+//  parse variants from the req.body
 function parseVariantsFromRequestBody(body) {
     const variants = [];
     for (let key in body) {
@@ -368,8 +406,6 @@ function parseVariantsFromRequestBody(body) {
     }
     return variants;
 }
-
-
 
 // Function to add a new women's product
 async function addWomensProduct(req, res) {
@@ -470,23 +506,6 @@ async function addMensProduct(req, res) {
 // Function to render the coupons creation page
 function couponsCreate(req, res) {
     res.render('couponsCreate.ejs');
-}
-
-// Helper function to parse variants from the request body
-function parseVariantsFromRequestBody(body) {
-    const variants = [];
-    for (let key in body) {
-        if (key.startsWith('variants[')) {
-            const match = key.match(/variants\[(\d+)\]\[(\w+)\]/);
-            if (match) {
-                const index = parseInt(match[1], 10);
-                const field = match[2];
-                variants[index] = variants[index] || {};
-                variants[index][field] = body[key];
-            }
-        }
-    }
-    return variants;
 }
 
 module.exports = {

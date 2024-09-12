@@ -10,7 +10,6 @@ require('./config/passportConfig');
 
 const app = express();
 
-// This code sets up a web server using Node.js and Express.js. It includes features like user and admin routes, file uploads, session management, authentication using Passport.js, and error handling. The server utilizes EJS as the templating engine and connects to a database (implementation not shown).
 // Setup view engine
 app.set("view engine", "ejs");
 
@@ -54,15 +53,11 @@ app.use(passport.session());
 // Routers
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
-// const authRouter = require("./routes/authRouter");
-// const cartRouter = require("./routes/cartRouter");
-// const productRouter = require("./routes/productRouter");
+
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
-// app.use("/auth", authRouter);
-// app.use("/cart", cartRouter);
-// app.use("/products", productRouter);
+
 
 // Set up views
 app.set("views", [

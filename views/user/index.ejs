@@ -312,63 +312,35 @@
 					<!-- loop start -->
 					<% products.forEach(function(product, index) { %>
 						<% if (product?.deleted === false) { %>
+
+
+						
+
+
+
+
+                          
 							<div class="col-lg-3 col-md-6 shadow-sm">
 								<div class="single-product">
 									<a href="/productDetails/<%= encodeURIComponent(product?._id) %>">
 										<img class="img-fluid" src="<%= product.variants[0]?.imageUrls[1] %>" alt="img">
 									</a>
 									<div class="product-details">
-										<h6><%= product?.name %></h6>
+										<h6><%= product.name %></h6>
 										<div class="price">
 											<h6>₹<%= product.price %></h6>
 											<h6 class="l-through">₹<%= product.price + 5000 %></h6>
 										</div>
-										<div class="prd-bottom">
-											<form action="/addToCart" method="POST" class="social-info  w-100 d-flex flex-wrap align-content-center justify-content-between" 
-											style="height: 150px;"
-											>
-												<input type="hidden" name="productId" value="<%= encodeURIComponent(product?._id) %>">
-												<input type="hidden" name="name" value="<%= product.name %>">
-												<input type="hidden" name="price" value="<%= product.price %>">
-												<input type="hidden" name="brand" value="<%= product.brand %>">
-												<input type="hidden" name="gender" value="<%= product.gender %>">
-												<div style="margin: 10px;width: 60px;">
-													<label for="variantSize" style="display: block;">Size:</label>
-													<select name="variantSize" id="variantSize" style="width: 50%; padding: 5px;" required>
-														<% product.variants.forEach(function(variant) { %>
-															<option value="<%= variant.size %>"><%= variant.size %></option>
-														<% }); %>
-													</select>
-												</div>
-												<div style="margin: 10px;width: 60px;">
-													<label for="variantColor" style="display: block;">Color:</label>
-													<select name="variantColor" id="variantColor" style="width: 50%; padding: 5px;" required>
-														<% product.variants.forEach(function(variant) { %>
-															<option value="<%= variant.color %>"><%= variant.color %></option>
-														<% }); %>
-													</select>
-													<!-- image sending hidden -->
-													<% product.variants.forEach(function(variant) { %>
-														<input type="hidden" name="variantImageUrls" value="<%= variant.imageUrls.join(',') %>">
-													<% }); %>
-												</div>
-												<div style="margin-top: 12px;width: 60px;">
-													<label for="qty" style="display: block;">Quantity:</label>
-													<input type="number" name="qty" id="qty" value="1" min="1" max="<%= Math.min(...product.variants.map(v => v.stock)) %>" style="width: 100%; padding: 5px;" required>
-												</div>
-												<div style="margin-top: 12px;width: 100%; " class="d-flex">
-													<button type="submit" class="add-to-cart-btn px-3" style="background-color: transparent !important; outline: none !important; border: none;">
-														<span class="ti-bag"></span>
-														<!-- <p class="hover-text">add to cart</p> -->
-													</button>
-												
-													<a href="/wishlist/add/<%= encodeURIComponent(product?._id) %>" class="social-info">
-														<span class="lnr lnr-heart"></span>
-														<p class="hover-text">Wishlist</p>
-													</a>
-												</div>
-											</form>
-											
+										<div class="prd-bottom d-flex justify-content-around align-items-center">
+											<a href="/productDetails/<%= encodeURIComponent(product._id) %>">
+												<button class="btn">
+													View Details
+												</button>
+											</a>
+											<a  href="/wishlist/add/<%= encodeURIComponent(product._id) %>" class="social-info">
+												<span class="lnr lnr-heart"></span>
+												<p class="hover-text">Wishlist</p>
+											</a>
 										</div>
 									</div>
 								</div>
