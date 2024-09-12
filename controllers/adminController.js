@@ -37,26 +37,17 @@ function loginPage(req, res) {
 }
 
 // Function to render the add men's product page
-async function addMensProductPage(req, res) {
+async function addProductsPage(req, res) {
     try {
         const categories = await Category.find({});
-        res.render('addMensProduct.ejs', { categories });
+        res.render('addProducts.ejs', { categories });
     } catch (err) {
         console.log(err);
-        res.render('addMensProduct.ejs', { categories: [] });
+        res.render('addProducts.ejs', { categories: [] });
     }
 }
 
-// Function to render the add women's product page
-async function addWomensProductPage(req, res) {
-    try {
-        const categories = await Category.find({});
-        res.render('addWomensProduct.ejs', { categories });
-    } catch (err) {
-        console.log(err);
-        res.render('addWomensProduct.ejs', { categories: [] });
-    }
-}
+
 
 // Function to render the user list page
 async function userList(req, res) {
@@ -101,17 +92,34 @@ async function orderList(req, res) {
 
 // Function to render the payment methods page
 function paymentMethods(req, res) {
-    res.render('paymentMethods.ejs');
+    // res.render('paymentMethods.ejs');
+    try{
+        res.render('paymentMethods.ejs');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
 
 // Function to render the sales report page
 function salesReport(req, res) {
-    res.render('report.ejs');
+    // res.render('report.ejs');
+    try {
+        res.render('report.ejs');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
 
 // Function to render the coupons history page
 function couponsHistory(req, res) {
-    res.render('couponsHistory.ejs');
+    try {
+        res.render('couponsHistroy.ejs');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
 
 // Function to render the categories page
@@ -407,9 +415,12 @@ function parseVariantsFromRequestBody(body) {
     return variants;
 }
 
-// Function to add a new women's product
-async function addWomensProduct(req, res) {
+
+// Function to add  products
+async function addProducts(req, res) {
     try {
+        console.log(req.body);
+        
         const { productName, price, gender, category, descriptionOfProduct, brand } = req.body;
 
         const newProduct = new Product({
@@ -448,58 +459,10 @@ async function addWomensProduct(req, res) {
         }
 
         await newProduct.save();
-        res.redirect('/admin/addWomensProduct');
+        res.redirect('/admin/addProducts');
     } catch (err) {
         console.error(err);
-        res.redirect('/admin/addWomensProduct');
-    }
-}
-
-// Function to add a new men's product
-async function addMensProduct(req, res) {
-    try {
-        const { productName, price, gender, category, descriptionOfProduct, brand } = req.body;
-
-        const newProduct = new Product({
-            name: productName,
-            description: descriptionOfProduct,
-            price,
-            category,
-            gender,
-            deleted: false,
-            brand,
-            variants: []
-        });
-
-        const variants = parseVariantsFromRequestBody(req.body);
-
-        for (let i = 0; i < variants.length; i++) {
-            const variant = variants[i];
-            const variantImages = [];
-
-            if (req.files && req.files[`variants[${i}][images]`]) {
-                const images = Array.isArray(req.files[`variants[${i}][images]`])
-                    ? req.files[`variants[${i}][images]`]
-                    : [req.files[`variants[${i}][images]`]];
-
-                for (let file of images) {
-                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                    const fileName = file.name + '-' + uniqueSuffix + path.extname(file.name);
-                    const filePath = path.join(__dirname, '..', 'uploads', 'img', fileName);
-
-                    await file.mv(filePath);
-                    variantImages.push(`/uploads/img/${fileName}`);
-                }
-            }
-
-            newProduct.variants.push({ color: variant.color, size: variant.size, stock: variant.stock, imageUrls: variantImages });
-        }
-
-        await newProduct.save();
-        res.redirect('/admin/addMensProduct');
-    } catch (err) {
-        console.error(err);
-        res.redirect('/admin/addMensProduct');
+        res.redirect('/admin/addProducts');
     }
 }
 
@@ -511,8 +474,6 @@ function couponsCreate(req, res) {
 module.exports = {
     dashboard,
     loginPage,
-    addMensProductPage,
-    addWomensProductPage,
     userList,
     toggleUserState,
     orderList,
@@ -532,7 +493,7 @@ module.exports = {
     editCategory,
     login,
     editProduct,
-    addWomensProduct,
-    addMensProduct,
-    couponsCreate
+    couponsCreate,
+    addProductsPage,
+    addProducts
 };

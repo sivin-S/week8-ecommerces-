@@ -20,8 +20,8 @@ router.use(fileUpload({
 
 router.get('/', isAdminLogin, adminController.dashboard);
 router.get('/login', preventAutoLogin, adminController.loginPage);
-router.get('/addMensProduct', isAdminLogin, adminController.addMensProductPage);
-router.get('/addWomensProduct', isAdminLogin, adminController.addWomensProductPage);
+
+router.get('/addProducts', isAdminLogin, adminController.addProductsPage);
 router.get('/userList', isAdminLogin, adminController.userList);
 router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.get('/orderList', isAdminLogin, adminController.orderList);
@@ -42,8 +42,7 @@ router.post('/checkOutStatus', isAdminLogin, adminController.checkOutStatus);
 router.post('/editCategory', isAdminLogin, adminController.editCategory);
 router.post('/login', adminController.login);
 router.post('/editProduct/:id', adminController.editProduct);
-router.post('/addWomensProduct', adminController.addWomensProduct);
-router.post('/addMensProduct', adminController.addMensProduct);
+router.post('/addProducts', adminController.addProducts);
 router.post('/couponsCreate', isAdminLogin, adminController.couponsCreate);
 
 module.exports = router;
