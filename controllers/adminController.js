@@ -177,12 +177,24 @@ async function orderStatus(req, res) {
 
 // Function to render the transaction history page
 function transactionHistory(req, res) {
-    res.render('transactionHistory.ejs');
+    // res.render('transactionHistory.ejs');
+    try{
+        res.render('transactionHistory.ejs');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
 
 // Function to render the notifications page
 function notifications(req, res) {
-    res.render('notification.ejs');
+    // res.render('notification.ejs');
+    try{
+        res.render('notification.ejs');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
 
 // Function to render the edit product page
@@ -342,16 +354,25 @@ async function editProduct(req, res) {
             const variant = variants[i];
             let variantImages = [];
 
-
             if (existingProduct.variants[i] && existingProduct.variants[i].imageUrls) {
                 variantImages = [...existingProduct.variants[i].imageUrls];
             }
 
-         
             if (req.files) {
-                for (let j = 0; j < 3; j++) { 
+                for (let j = 0; j < 3; j++) {
                     const fileKey = `variants[${i}][images][${j}]`;
                     if (req.files[fileKey]) {
+                        // Delete the old image if it exists
+                        if (variantImages[j]) {
+                            const oldImagePath = path.join(__dirname, '..', variantImages[j]);
+                            fs.unlink(oldImagePath, (err) => {
+                                if (err) {
+                                    console.error(`Failed to delete old image: ${oldImagePath}`, err);
+                                }
+                            });
+                        }
+
+                        // Upload the new image
                         const file = req.files[fileKey];
                         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                         const fileName = file.name + '-' + uniqueSuffix + path.extname(file.name);
@@ -359,7 +380,6 @@ async function editProduct(req, res) {
 
                         await file.mv(filePath);
                         const newImageUrl = `/uploads/img/${fileName}`;
-                        
 
                         variantImages[j] = newImageUrl;
                     }
@@ -372,11 +392,11 @@ async function editProduct(req, res) {
                 existingProduct.variants[i].stock = variant.stock;
                 existingProduct.variants[i].imageUrls = variantImages;
             } else {
-                existingProduct.variants.push({ 
-                    color: variant.color, 
-                    size: variant.size, 
-                    stock: variant.stock, 
-                    imageUrls: variantImages 
+                existingProduct.variants.push({
+                    color: variant.color,
+                    size: variant.size,
+                    stock: variant.stock,
+                    imageUrls: variantImages
                 });
             }
         }
@@ -390,6 +410,7 @@ async function editProduct(req, res) {
         res.status(500).send('Server Error');
     }
 }
+
 
 
 
