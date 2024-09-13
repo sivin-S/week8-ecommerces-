@@ -47,6 +47,8 @@
     </style>
 </head>
 <body>
+ 
+
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -57,47 +59,50 @@
         <div class="form-container">
             <h1>Edit Product</h1>
             <form action="/admin/editProduct/<%= encodeURIComponent(productDetails._id) %>" method="post" enctype="multipart/form-data" id="editProductForm">
-                <div class="mb-3">
-                    <label for="productName" class="form-label">Product Name</label>
-                    <input type="text" class="form-control" id="productName" value="<%= locals.productDetails.name %>" name="productName" >
+                <div class="d-flex flex-column flex-wrap" style="height: 300px;">
+                    <div class="mb-3 px-3">
+                        <label for="productName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="productName" value="<%= locals.productDetails.name %>" name="productName" >
+                    </div>
+                    <div class="mb-3 px-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" value="<%= locals.productDetails.price %>">
+                    </div>
+                    <div class="mb-3 px-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-select" id="gender" aria-label="Default select example" name="gender">
+                            <option selected  value="<%= locals.productDetails.gender %>"><%= locals.productDetails.gender %></option>
+                            <option value="<%= (locals.productDetails.gender === "mens")?'womens':'mens' %>"><%= (locals.productDetails.gender === "mens")?'womens':'mens' %></option>
+                          </select>
+                    </div>
+                    <div class="mb-3 px-3">
+                        <label for="brand" class="form-label">Brand</label>
+                        <select class="form-select" aria-label="Default select example" name="brand">
+                            <option value="nike" <%= locals.productDetails.brand === 'nike' ? 'selected' : '' %>>Nike</option>
+                            <option value="puma" <%= locals.productDetails.brand === 'puma' ? 'selected' : '' %>>Puma</option>
+                            <option value="adidas" <%= locals.productDetails.brand === 'adidas' ? 'selected' : '' %>>Adidas</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 px-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select mb-3" aria-label="Default select example" name="category" id="category">
+                            <% if (Array.isArray(categories) && categories.length > 0) { %>
+                                <% categories.forEach(function(category, index) { %>
+                                    <% if (category?.gender === 'mens') { %>
+                                        <option value="<%= category?._id %>" <%= locals.productDetails.category._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category?.name %>, (<%= category?.gender %>)</option>
+                                    <% } %>
+                                <% }) %>
+                            <% } else { %>
+                                <option value="">No categories available</option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3 px-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="3" name="descriptionOfProduct"><%= locals.productDetails.description %></textarea>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" class="form-control" id="price" name="price" value="<%= locals.productDetails.price %>">
-                </div>
-                <div class="mb-3">
-                    <label for="gender" class="form-label">Gender</label>
-                    <select class="form-select" id="gender" aria-label="Default select example" name="gender">
-                        <option selected  value="<%= locals.productDetails.gender %>"><%= locals.productDetails.gender %></option>
-                        <option value="<%= (locals.productDetails.gender === "mens")?'womens':'mens' %>"><%= (locals.productDetails.gender === "mens")?'womens':'mens' %></option>
-                      </select>
-                </div>
-                <div class="mb-3">
-                    <label for="brand" class="form-label">Brand</label>
-                    <select class="form-select" aria-label="Default select example" name="brand">
-                        <option value="nike" <%= locals.productDetails.brand === 'nike' ? 'selected' : '' %>>Nike</option>
-                        <option value="puma" <%= locals.productDetails.brand === 'puma' ? 'selected' : '' %>>Puma</option>
-                        <option value="adidas" <%= locals.productDetails.brand === 'adidas' ? 'selected' : '' %>>Adidas</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <select class="form-select mb-3" aria-label="Default select example" name="category" id="category">
-                        <% if (Array.isArray(categories) && categories.length > 0) { %>
-                            <% categories.forEach(function(category, index) { %>
-                                <% if (category?.gender === 'mens') { %>
-                                    <option value="<%= category?._id %>" <%= locals.productDetails.category._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category?.name %>, (<%= category?.gender %>)</option>
-                                <% } %>
-                            <% }) %>
-                        <% } else { %>
-                            <option value="">No categories available</option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" rows="3" name="descriptionOfProduct"><%= locals.productDetails.description %></textarea>
-                </div>
+               
                 <!-- variant start -->
                 <div id="variants-container">
                     <% if (productDetails.variants.length > 0) { %>
@@ -110,7 +115,22 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="size-<%= variantIndex %>" class="form-label">Size</label>
-                                    <input type="text" class="form-control" id="size-<%= variantIndex %>" name="variants[<%= variantIndex %>][size]" value="<%= variant.size %>">
+                                    <!-- <input type="text" class="form-control" id="size-<%= variantIndex %>" name="variants[<%= variantIndex %>][size]" -->
+                                    
+                                    
+                                  
+                                    <select class="form-select form-control" aria-label="Default select example" id="size-<%= variantIndex %>" name="variants[<%= variantIndex %>][size]">
+                                        <option value="">Size</option>
+                                        <option value="uk8" <%= variant.size === 'uk8' ? 'selected' : '' %>>UK 8</option>
+                                        <option value="uk10" <%= variant.size === 'uk10' ? 'selected' : '' %>>UK 10</option>
+                                        <option value="uk12" <%= variant.size === 'uk12' ? 'selected' : '' %>>UK 12</option>
+                                        <option value="uk14" <%= variant.size === 'uk14' ? 'selected' : '' %>>UK 14</option>
+                                        <option value="uk16" <%= variant.size === 'uk16' ? 'selected' : '' %>>UK 16</option>
+                                      </select>
+
+
+
+
                                 </div>
                                 <div class="mb-3">
                                     <label for="stock-<%= variantIndex %>" class="form-label">Stock</label>
@@ -160,7 +180,21 @@
                             </div>
                             <div class="mb-3">
                                 <label for="stock-0" class="form-label">Stock</label>
-                                <input type="number" class="form-control" id="stock-0" name="variants[0][stock]" min="1">
+                                <!-- <input type="number" class="form-control" id="stock-0" name="variants[0][stock]" min="1"> -->
+
+                                <select class="form-select form-control" aria-label="Default select example" id="stock-0" name="variants[0][stock]" min="1">
+                                    <option value="">Size</option>
+                                    <option value="uk8" <%= variant.size === 'uk8' ? 'selected' : '' %>>UK 8</option>
+                                    <option value="uk10" <%= variant.size === 'uk10' ? 'selected' : '' %>>UK 10</option>
+                                    <option value="uk12" <%= variant.size === 'uk12' ? 'selected' : '' %>>UK 12</option>
+                                    <option value="uk14" <%= variant.size === 'uk14' ? 'selected' : '' %>>UK 14</option>
+                                    <option value="uk16" <%= variant.size === 'uk16' ? 'selected' : '' %>>UK 16</option>
+                                  </select>
+
+
+
+
+                                
                             </div>
                             <% for (let i = 0; i < 3; i++) { %>
                                 <div class="mb-3">
@@ -408,35 +442,48 @@ document.getElementById("editProductForm").addEventListener("submit", function (
 
 
 
-    document.getElementById('addVariantBtn').addEventListener('click', function() {
-        const variantsContainer = document.getElementById('variants-container');
-        const newVariantSection = document.createElement('div');
-        newVariantSection.className = 'variant-section mb-4';
-        newVariantSection.innerHTML = `
-            <h3>Variant ${variantCount + 1}</h3>
+      document.getElementById('addVariantBtn').addEventListener('click', function() {
+    const variantsContainer = document.getElementById('variants-container');
+    const newVariantSection = document.createElement('div');
+    newVariantSection.className = 'variant-section mb-4';
+    newVariantSection.innerHTML = `
+        <h3>Variant ${variantCount + 1}</h3>
+        <div class="mb-3">
+            <label for="color-${variantCount}" class="form-label">Color</label>
+            <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]">
+        </div>
+        <div class="mb-3">
+            <label for="size-${variantCount}" class="form-label">Size</label>
+            <select class="form-select form-control" aria-label="Default select example" id="size-${variantCount}" name="variants[${variantCount}][size]">
+                <option value="">Size</option>
+                <option value="uk8">UK 8</option>
+                <option value="uk10">UK 10</option>
+                <option value="uk12">UK 12</option>
+                <option value="uk14">UK 14</option>
+                <option value="uk16">UK 16</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="stock-${variantCount}" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
+        </div>
+        ${[...Array(3)].map((_, i) => `
             <div class="mb-3">
-                <label for="color-${variantCount}" class="form-label">Color</label>
-                <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]">
+                <label for="variantImage${i + 1}-${variantCount}" class="form-label">Image ${i + 1}</label>
+                <input type="file" class="form-control variant-image" id="variantImage${i + 1}-${variantCount}" name="variants[${variantCount}][images][${i}]" accept="image/*" data-variant="${variantCount}" data-index="${i}">
             </div>
-            <div class="mb-3">
-                <label for="size-${variantCount}" class="form-label">Size</label>
-                <input type="text" class="form-control" id="size-${variantCount}" name="variants[${variantCount}][size]">
-            </div>
-            <div class="mb-3">
-                <label for="stock-${variantCount}" class="form-label">Stock</label>
-                <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
-            </div>
-            ${[...Array(3)].map((_, i) => `
-                <div class="mb-3">
-                    <label for="variantImage${i + 1}-${variantCount}" class="form-label">Image ${i + 1}</label>
-                    <input type="file" class="form-control variant-image" id="variantImage${i + 1}-${variantCount}" name="variants[${variantCount}][images][${i}]" accept="image/*" data-variant="${variantCount}" data-index="${i}">
-                </div>
-            `).join('')}
-            <div class="preview-container" id="previewContainer-${variantCount}"></div>
-        `;
-        variantsContainer.appendChild(newVariantSection);
-        variantCount++;
-    });
+        `).join('')}
+        <div class="preview-container" id="previewContainer-${variantCount}"></div>
+    `;
+    variantsContainer.appendChild(newVariantSection);
+    variantCount++;
+});
+
+
+
+
+
+
         });
 
         document.getElementById('cropButton').addEventListener('click', function() {

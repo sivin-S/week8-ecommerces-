@@ -13,6 +13,10 @@
       rel="stylesheet"
     />
     <style>
+      /* input[type="text"],[type="number"],select,textarea{
+         
+         border: 1px  solid ;
+      } */
       body {
         background-color: #f8f9fa;
       }
@@ -53,6 +57,34 @@
     </style>
   </head>
   <body>
+
+<!-- flash message  -->
+<% if (locals.successMessage && locals.successMessage.length > 0) { %>
+  <div id="successAlert" class="alert alert-success" role="alert"
+  style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+  >
+    <%= locals.successMessage %>
+  </div>
+<% } %>
+
+<% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+  <div id="errorAlert" class="alert alert-danger" role="alert"
+  style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+  >
+    <%= locals.errorMessage %>
+  </div>
+<% } %>
+
+
+
+
+
+
+
+
+
+
+
     <div class="container">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -71,77 +103,80 @@
           enctype="multipart/form-data"
         >
           <!-- Form Fields -->
-          <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input
-              type="text"
-              class="form-control"
-              id="productName"
-              name="productName"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="number" class="form-control" id="price" name="price" />
-          </div>
-          <div class="mb-3">
-            <label for="gender" class="form-label">Gender</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              id="gender"
-              name="gender"
-            >
-              <option selected value="">Gender</option>
-              <option value="mens">mens</option>
-              <option value="womens">womens</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="brand" class="form-label">Brand</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              name="brand"
-            >
-              <option value="nike">Nike</option>
-              <option value="puma">Puma</option>
-              <option value="adidas">Adidas</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <select
-              class="form-select mb-3"
-              aria-label="Default select example"
-              name="category"
-              id="category"
-            >
-              <% if (Array.isArray(categories) && categories.length > 0) { %> <%
-              categories.forEach(function(category, index) { %> <% if
-              (category?.gender === 'mens') { %>
-              <option value="<%= category?._id %>">
-                <%= category?.name %>, (<%= category?.gender %>)
-              </option>
-              <% } %> <% }) %> <% } else { %>
-              <option value="">No categories available</option>
-              <% } %>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              id="description"
-              rows="3"
-              name="descriptionOfProduct"
-            ></textarea>
-          </div>
+           <div class="d-flex flex-column flex-wrap" style="height: 300px;">
+            <div class="mb-3 px-3">
+              <label for="productName" class="form-label">Product Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="productName"
+                name="productName"
+              />
+            </div>
+            <div class="mb-3 px-3">
+              <label for="price" class="form-label">Price</label>
+              <input type="number" class="form-control" id="price" name="price" />
+            </div>
+            <div class="mb-3 px-3">
+              <label for="gender" class="form-label">Gender</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                id="gender"
+                name="gender"
+              >
+                <option selected value="">Gender</option>
+                <option value="mens">mens</option>
+                <option value="womens">womens</option>
+              </select>
+            </div>
+            <div class="mb-3 px-3">
+              <label for="brand" class="form-label">Brand</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                name="brand"
+              >
+                <option value="nike">Nike</option>
+                <option value="puma">Puma</option>
+                <option value="adidas">Adidas</option>
+              </select>
+            </div>
+            <div class="mb-3 px-3">
+              <label for="category" class="form-label">Category</label>
+              <select
+                class="form-select mb-3"
+                aria-label="Default select example"
+                name="category"
+                id="category"
+              >
+                <% if (Array.isArray(categories) && categories.length > 0) { %> <%
+                categories.forEach(function(category, index) { %> <% if
+                (category?.gender === 'mens') { %>
+                <option value="<%= category?._id %>">
+                  <%= category?.name %>, (<%= category?.gender %>)
+                </option>
+                <% } %> <% }) %> <% } else { %>
+                <option value="">No categories available</option>
+                <% } %>
+              </select>
+            </div>
+            <div class="mb-3 px-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                id="description"
+                rows="3"
+                name="descriptionOfProduct"
+              ></textarea>
+            </div>
+           </div>
+         
           <!-- Variant Section -->
           <div id="variants-container">
-            <div class="variant-section mb-4">
+            <div class="variant-section mb-4 d-flex flex-column flex-wrap" style="height: 350px;">
               <h3>Variant 1</h3>
-              <div class="mb-3">
+              <div class="mb-3 px-3">
                 <label for="color-0" class="form-label">Color</label>
                 <input
                   type="text"
@@ -150,17 +185,22 @@
                   name="variants[0][color]"
                 />
               </div>
-              <div class="mb-3">
+              <div class="mb-3 px-3">
                 <label for="size-0" class="form-label">Size</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="size-0"
-                  name="variants[0][size]"
-                  placeholder="UK8 to UK11"
-                />
+
+                <select class="form-select" aria-label="Default select example"  id="size-0" name="variants[0][size]">
+  <option selected value="">Size</option>
+  <option value="uk8">uk8</option>
+  <option value="uk10">uk10</option>
+  <option value="uk12">uk12</option>
+  <option value="uk14">uk14</option>
+  <option value="uk16">uk16</option>
+</select>
+
+
+
               </div>
-              <div class="mb-3">
+              <div class="mb-3 px-3">
                 <label for="stock-0" class="form-label">Stock</label>
                 <input
                   type="number"
@@ -170,7 +210,7 @@
                   min="1"
                 />
               </div>
-              <div class="mb-3">
+              <div class="mb-3 mt-5 px-3">
                 <label for="variantImage1-0" class="form-label">Image 1</label>
                 <input
                   type="file"
@@ -182,7 +222,7 @@
                   data-index="0"
                 />
               </div>
-              <div class="mb-3">
+              <div class="mb-3 px-3">
                 <label for="variantImage2-0" class="form-label">Image 2</label>
                 <input
                   type="file"
@@ -194,7 +234,7 @@
                   data-index="1"
                 />
               </div>
-              <div class="mb-3">
+              <div class="mb-3 px-3">
                 <label for="variantImage3-0" class="form-label">Image 3</label>
                 <input
                   type="file"
@@ -206,7 +246,10 @@
                   data-index="2"
                 />
               </div>
+          
+              
               <div class="preview-container" id="previewContainer-0"></div>
+              
             </div>
           </div>
           <div class="row align-items-center">
@@ -331,34 +374,52 @@
             const variantsContainer =
               document.getElementById("variants-container");
             const newVariantSection = document.createElement("div");
-            newVariantSection.className = "variant-section mb-4";
+
+            newVariantSection.className = "variant-section mb-4 d-flex flex-column flex-wrap";
+            newVariantSection.style.height = "350px"
             newVariantSection.innerHTML = `
                     <h3>Variant ${variantCount + 1}</h3>
-                    <div class="mb-3">
+                    <div class="mb-3 px-3">
                         <label for="color-${variantCount}" class="form-label">Color</label>
                         <input type="text" class="form-control" id="color-${variantCount}" name="variants[${variantCount}][color]">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3  px-3">
                         <label for="size-${variantCount}" class="form-label">Size</label>
-                        <input type="text" class="form-control" id="size-${variantCount}" name="variants[${variantCount}][size]" placeholder="UK8 to UK11">
+                       
+
+                                  
+                <select class="form-select" aria-label="Default select example"  id="size-${variantCount}" name="variants[${variantCount}][size]">
+  <option selected value="">Size</option>
+  <option value="uk8">uk8</option>
+  <option value="uk10">uk10</option>
+  <option value="uk12">uk12</option>
+  <option value="uk14">uk14</option>
+  <option value="uk16">uk16</option>
+</select>
+
+
+
+
+
+
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3  px-3">
                         <label for="stock-${variantCount}" class="form-label">Stock</label>
                         <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 mt-4  px-3">
                         <label for="variantImage1-${variantCount}" class="form-label">Image 1</label>
                         <input type="file" class="form-control variant-image" id="variantImage1-${variantCount}" name="variants[${variantCount}][images]" accept="image/*" data-variant="${variantCount}" data-index="0">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3  px-3">
                         <label for="variantImage2-${variantCount}" class="form-label">Image 2</label>
                         <input type="file" class="form-control variant-image" id="variantImage2-${variantCount}" name="variants[${variantCount}][images]" accept="image/*" data-variant="${variantCount}" data-index="1">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3  px-3">
                         <label for="variantImage3-${variantCount}" class="form-label">Image 3</label>
                         <input type="file" class="form-control variant-image" id="variantImage3-${variantCount}" name="variants[${variantCount}][images]" accept="image/*" data-variant="${variantCount}" data-index="2">
                     </div>
-                    <div class="preview-container" id="previewContainer-${variantCount}"></div>
+                    <div class="preview-container mt-3" id="previewContainer-${variantCount}"></div>
                 `;
             variantsContainer.appendChild(newVariantSection);
             variantCount++;
@@ -393,6 +454,16 @@
               );
               return;
             }
+           
+           
+
+             if (validator.isEmpty(gender)) {
+              Swal.fire("Validation Error", "Gender is required", "error");
+              return;
+            }
+
+         
+
 
             if (validator.isEmpty(description)) {
               Swal.fire("Validation Error", "Description is required", "error");
@@ -403,13 +474,8 @@
             //     Swal.fire('Validation Error', 'Gender is required', 'error');
             //     return;
             // }
-
-            if (validator.isEmpty(gender)) {
-              Swal.fire("Validation Error", "Gender is required", "error");
-              return;
-            }
-
-            // Validate variants
+           
+           
 
             // Validate variants
             for (let i = 0; i < variantCount; i++) {
@@ -525,6 +591,22 @@
             cropperModal.hide();
           }, "image/jpeg");
         });
+
+
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const successAlert = document.getElementById('successAlert');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+            }
+            const errorAlert = document.getElementById('errorAlert');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+            }
+        }, 3000);
+
+
     </script>
   </body>
 </html>

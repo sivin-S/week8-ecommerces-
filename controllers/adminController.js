@@ -404,6 +404,7 @@ async function editProduct(req, res) {
         existingProduct.variants = existingProduct.variants.slice(0, variants.length);
 
         await existingProduct.save();
+        req.flash('success', "Product updated successfully!");
         res.redirect('/admin');
     } catch (err) {
         console.error(err);
@@ -440,7 +441,7 @@ function parseVariantsFromRequestBody(body) {
 // Function to add  products
 async function addProducts(req, res) {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         
         const { productName, price, gender, category, descriptionOfProduct, brand } = req.body;
 
@@ -480,6 +481,7 @@ async function addProducts(req, res) {
         }
 
         await newProduct.save();
+        req.flash('success', "Product added successfully!");
         res.redirect('/admin/addProducts');
     } catch (err) {
         console.error(err);

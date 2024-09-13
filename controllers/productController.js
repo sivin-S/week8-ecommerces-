@@ -14,7 +14,9 @@ exports.getProducts = async (req, res) => {
 
 exports.getProductDetails = async (req, res) => {
   try {
-    const allProducts = await Product.find({});
+    const allProducts = await Product.find({}).populate("category");
+    
+    
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).render("404.ejs");
@@ -31,9 +33,12 @@ exports.getShop = async (req, res) => {
     const { category, gender, color, size, brand, minPrice, maxPrice, sort, page = 1, limit = 12, search } = req.query;
     let query = {};
     if (category) {
-      const categoryDoc = await Category.findOne({ 'name': category });
-      if (categoryDoc) {
-        query['category'] = new ObjectId(categoryDoc._id);
+      const categories = category.split(',').map(cat => cat.trim());
+      
+      const categoryDocs = await Category.find({ 'name': { $in: categories } });
+      
+      if (categoryDocs.length > 0) {
+        query['category'] = { $in: categoryDocs.map(doc => doc._id) };
       } else {
         query['category'] = null;
       }
@@ -60,6 +65,7 @@ exports.getShop = async (req, res) => {
     else if (sort === 'nameDesc') sortOption.name = -1;
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
+    // querying products
     const products = await Product.find(query)
       .populate("category")
       .sort(sortOption)
@@ -72,6 +78,8 @@ exports.getShop = async (req, res) => {
     const priceRange = await Product.aggregate([
       { $group: { _id: null, minPrice: { $min: "$price" }, maxPrice: { $max: "$price" } } }
     ]);
+    // console.log(products);
+    
     res.render("shop", {
       products,
       uniqueCategories,

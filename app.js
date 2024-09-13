@@ -13,15 +13,8 @@ const app = express();
 // Setup view engine
 app.set("view engine", "ejs");
 
-
 // Middleware
-// app.use(express.urlencoded({ extended: true, limit: '10mb', parameterLimit: 10000 }));
 app.use(express.json({ limit: '10mb' }));
-app.use(flash());
-// app.use(fileUpload({
-//     createParentPath: true,
-//     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit per file
-// }));
 
 // Static files
 app.use("/", express.static(path.join(__dirname, "/public/user")));
@@ -40,6 +33,9 @@ app.use(session({
 }));
 
 // Flash middleware
+app.use(flash());
+
+// Flash messages middleware
 app.use((req, res, next) => {
     res.locals.successMessage = req.flash('success');
     res.locals.errorMessage = req.flash('error');
@@ -54,10 +50,8 @@ app.use(passport.session());
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 
-
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
-
 
 // Set up views
 app.set("views", [
@@ -71,10 +65,10 @@ app.use((req, res, next) => {
     res.status(404).render("404Page.ejs");
 });
 
-// // General error handler for dev 
+// General error handler for dev 
 app.use((err, req, res, next) => {
     console.error(err);
-    res.status(500).send('Something broke!');
+    // res.status(500).send('Something broke!');
 });
 
 // Start the server

@@ -39,10 +39,17 @@ exports.login = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email: req.body.email });
+
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
+      if (user.isBlocked) {
+        req.flash('error', "Your account has been blocked. Please contact the administrator.");
+        return res.redirect('/login');
+      }
+
       req.session.email = email;
       req.session.userStatus = true;
       req.session.userId = user._id;
+      req.flash('success', "Login successful!");
       res.redirect('/');
     } else {
       req.flash('error', "Invalid email or password");
@@ -50,7 +57,7 @@ exports.login = async (req, res) => {
     }
   } catch (err) {
     console.error("Error during login:", err);
-    req.flash('error', err.message);
+    req.flash('error', "An error occurred during login. Please try again.");
     res.status(500).render("login");
   }
 };

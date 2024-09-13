@@ -80,6 +80,34 @@
     </style>
 </head>
 <body>
+
+<!-- flash message  -->
+<% if (locals.successMessage && locals.successMessage.length > 0) { %>
+    <div id="successAlert" class="alert alert-success" role="alert"
+    style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+    >
+      <%= locals.successMessage %>
+    </div>
+  <% } %>
+  
+  <% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+    <div id="errorAlert" class="alert alert-danger" role="alert"
+    style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
+    >
+      <%= locals.errorMessage %>
+    </div>
+  <% } %>
+  
+
+
+
+
+
+
+
+
+
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -316,6 +344,21 @@
                 }
             }
         }
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const successAlert = document.getElementById('successAlert');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+            }
+            const errorAlert = document.getElementById('errorAlert');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+            }
+        }, 3000);
+
+
+
     </script>
 </body>
 </html>

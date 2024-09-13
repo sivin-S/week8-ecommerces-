@@ -148,176 +148,178 @@
         </div>
     </footer>
     <!-- End Footer Area -->
-	
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('contactForm');
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const ageInput = document.getElementById('ageInput');
-    const phoneInput = document.getElementById('phone');
-    const countryInput = document.getElementById('country');
-    const postCodeInput = document.getElementById('postCode');
-    const stateInput = document.getElementById('state');
-    const landMarkInput = document.getElementById('landMark');
-    const localityInput = document.getElementById('locality');
-    const genderInput = document.getElementById('genderInput');
-    const genderError = document.getElementById('genderError');
-    const nameError = document.getElementById('nameError');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-    const phoneError = document.getElementById('phoneError');
-    const countryError = document.getElementById('countryError');
-    const postCodeError = document.getElementById('postCodeError');
-    const stateError = document.getElementById('stateError');
-    const landMarkError = document.getElementById('landMarkError');
-    const localityError = document.getElementById('localityError');
+            const form = document.getElementById('contactForm');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const ageInput = document.getElementById('ageInput');
+            const phoneInput = document.getElementById('phone');
+            const countryInput = document.getElementById('country');
+            const postCodeInput = document.getElementById('postCode');
+            const stateInput = document.getElementById('state');
+            const landMarkInput = document.getElementById('landMark');
+            const localityInput = document.getElementById('locality');
+            const genderInput = document.getElementById('genderInput');
+            const genderError = document.getElementById('genderError');
+            const nameError = document.getElementById('nameError');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const phoneError = document.getElementById('phoneError');
+            const countryError = document.getElementById('countryError');
+            const postCodeError = document.getElementById('postCodeError');
+            const stateError = document.getElementById('stateError');
+            const landMarkError = document.getElementById('landMarkError');
+            const localityError = document.getElementById('localityError');
 
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
 
-        let isValid = true;
+                let isValid = true;
 
-        // Regex patterns
-        const namePattern = /^[a-zA-Z]+$/; // Only letters, no spaces
-        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
-        const phonePattern = /^[0-9]{10}$/; // Exactly 10 digits
-        const postCodePattern = /^[0-9]{5,6}$/; // 5 or 6 digits
-        const textPattern = /^[a-zA-Z0-9,.'-]{3,}$/; // Letters, numbers, and some punctuation, no spaces
+                // Regex patterns
+                // const namePattern = /^[a-zA-Z\s]+$/; // Only letters and spaces
+                const namePattern = /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/;
+                // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
+                const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[\w\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]{8,}$/;
+                const phonePattern = /^[0-9]{10}$/; // Exactly 10 digits
+                const postCodePattern = /^[0-9]{5,6}$/; // 5 or 6 digits
+                const textPatternWithSpaces = /^[a-zA-Z0-9,.' -]{3,}$/; // Letters, numbers, some punctuation, and spaces allowed
 
-        // Validate name
-        if (!namePattern.test(nameInput.value)) {
-            isValid = false;
-            nameError.textContent = 'Invalid name. Only letters are allowed, no spaces.';
-            nameInput.classList.add('is-invalid');
-        } else {
-            nameError.textContent = '';
-            nameInput.classList.remove('is-invalid');
-        }
-
-        // Validate gender
-        if (genderInput.value === "") {
-            isValid = false;
-            genderError.textContent = 'Please select a gender';
-            genderInput.classList.add('is-invalid');
-        } else {
-            genderError.textContent = '';
-            genderInput.classList.remove('is-invalid');
-        }
-
-        // Validate age
-        if (ageInput.value === "") {
-            isValid = false;
-            ageError.textContent = 'Please select an age';
-            ageInput.classList.add('is-invalid');
-        } else {
-            ageError.textContent = '';
-            ageInput.classList.remove('is-invalid');
-        }
-
-        // Validate email
-        if (!validator.isEmail(emailInput.value)) {
-            isValid = false;
-            emailError.textContent = 'Invalid email';
-            emailInput.classList.add('is-invalid');
-        } else {
-            emailError.textContent = '';
-            emailInput.classList.remove('is-invalid');
-        }
-
-        // Validate password
-        if (!passwordPattern.test(passwordInput.value)) {
-            isValid = false;
-            passwordError.textContent = 'Password must be at least 8 characters long and contain at least one letter and one number.';
-            passwordInput.classList.add('is-invalid');
-        } else {
-            passwordError.textContent = '';
-            passwordInput.classList.remove('is-invalid');
-        }
-
-        // Validate phone
-        if (!phonePattern.test(phoneInput.value)) {
-            isValid = false;
-            phoneError.textContent = 'Invalid phone number. Must be 10 digits.';
-            phoneInput.classList.add('is-invalid');
-        } else {
-            phoneError.textContent = '';
-            phoneInput.classList.remove('is-invalid');
-        }
-
-        // Validate country
-        if (!textPattern.test(countryInput.value)) {
-            isValid = false;
-            countryError.textContent = 'Invalid country name. No spaces allowed.';
-            countryInput.classList.add('is-invalid');
-        } else {
-            countryError.textContent = '';
-            countryInput.classList.remove('is-invalid');
-        }
-
-        // Validate post code
-        if (!postCodePattern.test(postCodeInput.value)) {
-            isValid = false;
-            postCodeError.textContent = 'Invalid post code. Must be 5 or 6 digits.';
-            postCodeInput.classList.add('is-invalid');
-        } else {
-            postCodeError.textContent = '';
-            postCodeInput.classList.remove('is-invalid');
-        }
-
-        // Validate state
-        if (!textPattern.test(stateInput.value)) {
-            isValid = false;
-            stateError.textContent = 'Invalid state name. No spaces allowed.';
-            stateInput.classList.add('is-invalid');
-        } else {
-            stateError.textContent = '';
-            stateInput.classList.remove('is-invalid');
-        }
-
-        // Validate land mark
-        if (!textPattern.test(landMarkInput.value)) {
-            isValid = false;
-            landMarkError.textContent = 'Invalid land mark. No spaces allowed.';
-            landMarkInput.classList.add('is-invalid');
-        } else {
-            landMarkError.textContent = '';
-            landMarkInput.classList.remove('is-invalid');
-        }
-
-        // Validate locality
-        if (!textPattern.test(localityInput.value)) {
-            isValid = false;
-            localityError.textContent = 'Invalid locality. No spaces allowed.';
-            localityInput.classList.add('is-invalid');
-        } else {
-            localityError.textContent = '';
-            localityInput.classList.remove('is-invalid');
-        }
-
-        if (isValid) {
-            form.submit();
-        }
-    });
-});
-
-// flash message popup
-function hideElement(elementId){
-    const element = document.getElementById(elementId);
-    if(element){
-        setTimeout(()=>{
-            element.style.transition="opacity 0.5s ease-out";
-            element.style.opacity='0';
-            setTimeout(()=>{
-                element.style.display="none";
-            },500)
-        },2000)
-    }
+                // Validate name
+                if (!namePattern.test(nameInput.value.trim())) {
+    isValid = false;
+    nameError.textContent = 'Invalid name. Only letters and single spaces between words are allowed.';
+    nameInput.classList.add('is-invalid');
+} else {
+    nameError.textContent = '';
+    nameInput.classList.remove('is-invalid');
 }
-// Hide alerts
-hideElement('successAlert');
-hideElement('errorAlert');
+
+                // Validate gender
+                if (genderInput.value === "") {
+                    isValid = false;
+                    genderError.textContent = 'Please select a gender';
+                    genderInput.classList.add('is-invalid');
+                } else {
+                    genderError.textContent = '';
+                    genderInput.classList.remove('is-invalid');
+                }
+
+                // Validate age
+                if (ageInput.value === "") {
+                    isValid = false;
+                    ageError.textContent = 'Please enter your age';
+                    ageInput.classList.add('is-invalid');
+                } else {
+                    ageError.textContent = '';
+                    ageInput.classList.remove('is-invalid');
+                }
+
+                // Validate email
+                if (!validator.isEmail(emailInput.value)) {
+                    isValid = false;
+                    emailError.textContent = 'Invalid email';
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailError.textContent = '';
+                    emailInput.classList.remove('is-invalid');
+                }
+
+                // Validate password
+                if (!passwordPattern.test(passwordInput.value)) {
+                    isValid = false;
+                    passwordError.textContent = 'Password must be at least 8 characters long and contain at least one letter and one number.';
+                    passwordInput.classList.add('is-invalid');
+                } else {
+                    passwordError.textContent = '';
+                    passwordInput.classList.remove('is-invalid');
+                }
+
+                // Validate phone
+                if (!phonePattern.test(phoneInput.value)) {
+                    isValid = false;
+                    phoneError.textContent = 'Invalid phone number. Must be 10 digits.';
+                    phoneInput.classList.add('is-invalid');
+                } else {
+                    phoneError.textContent = '';
+                    phoneInput.classList.remove('is-invalid');
+                }
+
+                // Validate country
+                if (!textPatternWithSpaces.test(countryInput.value)) {
+                    isValid = false;
+                    countryError.textContent = 'Invalid country name.';
+                    countryInput.classList.add('is-invalid');
+                } else {
+                    countryError.textContent = '';
+                    countryInput.classList.remove('is-invalid');
+                }
+
+                // Validate post code
+                if (!postCodePattern.test(postCodeInput.value)) {
+                    isValid = false;
+                    postCodeError.textContent = 'Invalid post code. Must be 5 or 6 digits.';
+                    postCodeInput.classList.add('is-invalid');
+                } else {
+                    postCodeError.textContent = '';
+                    postCodeInput.classList.remove('is-invalid');
+                }
+
+                // Validate state
+                if (!textPatternWithSpaces.test(stateInput.value)) {
+                    isValid = false;
+                    stateError.textContent = 'Invalid state name.';
+                    stateInput.classList.add('is-invalid');
+                } else {
+                    stateError.textContent = '';
+                    stateInput.classList.remove('is-invalid');
+                }
+
+                // Validate land mark
+                if (!textPatternWithSpaces.test(landMarkInput.value)) {
+                    isValid = false;
+                    landMarkError.textContent = 'Invalid land mark.';
+                    landMarkInput.classList.add('is-invalid');
+                } else {
+                    landMarkError.textContent = '';
+                    landMarkInput.classList.remove('is-invalid');
+                }
+
+                // Validate locality
+                if (!textPatternWithSpaces.test(localityInput.value)) {
+                    isValid = false;
+                    localityError.textContent = 'Invalid locality.';
+                    localityInput.classList.add('is-invalid');
+                } else {
+                    localityError.textContent = '';
+                    localityInput.classList.remove('is-invalid');
+                }
+
+                if (isValid) {
+                    form.submit();
+                }
+            });
+        });
+
+        // flash message popup
+        function hideElement(elementId){
+            const element = document.getElementById(elementId);
+            if(element){
+                setTimeout(()=>{
+                    element.style.transition="opacity 0.5s ease-out";
+                    element.style.opacity='0';
+                    setTimeout(()=>{
+                        element.style.display="none";
+                    },500)
+                },2000)
+            }
+        }
+        // Hide alerts
+        hideElement('successAlert');
+        hideElement('errorAlert');
 
     </script>
 
