@@ -21,12 +21,83 @@ exports.getProductDetails = async (req, res) => {
     if (!product) {
       return res.status(404).render("404.ejs");
     }
+    console.log("product ==>"+ product);
+    console.log("all product ==>"+ allProducts);
+    
     res.render("productDetails.ejs", { product, allProducts });
   } catch (error) {
     console.error("Error fetching product details:", error);
     res.redirect("/");
   }
 };
+
+//   // get Variant Details Ajax  
+// exports.getVariantDetails = async (req, res) => {
+//     try {
+//         const variantId = req.params.variantId;
+//         const product = await Product.findOne({ "variants._id": variantId }, { "variants.$": 1 });
+//         if (!product) {
+//           return res.status(404).json({ success: false, message: "Variant not found" });
+//       }
+//       res.json({ success: true, variant: product.variants[0] });
+//     } catch (error) {
+//         console.error("Error fetching variant details:", error);
+//         res.status(500).json({ success: false, message: "Internal Server Error" });
+//     }
+// };
+
+
+// filtering variants
+
+exports.filterVariant = async (req, res) => {
+  console.log('Query Parameters:', req.query); // Log the query parameters
+
+  try {
+      const { productId, variantColor, size } = req.query;
+
+      const product = await Product.findById(productId);
+
+      if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+      }
+
+      let filteredVariants = product.variants;
+
+      if (variantColor) {
+          filteredVariants = filteredVariants.filter(v => v.color === variantColor);
+      }
+
+      if (size) {
+          filteredVariants = filteredVariants.filter(v => v.size === size);
+      }
+
+      if (filteredVariants.length === 0) {
+          return res.json({ message: 'No variants found for the selected criteria' });
+      }
+
+      res.json({ 
+          variants: filteredVariants.map(v => ({
+              ...v.toObject(),
+              price: product.price,
+              name: product.name,
+              description: product.description
+          }))
+      });
+
+  } catch (error) {
+      console.error("Error filtering variants:", error);
+      res.status(500).json({ message: 'An error occurred while filtering variants' });
+  }
+};
+
+
+
+
+
+
+
+
+
 
 exports.getShop = async (req, res) => {
   try {

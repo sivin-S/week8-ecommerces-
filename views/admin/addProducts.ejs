@@ -151,8 +151,8 @@
                 id="category"
               >
                 <% if (Array.isArray(categories) && categories.length > 0) { %> <%
-                categories.forEach(function(category, index) { %> <% if
-                (category?.gender === 'mens') { %>
+                categories.forEach(function(category, index) { %> <% 
+                  if(category) { %>
                 <option value="<%= category?._id %>">
                   <%= category?.name %>, (<%= category?.gender %>)
                 </option>

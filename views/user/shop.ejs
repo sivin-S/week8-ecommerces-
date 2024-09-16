@@ -124,9 +124,15 @@
 
 <div class="container py-5">
     <div class="row">
-        <div class="col-12">
-          
-          <div class="col-offset">
+        <div class="col-12 mb-3">
+          <div class="row" style="float: right;">
+            <!-- <div class="border border-danger"> -->
+                <a href="/shop" class="px-3">
+                    <button class="btn btn-primary">
+                        <span><i class="bi bi-arrow-clockwise"></i></span>
+                    </button>
+                </a>
+            
             <form action="/shop" method="GET" class="form-inline justify-content-end">
                 <select name="sort" class="form-control mr-2" onchange="this.form.submit()">
                   <option value="">Sort by</option>
@@ -136,8 +142,8 @@
                   <option value="priceDesc">Price High to Low</option>
                 </select>
               </form>
-          </div>
-         
+          <!-- </div>// -->
+        </div>
           
         </div>
         <div class="col-xl-3 col-lg-4 col-md-5">
@@ -212,7 +218,7 @@
                         <% products.forEach(function(product) { %>
 
                         <% if(product?.deleted===false){ %>
-                            <div class="col-4 single-product shadow mx-5 my-3 border border-danger" style="width: 250px;height: 480px;">
+                            <div class="col-4 single-product shadow mx-5 my-3" style="width: 250px;height: 480px;">
                                 <a href="/productDetails/<%= encodeURIComponent(product._id) %>">
                                     <img class="img-fluid" src="<%= product?.variants[0]?.imageUrls[0] %>" alt="img">
                                 </a>

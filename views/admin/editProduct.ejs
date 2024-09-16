@@ -88,7 +88,7 @@
                         <select class="form-select mb-3" aria-label="Default select example" name="category" id="category">
                             <% if (Array.isArray(categories) && categories.length > 0) { %>
                                 <% categories.forEach(function(category, index) { %>
-                                    <% if (category?.gender === 'mens') { %>
+                                    <% if (category) { %>
                                         <option value="<%= category?._id %>" <%= locals.productDetails.category._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category?.name %>, (<%= category?.gender %>)</option>
                                     <% } %>
                                 <% }) %>

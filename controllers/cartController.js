@@ -10,14 +10,18 @@ exports.getCart = async (req, res) => {
     res.render("cart.ejs", { cart });
   } catch (error) {
     console.error("Error retrieving cart:", error);
-    res.status(500).render("cart.ejs", {
-      cart: null,
-      error: "Error retrieving cart",
-    });
+    req.flash('error', 'Please try again.');
+    // res.status(500).render("cart.ejs", {
+    //   cart: null,
+    //   error: "Error retrieving cart",
+    // });
+    res.redirect('/');
   }
 };
 
 exports.addToCart = async (req, res) => {
+  console.log(req.body);
+  
   try {
     const userId = req.session.userId;
     const { productId, variantSize, variantColor, qty, variantImageUrls } = req.body;
@@ -26,6 +30,8 @@ exports.addToCart = async (req, res) => {
       return res.redirect('/');
     }
     const product = await Product.findById(productId);
+    console.log("product >>>>>>>>> ", product);
+    
     if (!product) {
       req.flash('error', 'Product not found');
       return res.redirect('/');
@@ -33,6 +39,8 @@ exports.addToCart = async (req, res) => {
     const selectedVariant = product.variants.find(
       (variant) => variant.size === variantSize && variant.color === variantColor
     );
+    console.log("selectedVariant >>",selectedVariant);
+    
     if (!selectedVariant) {
       req.flash('error', 'Selected variant not available');
       return res.redirect('/');
@@ -62,7 +70,8 @@ exports.addToCart = async (req, res) => {
           size: variantSize,
           imageUrls: variantImageUrls ? variantImageUrls.split(',') : []
         },
-        price: product.price
+        price: product?.price
+        
       });
     }
     await cart.save();
@@ -82,7 +91,9 @@ exports.removeProductFromCart = async (req, res) => {
     const userCart = await Cart.findOne({ user: userId });
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
     if (!userCart) {
-      return res.status(404).render("cart.ejs", { cartProducts: null, error: "Cart not found" });
+      // return res.status(404).render("cart.ejs", { cartProducts: null, error: "Cart not found" });
+      req.flash('error', 'Cart not found');
+      return res.redirect('/');
     }
     userCart.items = userCart.items.filter((item) => {
       if (!item.product.equals(productId)) {
@@ -95,6 +106,7 @@ exports.removeProductFromCart = async (req, res) => {
     res.redirect('/cart');
   } catch (error) {
     console.error("Error removing product from cart:", error);
+    req.flash('error', 'Please try again.');
     res.redirect('/cart');
   }
 };
@@ -104,15 +116,23 @@ exports.updateCart = async (req, res) => {
     const quantity = parseInt(req.body.qty, 10);
     const totalAmount = parseFloat(req.body.totalAmount);
     if (isNaN(quantity) || isNaN(totalAmount)) {
-      return res.status(400).json({ error: 'Invalid quantity or total amount' });
+      // return res.status(400).json({ error: 'Invalid quantity or total amount' });
+      console.log('Invalid quantity or total amount');
+      
+      req.flash('error', 'Please try again.');
+      return res.redirect('/cart');
     }
     let updatedQuantities;
-    if (req.body.updatedQuantities && req.body.updatedQuantities.trim() !== '') {
+   
+    // console.log("updatedQuantities", req.body);
+    if (req.body.updatedQuantities && req.body.updatedQuantities !== '') {
       try {
         updatedQuantities = JSON.parse(req.body.updatedQuantities);
       } catch (error) {
         console.error('Error parsing updatedQuantities:', error);
-        return res.status(400).json({ error: 'Invalid updated quantities format' });
+        req.flash('error', 'Please try again.');
+        // return res.status(400).json({ error: 'Invalid updated quantities format' });
+        return res.redirect('/cart');
       }
     }
     const cart = await Cart.findOne({ user: req.session.userId });
@@ -133,7 +153,9 @@ exports.updateCart = async (req, res) => {
     res.redirect('/checkout');
   } catch (error) {
     console.error('Error updating cart:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    // res.status(500).json({ error: 'Internal server error' });
+    req.flash('error', 'Internal Server Error');
+    res.redirect('/');
   }
 };
 

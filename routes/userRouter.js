@@ -35,6 +35,9 @@ router.get("/orderhistory", isUserLogin, checkUserBlocked, userController.getOrd
 router.get("/orderhistory/details/:id", isUserLogin, checkUserBlocked, userController.getOrderOneHistory);
 router.get("/cancelOrder/:id", isUserLogin, checkUserBlocked, userController.getOrderCancel);
 router.get("/shop", productController.getShop);
+// router.get('/getVariantDetails/:variantId', productController.getVariantDetails);
+router.get("/filterVariant", productController.filterVariant);
+
 router.get("/checkOut", isUserLogin, checkUserBlocked, userController.getCheckout);
 router.get("/contact", isUserLogin, checkUserBlocked, (req, res) => res.render("contact.ejs"));
 router.get("/profile", isUserLogin, checkUserBlocked, userController.getProfile);

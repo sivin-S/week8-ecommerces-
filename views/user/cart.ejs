@@ -342,23 +342,37 @@ function hideFlashMessages() {
 document.addEventListener('DOMContentLoaded', hideFlashMessages);
 
 
-
 document.getElementById('updateCartForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
   var updatedQuantities = [];
-  var rows = document.querySelectorAll('#cart-items tr:not(:last-child):not(:nth-last-child(2))');
+  var rows = document.querySelectorAll('#cart-items tr');
   
-  rows.forEach(function(row) {
+  rows.forEach(function(row, index) {
     var productId = row.querySelector('input[name="productId"]').value;
-    var quantity = row.querySelector('.qty').value;
-    updatedQuantities.push({ productId: productId, quantity: quantity });
+    var quantity = parseInt(row.querySelector('.qty').value, 10);
+    
+    // Log the values to debug
+    console.log(`Product ID: ${productId}, Quantity: ${quantity}`);
+    
+    if (productId && !isNaN(quantity)) {
+      updatedQuantities.push({
+        productId: productId,
+        quantity: quantity
+      });
+    }
   });
+
+  // Log the JSON string to debug
+//   console.log('Updated Quantities JSON:', JSON.stringify(updatedQuantities));
 
   document.getElementById('updatedQuantities').value = JSON.stringify(updatedQuantities);
   
   this.submit();
 });
+
+
+
 
 
 
