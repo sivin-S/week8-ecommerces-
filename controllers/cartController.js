@@ -111,52 +111,40 @@ exports.removeProductFromCart = async (req, res) => {
   }
 };
 
-exports.updateCart = async (req, res) => {
+exports.updateQuantity = async (req, res) => {
   try {
-    const quantity = parseInt(req.body.qty, 10);
-    const totalAmount = parseFloat(req.body.totalAmount);
-    if (isNaN(quantity) || isNaN(totalAmount)) {
-      // return res.status(400).json({ error: 'Invalid quantity or total amount' });
-      console.log('Invalid quantity or total amount');
-      
-      req.flash('error', 'Please try again.');
-      return res.redirect('/cart');
-    }
-    let updatedQuantities;
-   
-    // console.log("updatedQuantities", req.body);
-    if (req.body.updatedQuantities && req.body.updatedQuantities !== '') {
-      try {
-        updatedQuantities = JSON.parse(req.body.updatedQuantities);
-      } catch (error) {
-        console.error('Error parsing updatedQuantities:', error);
-        req.flash('error', 'Please try again.');
-        // return res.status(400).json({ error: 'Invalid updated quantities format' });
-        return res.redirect('/cart');
+      const { productId, variantColor, variantSize, quantity } = req.body;
+      const userId = req.session.userId;
+
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+          return res.status(400).json({ success: false, message: 'Invalid product ID' });
       }
-    }
-    const cart = await Cart.findOne({ user: req.session.userId });
-    if (!cart) {
-      req.flash('error', 'Cart not found');
-      return res.redirect('/cart');
-    }
-    if (updatedQuantities) {
-      updatedQuantities.forEach((itemUpdate) => {
-        const item = cart.items.find(i => i.product.equals(itemUpdate.productId));
-        if (item) {
-          item.quantity = itemUpdate.quantity;
-        }
-      });
-    }
-    cart.totalAmount = totalAmount;
-    await cart.save();
-    res.redirect('/checkout');
+
+      const cart = await Cart.findOne({ user: userId });
+      if (!cart) {
+          return res.status(404).json({ success: false, message: 'Cart not found' });
+      }
+
+      const item = cart.items.find(
+          (item) =>
+              item.product.toString() === productId &&
+              item.variant.color === variantColor &&
+              item.variant.size === variantSize
+      );
+
+      if (!item) {
+          return res.status(404).json({ success: false, message: 'Item not found in cart' });
+      }
+
+      item.quantity = quantity;
+      await cart.save();
+
+      res.json({ success: true, message: 'Quantity updated successfully' });
   } catch (error) {
-    console.error('Error updating cart:', error);
-    // res.status(500).json({ error: 'Internal server error' });
-    req.flash('error', 'Internal Server Error');
-    res.redirect('/');
+      console.error('Error updating quantity:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
+
 
 

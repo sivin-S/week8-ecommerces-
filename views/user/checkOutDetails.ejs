@@ -33,9 +33,14 @@
             </div>
            </div>
            <div class="col-6 d-flex align-items-center" style="height: 500px;">
+             <div class="row shadow rounded p-3 " style="height: 400px;">
+
+                <div class=" d-flex" style="overflow-x: scroll;">
+
+               
             <% checkout.cart.items.forEach((item, index) => { %>
-                <div class="row shadow rounded p-3">
-                    <div class="col-6 border shadow-sm rounded d-flex">
+               
+                    <div class="mx-3 p-3 col-6 border shadow-sm rounded d-flex" style="height: 200px;">
                         <div class="col-4 h-100">
                             <% 
                             const variant = item.product.variants.find(variant => variant?.color === item.variant?.color);
@@ -53,6 +58,12 @@
                             <p>size: <%= item.variant?.size %></p>
                         </div>
                     </div>
+                   
+               
+            <% }) %>
+             </div> 
+                 <div class="" style="height: 100px;">
+                    
                     <div class="col-3 w-100" style="height: 50px;">
                         <p style="float: right;padding-right: 50px;margin-top: 12px;">Total: ₹ <%= checkout.cart.totalAmount %></p>
                     </div>
@@ -71,8 +82,8 @@
                            
                         </div>
                     </div>
-                </div>    
-            <% }) %>
+                  </div>
+             </div>    
         </div>
         
        </div>

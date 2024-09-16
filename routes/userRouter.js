@@ -56,7 +56,11 @@ router.post("/sendOtp", authController.sendOtp);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resetOtp", authController.resetOtp);
 router.post("/login", authController.login);
-router.post("/updateCart", cartController.updateCart);
+
+router.post("/updateQuantity", isUserLogin, checkUserBlocked, cartController.updateQuantity);
+
+
+
 router.post("/addAddress", isUserLogin, checkUserBlocked, userController.addAddress);
 router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.updateCheckoutStatus);
 router.post("/signup", authController.signup);

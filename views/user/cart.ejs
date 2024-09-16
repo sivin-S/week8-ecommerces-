@@ -35,6 +35,9 @@
 	<script defer src="/js/jquery.magnific-popup.min.js"></script>
 	<script defer src="/js/owl.carousel.min.js"></script>
 	<script defer src="/js/main.js"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+
    
 </head>
 
@@ -75,7 +78,7 @@
 							</li>
 							<li class="nav-item"><a class="nav-link" href="/contact" style="color: #ff6c00;">Contact</a></li>
 							<li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag" style="font-size: 1.3rem;color: #ff6c00;"></span></a></li>
-							<li class="nav-item">
+							<li class="nav-item" style="display: none;">
 								<button class="search" style="border: none;outline: none;background-color: transparent;"><span class="lnr lnr-magnifier" id="search" style="font-size: 1.3rem;color: #ff6c00;"></span></button>
 							</li>
 							<li class="nav-item">
@@ -146,10 +149,11 @@
                                 </tr>
                             </thead>
                            
-                            <form action="/updateCart" method="post" id="updateCartForm">
+                           
                             <tbody id="cart-items">
                                 <% cart.items.forEach(function(data,index){ %>
-                                <tr>
+                                    <tr data-product-id="<%= data.product._id %>" data-variant-color="<%= data.variant.color %>" data-variant-size="<%= data.variant.size %>">
+
                                     <td>
                                         <div class="media">
                                             <div class="d-flex">
@@ -169,8 +173,7 @@
                                         <div class="product_count">
                                             <% if (data.product.variants[0] && data.product.variants[0].stock) { %>
                                                 <input type="text" name="qty" class="qty" value="<%=data.quantity  %>" title="Quantity:" readonly>
-                                                <input type="text" name="productId"  value="<%=data.product._id %>" hidden>
-                                                <input type="hidden" name="updatedQuantities" id="updatedQuantities">
+                                                
                                                 <button onclick="changeQuantity(this, 1, <%= data.product.variants[0].stock %>)" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
                                                 <button onclick="changeQuantity(this, -1, <%= data.product.variants[0].stock %>)" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
                                             <% } else { %>
@@ -202,12 +205,15 @@
                                     <td>
                                         <div class="checkout_btn_inner d-flex align-items-center">
                                             <a class="gray_btn" href="/shop">Continue Shopping</a>
-                                            <button class="primary-btn" type="submit" style="border: none;outline: none;">Proceed to checkout</button>
+                                            <a href="/checkOut">
+                                                <button class="primary-btn" type="submit" style="border: none;outline: none;">Proceed to checkout</button>
+                                            </a>
+                                          
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
-                           </form>
+                        
                        
                         </table>
                    
@@ -261,127 +267,130 @@
     </footer>
     <!-- End footer Area -->
 
-    <!-- Custom Script for Search and Quantity -->
     <script>
-        document.getElementById('search-icon').addEventListener('click', function() {
-            document.getElementById('search_input_box').style.display = 'block';
-            document.getElementById('search_input').focus();
-        });
-
-        document.getElementById('close_search').addEventListener('click', function() {
-            document.getElementById('search_input_box').style.display = 'none';
-        });
-
-        document.addEventListener('click', function(event) {
-            var searchInputBox = document.getElementById('search_input_box');
-            if (!searchInputBox.contains(event.target) && event.target !== document.getElementById('search-icon')) {
-                searchInputBox.style.display = 'none';
-            }
-        });
-
-        //quantity
-        function changeQuantity(button, increment,maxStock) {
-            var input = button.parentElement.querySelector('.qty');
+        // Function to change quantity
+        function changeQuantity(button, increment, maxStock) {
+            var row = button.closest('tr');
+            var input = row.querySelector('.qty');
             var currentValue = parseInt(input.value, 10);
             if (!isNaN(currentValue)) {
                 let newValue = currentValue + increment;
-                newValue = Math.min(Math.max(1, newValue),maxStock);
-                input.value= newValue;
-                updateTotal(button);
+                newValue = Math.min(Math.max(1, newValue), maxStock);
+                input.value = newValue;
+                updateTotal(row, newValue);
+                updateQuantityInDatabase(row, newValue);
             }
         }
 
-        
-    function updateTotal(button) {
-        var row = button.closest('tr');
-        var quantity = parseInt(row.querySelector('.qty').value, 10);
-        var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
-        var total = quantity * price;
-        row.querySelector('.item-total').textContent = '₹' + total.toFixed(2);
-        updateSubtotal();
-    }
+        // Function to update total
+        function updateTotal(row, quantity) {
+            var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
+            var total = quantity * price;
+            row.querySelector('.item-total').textContent = '₹' + total.toFixed(2);
+            updateSubtotal();
+        }
 
-    function updateSubtotal() {
-  var rows = document.querySelectorAll('#cart-items tr:not(:last-child):not(:nth-last-child(2))');
-  var subtotal = 0;
-  rows.forEach(function(row) {
-    var quantity = parseInt(row.querySelector('.qty').value, 10);
-    var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
-    subtotal += quantity * price;
-  });
-  document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
-  document.getElementById('subtotals').value = subtotal.toFixed(2);
-}
+        // Function to update subtotal
+        function updateSubtotal() {
+            var rows = document.querySelectorAll('#cart-items tr:not(:last-child):not(:nth-last-child(2))');
+            var subtotal = 0;
+            rows.forEach(function(row) {
+                var quantity = parseInt(row.querySelector('.qty').value, 10);
+                var price = parseFloat(row.querySelector('td:nth-child(2) h5').textContent.replace('₹', ''));
+                subtotal += quantity * price;
+            });
+            document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
+            document.getElementById('subtotals').value = subtotal.toFixed(2);
+        }
 
-       
+        // Function to update quantity in database
+        async function updateQuantityInDatabase(row, quantity) {
+            var productId = row.getAttribute('data-product-id');
+            var variantColor = row.getAttribute('data-variant-color');
+            var variantSize = row.getAttribute('data-variant-size');
 
-    // Call updateSubtotal initially to set the correct value
-    document.addEventListener('DOMContentLoaded', function() {
-        updateSubtotal();
-    });
+            try {
+                const response = await fetch('/updateQuantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        variantColor: variantColor,
+                        variantSize: variantSize,
+                        quantity: quantity
+                    })
+                });
 
+                const result = await response.json();
 
-        
+                if (result.success) {
+                    const successAlert = document.createElement('div');
+                    successAlert.id = 'successAlert';
+                    successAlert.className = 'alert alert-success';
+                    successAlert.role = 'alert';
+                    successAlert.style.position = 'fixed';
+                    successAlert.style.top = '20px';
+                    successAlert.style.right = '20px';
+                    successAlert.style.zIndex = '1000';
+                    successAlert.textContent = 'The quantity has been updated successfully.';
+                    document.body.appendChild(successAlert);
+                    hideFlashMessages();
+                } else {
+                    const errorAlert = document.createElement('div');
+                    errorAlert.id = 'errorAlert';
+                    errorAlert.className = 'alert alert-danger';
+                    errorAlert.role = 'alert';
+                    errorAlert.style.position = 'fixed';
+                    errorAlert.style.top = '20px';
+                    errorAlert.style.right = '20px';
+                    errorAlert.style.zIndex = '1000';
+                    errorAlert.textContent = 'Failed to update the quantity. Please try again.';
+                    document.body.appendChild(errorAlert);
+                    hideFlashMessages();
+                }
+            } catch (error) {
+                const errorAlert = document.createElement('div');
+                errorAlert.id = 'errorAlert';
+                errorAlert.className = 'alert alert-danger';
+                errorAlert.role = 'alert';
+                errorAlert.style.position = 'fixed';
+                errorAlert.style.top = '20px';
+                errorAlert.style.right = '20px';
+                errorAlert.style.zIndex = '1000';
+                errorAlert.textContent = 'An error occurred while updating the quantity. Please try again.';
+                document.body.appendChild(errorAlert);
+                hideFlashMessages();
+            }
+        }
+
         // Function to hide flash messages
-function hideFlashMessages() {
-    const successAlert = document.getElementById('successAlert');
-    const errorAlert = document.getElementById('errorAlert');
+        function hideFlashMessages() {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
 
-    if (successAlert) {
-        setTimeout(() => {
-            successAlert.style.display = 'none';
-        }, 5000);
-    }
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 1000); 
+            }
 
-    if (errorAlert) {
-        setTimeout(() => {
-            errorAlert.style.display = 'none';
-        }, 5000);
-    }
-}
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.display = 'none';
+                }, 1000); 
+            }
+        }
 
-// Call the function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', hideFlashMessages);
-
-
-document.getElementById('updateCartForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  var updatedQuantities = [];
-  var rows = document.querySelectorAll('#cart-items tr');
-  
-  rows.forEach(function(row, index) {
-    var productId = row.querySelector('input[name="productId"]').value;
-    var quantity = parseInt(row.querySelector('.qty').value, 10);
-    
-    // Log the values to debug
-    console.log(`Product ID: ${productId}, Quantity: ${quantity}`);
-    
-    if (productId && !isNaN(quantity)) {
-      updatedQuantities.push({
-        productId: productId,
-        quantity: quantity
-      });
-    }
-  });
-
-  // Log the JSON string to debug
-//   console.log('Updated Quantities JSON:', JSON.stringify(updatedQuantities));
-
-  document.getElementById('updatedQuantities').value = JSON.stringify(updatedQuantities);
-  
-  this.submit();
-});
-
-
-
-
-
-
-
-
-
+        // Call updateSubtotal initially to set the correct value
+        document.addEventListener('DOMContentLoaded', function() {
+            // updateSubtotal();
+            hideFlashMessages()
+        });
     </script>
+
+
 </body>
 
 </html>

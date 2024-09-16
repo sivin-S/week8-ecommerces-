@@ -83,6 +83,7 @@ async function toggleUserState(req, res) {
 async function orderList(req, res) {
     try {
         const checkOut = await Checkout.find({}).populate("user").populate("cart.items.0.product");
+        console.log("checkOut >> ",checkOut );
         res.render('ordersList.ejs', { orderStatus: checkOut });
     } catch (err) {
         console.log(err);
