@@ -118,7 +118,7 @@
                 <div class="col-first">
                     <h1>Shopping Cart</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="/">check out<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="/">home<span class="lnr lnr-arrow-right"></span></a>
                         <p>Cart</p>
                     </nav>
                 </div>
@@ -153,10 +153,12 @@
                                     <td>
                                         <div class="media">
                                             <div class="d-flex">
-                                                <img class="img-fluid" src="<%= data.product.variants[0]?.imageUrls[0] %>" width="100" height="100" alt="img">
+                                                <img class="img-fluid" src="<%= data?.variant?.imageUrls[0] %>" width="100" height="100" alt="img">
                                             </div>
                                             <div class="media-body">
-                                                <p><%=data.product.name %></p>
+                                                <p><b><%=data?.product?.name %></b></p>
+                                                <p><%=data?.variant?.color %></p>
+                                                <p><%=data?.variant?.size %></p>
                                             </div>
                                         </div>
                                     </td>

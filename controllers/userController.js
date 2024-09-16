@@ -203,8 +203,8 @@ exports.getOrderOneHistory = async(req,res)=>{
                 model: 'Product'
               })
     
-    // console.log("checkout >>>>>>>>>>>");
-    // console.log(checkout);
+    console.log("checkout >>>>>>>>>>>");
+    console.log(checkout);
     
     res.render('checkOutDetails.ejs',{checkout})
 

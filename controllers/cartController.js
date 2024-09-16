@@ -20,7 +20,7 @@ exports.getCart = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   
   try {
     const userId = req.session.userId;

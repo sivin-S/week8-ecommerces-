@@ -127,6 +127,8 @@
         <div class="col-12 mb-3">
           <div class="row" style="float: right;">
             <!-- <div class="border border-danger"> -->
+                <input type="search" id="nameSearch" class="rounded border px-3 mx-2" placeholder="Search by name" style="outline: none;">
+                <button id="searchButton" class="btn"><span><i class="bi bi-search"></i></span></button>
                 <a href="/shop" class="px-3">
                     <button class="btn btn-primary">
                         <span><i class="bi bi-arrow-clockwise"></i></span>
@@ -310,6 +312,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categoryLinks = document.querySelectorAll('.category-link');
     const selectedCategories = new Set();
+    const nameSearch = document.getElementById('nameSearch');
+    const searchButton = document.getElementById('searchButton');
 
     categoryLinks.forEach(link => {
       link.addEventListener('click', function(e) {
@@ -330,6 +334,15 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.search = searchParams.toString();
       });
     });
+
+    searchButton.addEventListener('click', function() {
+                const searchParams = new URLSearchParams(window.location.search);
+                searchParams.set('search', nameSearch.value);
+                window.location.search = searchParams.toString();
+            });
+
+
+
   });
       
 
