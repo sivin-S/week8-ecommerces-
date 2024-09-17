@@ -66,7 +66,9 @@
     margin: 0 auto;
 }
 
-
+.variantContainer::-webkit-scrollbar {
+  display: none;
+}
 
 		/* Ensure the image container is responsive */
 		/* .carousel-inner {
@@ -256,7 +258,7 @@
 					
 					<!--//  variant filer-->
    
-					<div class="row" style="height: 250px;overflow: scroll;">
+					<div class="row variantContainer" style="height: 250px;overflow: scroll;">
 						<form action="/filterVariant" method="get" id="filterForm">
 							<input type="hidden" name="productId" value="<%=product._id %>">
 						<div class="row mx-1 mt-5 mb-2">
