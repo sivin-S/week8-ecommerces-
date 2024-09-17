@@ -91,6 +91,34 @@ async function orderList(req, res) {
     }
 }
 
+
+// function to get order details fetch "ajax method"
+async function getOrderDetails(req, res) {
+    try {
+        const orderId = req.params.id;
+        const order = await Checkout.findById(orderId).populate("user").populate("cart.items.product")
+        .populate('address')
+        ;
+
+        console.log("order >>>>>>>");
+        console.log(order);
+        
+        
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json(order);
+    } catch (err) {
+        console.error('Error fetching order details:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
+
+
+
+
 // Function to render the payment methods page
 function paymentMethods(req, res) {
     // res.render('paymentMethods.ejs');
@@ -519,5 +547,6 @@ module.exports = {
     editProduct,
     couponsCreate,
     addProductsPage,
-    addProducts
+    addProducts,
+    getOrderDetails
 };

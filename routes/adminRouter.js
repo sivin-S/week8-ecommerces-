@@ -36,6 +36,8 @@ router.get('/transactionHistory', isAdminLogin, adminController.transactionHisto
 router.get('/notifications', isAdminLogin, adminController.notifications);
 router.get('/editProduct/:id', isAdminLogin, adminController.editProductPage);
 router.get('/logout', adminController.logout);
+router.get('/orderDetails/:id', isAdminLogin, adminController.getOrderDetails);
+
 
 router.post('/category/add', isAdminLogin, adminController.addCategory);
 router.post('/checkOutStatus', isAdminLogin, adminController.checkOutStatus);
