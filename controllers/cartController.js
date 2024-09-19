@@ -6,7 +6,7 @@ exports.getCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
-    console.log(cart);
+    // console.log(cart);
     res.render("cart.ejs", { cart });
   } catch (error) {
     console.error("Error retrieving cart:", error);
@@ -20,48 +20,65 @@ exports.getCart = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-  // console.log(req.body);
-  
+  // console.log("addToCart >>>>>>>>>>>>>>>>>>>>>>>> ", req.body);
+
   try {
     const userId = req.session.userId;
     const { productId, variantSize, variantColor, qty, variantImageUrls } = req.body;
+
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       req.flash('error', 'Invalid product ID');
       return res.redirect('/');
     }
+
     const product = await Product.findById(productId);
-    console.log("product >>>>>>>>> ", product);
-    
     if (!product) {
       req.flash('error', 'Product not found');
       return res.redirect('/');
     }
+
     const selectedVariant = product.variants.find(
       (variant) => variant.size === variantSize && variant.color === variantColor
     );
-    console.log("selectedVariant >>",selectedVariant);
-    
+
     if (!selectedVariant) {
       req.flash('error', 'Selected variant not available');
       return res.redirect('/');
     }
+
     if (selectedVariant.stock < qty) {
       req.flash('error', 'Not enough stock available');
       return res.redirect('/');
     }
+
     let cart = await Cart.findOne({ user: userId });
     if (!cart) {
       cart = new Cart({ user: userId, items: [] });
     }
+
     const existingItemIndex = cart.items.findIndex(
       (item) =>
         item.product.toString() === productId &&
         item.variant.size === variantSize &&
         item.variant.color === variantColor
     );
+
     if (existingItemIndex > -1) {
-      cart.items[existingItemIndex].quantity += parseInt(qty);
+      const existingItem = cart.items[existingItemIndex];
+      const newQuantity = existingItem.quantity + parseInt(qty);
+
+      if (newQuantity > selectedVariant.stock) {
+        req.flash('error', 'Total quantity exceeds available stock');
+        return res.redirect('/cart');
+      }
+
+      existingItem.quantity = newQuantity;
     } else {
+      if (parseInt(qty) > selectedVariant.stock) {
+        req.flash('error', 'Total quantity exceeds available stock');
+        return res.redirect('/cart');
+      }
+
       cart.items.push({
         product: productId,
         quantity: parseInt(qty),
@@ -71,9 +88,9 @@ exports.addToCart = async (req, res) => {
           imageUrls: variantImageUrls ? variantImageUrls.split(',') : []
         },
         price: product?.price
-        
       });
     }
+
     await cart.save();
     req.flash('success', 'Product added to cart');
     res.redirect('/cart');
@@ -83,6 +100,7 @@ exports.addToCart = async (req, res) => {
     res.redirect('/');
   }
 };
+
 
 exports.removeProductFromCart = async (req, res) => {
   try {

@@ -1,7 +1,6 @@
-// checkoutSchema.js
 const mongoose = require('mongoose');
 
-// Define cartItemSchema
+
 const cartItemSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +31,7 @@ const cartItemSchema = new mongoose.Schema({
     }
 });
 
-// Define cartSchema
+
 const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -63,7 +62,7 @@ cartSchema.pre('save', function(next) {
     next();
 });
 
-// Define checkoutSchema
+
 const checkoutSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -72,9 +71,14 @@ const checkoutSchema = new mongoose.Schema({
     },
     cart: cartSchema,  
     address: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Address',
-        required: true
+        username: String, 
+        email: String, 
+        state: String, 
+        zip: Number, 
+        phone: Number, 
+        country: String, 
+        landmark: String, 
+        locality: String, 
     },
     paymentMethod: {
         type: String,
@@ -98,6 +102,14 @@ const checkoutSchema = new mongoose.Schema({
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending'
     },
+    shippingCost: { 
+        type: Number,
+         default: 0 
+        },
+    totalPrice: {
+         type: Number,
+        //   required: true
+        },
     createdAt: {
         type: Date,
         default: Date.now

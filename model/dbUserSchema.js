@@ -1,6 +1,5 @@
-// userSchema.js
 const mongoose = require('mongoose');
-const Address = require('./addressSchema'); // Make sure the path is correct
+const Address = require('./addressSchema'); 
 
 const userSchema = new mongoose.Schema({
     username: {

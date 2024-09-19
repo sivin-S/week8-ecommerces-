@@ -16,6 +16,19 @@
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/signUp.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+
+
+
+
+
+
     <style>
         .containerMod {
             height: 100vh;
@@ -29,7 +42,7 @@
 
         .rowMod-1 {
             width: 380px;
-            height: 475px;
+            min-height: 475px;
             border: 6px solid #ff9000;
             background-color: #ff91000e;
             box-shadow: 14px 15.5px 6px 0 #ff9000;
@@ -38,7 +51,7 @@
 
         .rowMod-1>form>.colMod-2 {
             width: 100%;
-            height: 490px;
+            height: 378px;
             padding: 0 20px;
         }
 
@@ -121,11 +134,18 @@
             opacity: 1;
             transition: opacity 0.5s ease-out;
         }
+
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
     </style>
 
 
-  <!-- validator js  -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.7.0/validator.min.js"></script>
+
+
+
     <!-- script  -->
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
@@ -163,280 +183,503 @@
             hideElement('errorAlert');
 
 
-
-
-    // Validation for edit address forms
-    document.querySelectorAll('form[action="/editAddress"]').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let isValid = true;
-            
-            const phone = this.querySelector('input[name="phone"]').value;
-            const zip = this.querySelector('input[name="zip"]').value;
-            const age = this.querySelector('input[name="age"]').value;
-            const username = this.querySelector('input[name="username"]').value;
-            const gender = this.querySelector('select[name="gender"]').value;
-            const country = this.querySelector('input[name="country"]').value;
-            const landmark = this.querySelector('input[name="landmark"]').value;
-            const locality = this.querySelector('input[name="locality"]').value;
-            const state = this.querySelector('input[name="state"]').value;
-            
-            if (!validator.isMobilePhone(phone, 'any')) {
-                alert('Please enter a valid phone number.');
-                isValid = false;
+            function displayError(input, message) {
+                const errorElement = input.nextElementSibling;
+                if (errorElement && errorElement.classList.contains('error-message')) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                } else {
+                    const newErrorElement = document.createElement('div');
+                    newErrorElement.className = 'error-message';
+                    newErrorElement.textContent = message;
+                    newErrorElement.style.display = 'block';
+                    input.parentNode.insertBefore(newErrorElement, input.nextSibling);
+                }
             }
 
-            if (!validator.isPostalCode(zip, 'any')) {
-                alert('Please enter a valid zip code.');
-                isValid = false;
+            function clearErrors(form) {
+                form.querySelectorAll('.error-message').forEach(el => {
+                    el.textContent = '';
+                    el.style.display = 'none';
+                });
             }
 
-            if (!validator.isInt(age, { min: 18, max: 100 })) {
-                alert('Please enter a valid age between 18 and 100.');
-                isValid = false;
-            }
 
-            if (!validator.isAlpha(username, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid username.');
-                isValid = false;
-            }
 
-            if (!validator.isAlpha(gender, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid gender.');
-                isValid = false;
-            }
-            if (!validator.isAlpha(country, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid country.');
-                isValid = false;
-            }
-            if (!validator.isAlpha(landmark, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid landmark.');
-                isValid = false;
-            }
-            if (!validator.isAlpha(locality, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid locality.');
-                isValid = false;
-            }
-            if (!validator.isAlpha(state, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid state.');
-                isValid = false;
-            }
-            
-            if (isValid) {
-                console.log('Form is valid, submitting...');
-                this.submit();
-            } else {
-                console.log('Form is invalid, not submitting.');
+            // Validation for edit address form
+            document.querySelectorAll('form[action="/editAddress"]').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    let isValid = true;
+
+                    clearErrors(form);
+
+                    const username = form.querySelector('input[name="username"]').value.trim();
+                    const state = form.querySelector('input[name="state"]').value.trim();
+                    const zip = form.querySelector('input[name="zip"]').value.trim();
+                    const phone = form.querySelector('input[name="phone"]').value.trim();
+                    const locality = form.querySelector('input[name="locality"]').value.trim();
+                    const country = form.querySelector('input[name="country"]').value.trim();
+                    const landmark = form.querySelector('input[name="landmark"]').value.trim();
+
+                    if (!/^[a-zA-Z\s]+$/.test(username)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="username"]'), 'Username must contain only letters');
+                    }
+
+                    if (!/^[a-zA-Z\s]+$/.test(state)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="state"]'), 'State must contain only letters');
+                    }
+
+                    if (!/^\d{6}$/.test(zip)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="zip"]'), 'ZIP code must be exactly 6 digits');
+                    }
+
+                    if (!/^\d{10}$/.test(phone)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="phone"]'), 'Phone number must be exactly 10 digits');
+                    }
+
+                    if (!/^[a-zA-Z\s]+$/.test(locality)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="locality"]'), 'Locality must contain only letters');
+                    }
+
+                    if (!/^[a-zA-Z\s]+$/.test(country)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="country"]'), 'Country must contain only letters');
+                    }
+
+                    if (!/^[a-zA-Z\s]+$/.test(landmark)) {
+                        isValid = false;
+                        displayError(form.querySelector('input[name="landmark"]'), 'Landmark must contain only letters');
+                    }
+
+                    if (isValid) {
+                       
+                        Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to save changes to this address?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, save changes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+
+
+
+
+                    }
+                    
+                });
+            });
+
+            // Validation for add address form
+            const addAddressForm = document.querySelector('form[action="/addAddress"]');
+            addAddressForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                let isValid = true;
+
+                clearErrors(addAddressForm);
+
+                const username = addAddressForm.querySelector('input[name="username"]').value.trim();
+                const state = addAddressForm.querySelector('input[name="state"]').value.trim();
+                const zip = addAddressForm.querySelector('input[name="zip"]').value.trim();
+                const phone = addAddressForm.querySelector('input[name="phone"]').value.trim();
+                const locality = addAddressForm.querySelector('input[name="locality"]').value.trim();
+                const country = addAddressForm.querySelector('input[name="country"]').value.trim();
+                const landmark = addAddressForm.querySelector('input[name="landmark"]').value.trim();
+
+                if (!/^[a-zA-Z\s]+$/.test(username)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="username"]'), 'Username must contain only letters');
+                }
+
+                if (!/^\d{10}$/.test(phone)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="phone"]'), 'Phone number must be exactly 10 digits');
+                }
+
+                if (!/^\d{6}$/.test(zip)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="zip"]'), 'ZIP code must be exactly 6 digits');
+                }
+
+                if (!/^[a-zA-Z\s]+$/.test(locality)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="locality"]'), 'Locality must contain only letters');
+                }
+
+                if (!/^[a-zA-Z\s]+$/.test(state)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="state"]'), 'State must contain only letters');
+                }
+
+                if (!/^[a-zA-Z\s]+$/.test(country)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="country"]'), 'Country must contain only letters');
+                }
+
+                if (!/^[a-zA-Z\s]+$/.test(landmark)) {
+                    isValid = false;
+                    displayError(addAddressForm.querySelector('input[name="landmark"]'), 'Landmark must contain only letters');
+                }
+
+                if (isValid) {
+                    addAddressForm.submit();
+                }
+            });
+            ///
+
+            // Validation for reset password form
+            const resetPasswordForm = document.querySelector('form[action="/resetPassword"]');
+            resetPasswordForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                let isValid = true;
+
+                const currentPassword = resetPasswordForm.querySelector('input[name="currentPassword"]').value.trim();
+                const newPassword = resetPasswordForm.querySelector('input[name="newPassword"]').value.trim();
+                const confirmPassword = resetPasswordForm.querySelector('input[name="confirmPassword"]').value.trim();
+
+                // Clear previous error messages
+                resetPasswordForm.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+                if (!currentPassword || !/^.{8,}$/.test(currentPassword)) {
+                    isValid = false;
+                    displayError(currentPassword, 'Current password must be at least 8 characters long and not empty');
+                }
+
+                if (!newPassword || !/^.{8,}$/.test(newPassword)) {
+                    isValid = false;
+                    displayError(newPassword, 'New password must be at least 8 characters long and not empty');
+                }
+
+                if (newPassword !== confirmPassword) {
+                    isValid = false;
+                    displayError(confirmPassword, 'New password and confirm password do not match');
+                }
+
+                if (isValid) {
+        Swal.fire({
+            title: 'Add New Address',
+            text: "Are you sure you want to add this new address?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, add address'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                addAddressForm.submit();
             }
         });
-    });
-
-    // Validation for add address form
-    const addAddressForm = document.querySelector('form[action="/addAddress"]');
-    console.log("called");
-    
-    if (addAddressForm) {
-        
-        addAddressForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let isValid = true;
-            
-            const phone = this.querySelector('input[name="phone"]').value;
-            const zip = this.querySelector('input[name="zip"]').value;
-            const country = this.querySelector('input[name="country"]').value;
-            const landmark = this.querySelector('input[name="landmark"]').value;
-            const locality = this.querySelector('input[name="locality"]').value;
-            const state = this.querySelector('input[name="state"]').value;
-            
-            if (!validator.isMobilePhone(phone, 'any')) {
-                alert('Please enter a valid phone number.');
-                isValid = false;
-            }
-
-            if (!validator.isPostalCode(zip, 'any')) {
-                alert('Please enter a valid zip code.');
-                isValid = false;
-            }
-
-            if (!validator.isAlpha(locality, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid locality.');
-                isValid = false;
-            }
-
-            if (!validator.isAlpha(state, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid state.');
-                isValid = false;
-            }
-
-            if (!validator.isAlpha(country, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid country.');
-                isValid = false;
-            }
-            if (!validator.isAlpha(landmark, 'en-US', {ignore: ' '})) {
-                alert('Please enter a valid landmark.');
-                isValid = false;
-            }
-         
-           
-            
-            if (isValid) {
-                console.log('Form is valid, submitting...');
-                this.submit();
-            } else {
-                console.log('Form is invalid, not submitting.');
-            }
-        });
-
-
-
     }
+            });
 
-    // Validation for reset password form
-    const resetPasswordForm = document.querySelector('form[action="/resetPassword"]');
-    if (resetPasswordForm) {
-        resetPasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let isValid = true;
-            
-            const newPassword = this.querySelector('input[name="newPassword"]').value;
-            const confirmPassword = this.querySelector('input[name="confirmPassword"]').value;
-            
-            if (!validator.isLength(newPassword, {min: 8})) {
-                alert('Password must be at least 8 characters long.');
+            //
+
+            // Prevent negative integers in number inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', function (e) {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                });
+            });
+
+
+
+
+
+
+
+            // delete address
+            document.querySelectorAll('.delete-address').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const addressId = this.getAttribute('data-address-id');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/deleteAddress', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ addressId: addressId }),
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+
+                                        this.closest('.address-item').remove();
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Your address has been deleted.',
+                                            'success'
+                                        );
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'Failed to delete address.',
+                                            'error'
+                                        );
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred while deleting the address.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    });
+                });
+            });
+
+
+            // Edit Profile functionality
+
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const saveProfileBtn = document.createElement('button');
+            saveProfileBtn.textContent = 'Save Profile';
+            saveProfileBtn.classList.add('btn', 'btn-success', 'd-none');
+            editProfileBtn.parentNode.insertBefore(saveProfileBtn, editProfileBtn.nextSibling);
+
+            editProfileBtn.addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Edit Profile',
+                    text: "Are you sure you want to edit your profile?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, edit profile'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const profileInputs = document.querySelectorAll('.colMod-2 input:not([name="email"]), .colMod-2 select');
+                        profileInputs.forEach(input => {
+                            input.removeAttribute('disabled');
+                            input.removeAttribute('readonly');
+                        });
+                        editProfileBtn.classList.add('d-none');
+                        saveProfileBtn.classList.remove('d-none');
+                    }
+                });
+            });
+
+
+
+
+            saveProfileBtn.addEventListener('click', function () {
+                const profileInputs = document.querySelectorAll('.colMod-2 input:not([name="email"]), .colMod-2 select');
+                const updatedData = {};
+                let isValid = true;
+// Clear all previous error messages
+                clearErrors(document.querySelector('form[action="/updateProfile"]'));
+
+
+                profileInputs.forEach(input => {
+                    const value = input.value.trim();
+                    updatedData[input.name] = value;
+
+                    // Validation
+                    if (input.name === 'username') {
+                        if (!/^[a-zA-Z\s]+$/.test(value)) {
+                            isValid = false;
+                            displayError(input, 'Name must contain only letters and spaces');
+                        }
+                    } else if (input.name === 'age') {
+                        const age = parseInt(value);
+            if (!/^\d+$/.test(value) || age < 18 || age > 120) {
                 isValid = false;
+                displayError(input, 'Age must be a number between 18 and 120');
             }
-            
-            if (!validator.equals(newPassword, confirmPassword)) {
-                alert('New password and confirm password do not match.');
-                isValid = false;
-            }
-            
-            if (isValid) {
-                console.log('Form is valid, submitting...');
-                this.submit();
-            } else {
-                console.log('Form is invalid, not submitting.');
-            }
+                    } else if (input.name === 'gender') {
+                        if (!['male', 'female', 'other'].includes(value.toLowerCase())) {
+                            isValid = false;
+                            displayError(input, 'Gender must be Male, Female, or Other');
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to save these changes to your profile?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, save changes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/updateProfile', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedData),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Success', 'Profile updated successfully', 'success');
+                                    profileInputs.forEach(input => {
+                                        input.setAttribute('disabled', '');
+                                        if (input.name !== 'gender') {
+                                            input.setAttribute('readonly', '');
+                                        }
+                                    });
+                                    saveProfileBtn.classList.add('d-none');
+                                    editProfileBtn.classList.remove('d-none');
+                                } else {
+                                    Swal.fire('Error', 'Failed to update profile', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'An error occurred while updating the profile', 'error');
+                            });
+                    }
+                });
+            });
+
+
+
+
+
+
+
+            // dom event ending
+
         });
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        });
-
-
-
-            
-           
-
-
-
-
-
     </script>
-  
+
+
+
 </head>
 
 <body>
 
     <div class="main">
         <!-- flash message  -->
-        <% if (locals.successMessage && locals.successMessage.length > 0) { %>
+        <% if (locals.successMessage && locals.successMessage.length> 0) { %>
             <div id="successAlert" class="alert alert-success" role="alert"
                 style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
                 <%= locals.successMessage %>
             </div>
-        <% } %>
+            <% } %>
 
-        <% if (locals.errorMessage && locals.errorMessage.length > 0) { %>
-            <div id="errorAlert" class="alert alert-danger" role="alert"
-                style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
-                <%= locals.errorMessage %>
-            </div>
-        <% } %>
-
-
-        <div class="container-fluid containerMod d-flex align-items-center justify-content-center">
-            <div style="position: absolute;top: 0;left: 100px;top: 50px;">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="row rowMod-1 flex-column rounded-4">
-                <div class="col-6 colMod-2 w-100">
-                    <div class="form-floating mb-3 form-floatingOne">
-                        <input type="text" id="name" name="name" value="<%=userData?.username%>"
-                            class="form-control shadow-none" placeholder="name" disabled
-                            style="background-color: #fff;">
-                        <label for="name">
-                            <p>Name</p>
-                        </label>
+                <% if (locals.errorMessage && locals.errorMessage.length> 0) { %>
+                    <div id="errorAlert" class="alert alert-danger" role="alert"
+                        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
+                        <%= locals.errorMessage %>
                     </div>
-                    <div class="form-floating mb-3 form-floatingOne">
-                        <input type="email" id="email" name="email" value="<%=userData?.email %>"
-                            class="form-control shadow-none" placeholder="email" disabled
-                            style="background-color: #fff;">
-                        <label for="email">
-                            <p>Email address</p>
-                        </label>
-                    </div>
+                    <% } %>
 
 
-                    <div class="form-floating mb-3 form-floatingFour">
-                        <input type="text" name="state" id="state" value="<%=userData?.age %>"
-                            class="form-control shadow-none" disabled placeholder="age">
-                        <label for="state">
-                            <p>Age</p>
-                        </label>
-                    </div>
-                    <div class="form-floating mb-3 form-floatingFour">
-                        <input type="text" name="gender" id="gender" class="form-control shadow-none"
-                            value="<%=userData?.gender %>" placeholder="gender" readonly>
-                        <label for="country">
-                            <p>Gender</p>
-                        </label>
-                    </div>
-                    <div class="form-floating mb-3 form-floatingFour">
-                        <button class="w-100 py-3 rounded" data-bs-toggle="modal" data-bs-target="#addressModal"
-                            style="border: 1px solid #ff9000;outline: none;color: #ff9000;background-color: #fff;">
-                            Address
-                        </button>
-                    </div>
-                </div>
-                <div class="col-6 colMod-3 w-100 d-flex justify-content-evenly mt-2">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#resetPassword">Reset Password</button>
-                    <a href="/logout" class="btn btn-danger">Logout</a>
-                </div>
-            </div>
-        </div>
+                        <div class="container-fluid containerMod d-flex align-items-center justify-content-center">
+                            <div style="position: absolute;top: 0;left: 100px;top: 50px;">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="row rowMod-1 flex-column rounded-4">
+                                
+                                    <div class="col-6 colMod-2 w-100">
+                                        <form action="/updateProfile" method="post">
+                                        <div class="form-floating mb-3 form-floatingOne">
+                                            <input type="text" id="name" name="username" value="<%=userData?.username%>"
+                                                class="form-control shadow-none" placeholder="name" disabled
+                                                style="background-color: #fff;">
+                                            <label for="name">
+                                                <p>Name</p>
+                                            </label>
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div class="form-floating mb-3 form-floatingOne">
+                                            <input type="hidden" name="email" value="<%=userData?.email %>">
+                                            <input type="email" id="email" name="email" value="<%=userData?.email %>"
+                                                class="form-control shadow-none" placeholder="email" disabled
+                                                style="background-color: #fff;">
+                                            <label for="email">
+                                                <p>Email address</p>
+                                            </label>
+                                        </div>
+
+
+                                        <div class="form-floating mb-3 form-floatingFour">
+                                            <input type="number" name="age" id="age" value="<%=userData?.age %>"
+                                                class="form-control shadow-none" disabled placeholder="age">
+                                            <label for="age">
+                                                <p>Age</p>
+                                            </label>
+                                            <div class="error-message"></div>
+                                        </div>
+
+                                        <div class="form-floating mb-3 form-floatingFour  p-0" >
+                                          <div class="" style="    line-height: 0px;">
+                                           
+                                                <p>Gender</p>
+                                            </label>
+                                            <select name="gender" id="gender" class="form-select py-3" disabled style="background-color: #fff;border: 1px solid #ff9000;outline: none;color: #ff9000;">
+                                                <option value="male" <%=userData?.gender.toLowerCase()==='male'
+                                                    ? 'selected' : '' %>>Male</option>
+                                                <option value="female" <%=userData?.gender.toLowerCase()==='female'
+                                                    ? 'selected' : '' %>>Female</option>
+                                                <option value="other" <%=userData?.gender.toLowerCase()==='other'
+                                                    ? 'selected' : '' %>>Other</option>
+                                            </select>
+                                          </div>
+                                           
+                                            <div class="error-message"></div>
+
+                                           
+                                        </div>
+                                      </form>
+
+
+                                        <div class="form-floating mb-3 form-floatingFour">
+                                            <button class="w-100 py-3 rounded" data-bs-toggle="modal"
+                                                data-bs-target="#addressModal"
+                                                style="border: 1px solid #ff9000;outline: none;color: #ff9000;background-color: #fff;">
+                                                Address
+                                            </button>
+                                        </div>
+                                    </div>
+                               
+
+                                <div class="col-6 colMod-3 w-100 mb-3 mt-3 d-flex justify-content-evenly mt-2">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#resetPassword">Reset Password</button>
+                                    <button class="btn btn-warning" id="editProfileBtn">Edit Profile</button>
+                                    <a href="/logout" class="btn btn-danger">Logout</a>
+                                </div>
+                            </div>
+                        </div>
     </div>
 
     <!-- multiple address edit address modal -->
@@ -446,103 +689,152 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5 text-capitalize text-secondary" id="addressModalLabel">Addresses</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
                 <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                     <!-- looping address -->
-                    <% userData.addresses.forEach((address, index) => { %>
+                    <% userData.addresses.forEach((address, index)=> { %>
                         <form action="/editAddress" method="post">
                             <div class="address-item mb-4 border border shadow-sm p-4">
                                 <div class="d-flex justify-content-between">
-                                    <h5 class="text-capitalize text-secondary"> <b>Address</b> <%= index + 1 %></h5>
-                                    <button type="submit" class="btn btn-sm btn-primary edit-address px-5">Edit</button>
+                                    <h5 class="text-capitalize text-secondary"> <b>Address</b>
+                                        <%= index + 1 %>
+                                    </h5>
+                                    <div>
+
+                                        <!-- <form action="/deleteAddress" method="post">
+                                        <input type="hidden" value="<%=address._id%>" name="addressId">
+                                        <button type="submit" class="btn btn-sm btn-danger delete-address">Delete</button>
+                                    </form> -->
+                                        <button type="button" class="btn btn-sm btn-danger delete-address"
+                                            data-address-id="<%=address._id%>">Delete</button>
+                                        <button type="submit"
+                                            class="btn btn-sm btn-primary edit-address px-5">Save</button>
+                                    </div>
 
                                 </div>
                                 <div class="py-3 row">
-                                    <input type="hidden" class="py-3 mb-3 rounded shadow" value="<%=index%>" name="index">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.username %>" name="username" placeholder="username">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= userData?.age %>" name="age" placeholder="age">
-                                    <!-- <input type="text" class="py-3 mb-3 rounded shadow" value="<%# = userData?.gender %>" name="gender"> -->
-                                    <select class="form-select py-3 mb-3 rounded shadow" aria-label="Default select example" name="gender" id="editGender" style="border:1px solid #ff9000 !important;color: #ff9000;">
-                                        <option selected><%= userData?.gender %></option>
-                                        <option value="<%=( userData?.gender === "male") ? "female" : "male" %>">
-                                            <%=( userData?.gender === "male") ? "female" : "male" %>
-                                        </option>                                        
-                                      </select>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>" name="state" placeholder="state">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>" name="zip" placeholder="zip">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>" name="phone" placeholder="phone">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>" name="locality" placeholder="locality">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>" name="country" placeholder="country">
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>" name="landmark" placeholder="landmark">
+                                    <input type="hidden" class="py-3 mb-3 rounded shadow" value="<%=index%>"
+                                        name="index">
+                                    <label for="username">username</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.username %>"
+                                        name="username" placeholder="username">
+                                    <div class="error-message"></div>
+                                    <label for="state">state</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>"
+                                        name="state" placeholder="state">
+                                    <div class="error-message"></div>
+                                    <label for="zip">zip</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>"
+                                        name="zip" placeholder="zip">
+                                    <div class="error-message"></div>
+                                    <label for="phone">phone</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>"
+                                        name="phone" placeholder="phone">
+                                    <div class="error-message"></div>
+                                    <label for="locality">locality</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>"
+                                        name="locality" placeholder="locality">
+                                    <div class="error-message"></div>
+                                    <label for="country">country</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>"
+                                        name="country" placeholder="country">
+                                    <div class="error-message"></div>
+                                    <label for="landmark">landmark</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>"
+                                        name="landmark" placeholder="landmark">
+                                    <div class="error-message"></div>
                                 </div>
                             </div>
                         </form>
-                    <% }) %>
+                        <% }) %>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add Address</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addAddressModal">Add Address</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- add address model -->
-    <div class="modal fade" id="addAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addAddressModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <form action="/addAddress" method="post">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="addAddressModalLabel">Add Address</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                     </div>
                     <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                         <div class="address-item mb-3 border p-4 shadow-sm">
                             <div>
                                 <div class="form-floating mb-3">
-                                    <input type="hidden" name="username" value="<%= userData?.username %>">
-                                    <input type="hidden" name="email" value="<%= userData?.email %>">
-                                    <input type="number" name="phone" id="editPhone" class="form-control shadow-none"
-                                        placeholder="number">
-                                    <label for="editPhone">
-                                        <p>Phone</p>
+
+                                    <input type="text" id="username" class="form-control shadow-none" name="username"
+                                        placeholder="username">
+                                    <label for="username">
+                                        <p>username</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="number" id="editZip" class="form-control shadow-none" name="zip"
-                                        placeholder="zip">
-                                    <label for="editZip">
+                                    <!-- email hidden  -->
+                                    <input type="hidden" name="email" value="<%= userData?.email %>">
+
+                                    <input type="number" name="phone" id="phone" class="form-control shadow-none"
+                                        placeholder="number"  min="0">
+                                    <label for="phone">
+                                        <p>phone</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="number" id="zip" class="form-control shadow-none" name="zip"
+                                        placeholder="zip"  min="0">
+                                    <label for="zip">
                                         <p>zip</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" name="locality" id="editLocality" class="form-control shadow-none"
-                                        placeholder="address">
-                                    <label for="editLocality">
+
+                                    <input type="text" name="locality" id="locality" class="form-control shadow-none"
+                                        placeholder="locality" >
+                                    <label for="locality">
                                         <p>locality</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" name="state" id="editState" class="form-control shadow-none"
-                                        placeholder="address">
-                                    <label for="editState">
+
+                                    <input type="text" name="state" id="state" class="form-control shadow-none"
+                                        placeholder="state" >
+                                    <label for="state">
                                         <p>state</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" name="country" id="editCountry" class="form-control shadow-none"
+
+                                    <input type="text" name="country" id="country" class="form-control shadow-none"
                                         placeholder="country">
-                                    <label for="editCountry">
+                                    <label for="country">
                                         <p>country</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" name="landmark" id="editLandmark" class="form-control shadow-none"
+
+                                    <input type="text" name="landmark" id="landmark" class="form-control shadow-none"
                                         placeholder="landmark">
-                                    <label for="editLandmark">
+                                    <label for="landmark">
                                         <p>landmark</p>
                                     </label>
+                                    <div class="error-message"></div>
                                 </div>
 
                             </div>
@@ -557,54 +849,53 @@
             </form>
         </div>
     </div>
-
     <!-- reset password modal -->
-<div class="modal fade" id="resetPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="resetPasswordLabel">Reset Password</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/resetPassword" method="post">
-                    <div class="form-floating mb-3">
-                        <input type="password" name="currentPassword" class="form-control shadow-none" placeholder="Current Password" required>
-                        <label for="currentPassword">
-                            <p>Current Password</p>
-                        </label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" name="newPassword" class="form-control shadow-none" placeholder="New Password" required>
-                        <label for="newPassword">
-                            <p>New Password</p>
-                        </label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" name="confirmPassword" class="form-control shadow-none" placeholder="Confirm Password" required>
-                        <label for="confirmPassword">
-                            <p>Confirm Password</p>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Reset Password</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <div class="modal fade" id="resetPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="resetPasswordLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="resetPasswordLabel">Reset Password</h1>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body">
+                    <form action="/resetPassword" method="post">
+                        <div class="form-floating mb-3">
+                            
+                            <input type="password" name="currentPassword" class="form-control shadow-none"
+                                placeholder="Current Password" required>
+                            <label for="currentPassword">
+                                <p>Current Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            
+                            <input type="password" name="newPassword" class="form-control shadow-none"
+                                placeholder="New Password" required>
+                            <label for="newPassword">
+                                <p>New Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-floating mb-3">
+                           
+                            <input type="password" name="confirmPassword" class="form-control shadow-none"
+                                placeholder="Confirm Password" required>
+                            <label for="confirmPassword">
+                                <p>Confirm Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Reset Password</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-
-
-
-
-
-
-
-
 
 </body>
 

@@ -11,6 +11,7 @@ const { Product } = require("../model/productSchema");
 exports.getProfile = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.email }).populate('addresses');
+        console.log("userData >>>", userData);
         if (!userData) {
             return res.status(404).send("User not found");
         }
@@ -21,7 +22,66 @@ exports.getProfile = async (req, res) => {
     }
 };
 
+exports.deleteAddress = async (req, res) => {
+    console.log("delete address >> ", req.body);
+    try {
+        const userId = req.session.userId;
+        const { addressId } = req.body;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { addresses: addressId } },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const deletedAddress = await Address.findByIdAndDelete(addressId);
+
+        if (!deletedAddress) {
+            return res.status(404).json({ success: false, message: "Address not found" });
+        }
+
+        res.json({ success: true, message: "Address deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        res.status(500).json({ success: false, message: "Error deleting address. Please try again." });
+    }
+};
+
+
+exports.updateProfile = async (req, res) => {
+    console.log(req.body);
+    try {
+        const userId = req.session.userId;
+        const { username, age, gender } = req.body;
+
+      
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: { username, age, gender } },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, message: "Profile updated successfully", user: updatedUser });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ success: false, message: "Error updating profile. Please try again." });
+    }
+};
+
+
+
+
+
 exports.editAddress = async (req, res) => {
+    console.log("edit address >> ",req.body);
     try {
         const userId = req.session.userId;
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -29,7 +89,7 @@ exports.editAddress = async (req, res) => {
             return res.redirect("/profile");
         }
 
-        const { index, username, age, gender, phone, zip, locality, state, country, landmark } = req.body;
+        const { index, username,  phone, zip, locality, state, country, landmark } = req.body;
 
         if (index !== '' && (isNaN(index) || index < 0)) {
             req.flash('error', "Invalid address index");
@@ -41,7 +101,7 @@ exports.editAddress = async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        const newAddressData = { phone, zip, locality, state, country, landmark };
+        const newAddressData = {username,  phone, zip, locality, state, country, landmark };
 
         if (index === '') {
             const newAddress = new Address(newAddressData);
@@ -54,27 +114,18 @@ exports.editAddress = async (req, res) => {
                 return res.redirect("/profile");
             }
             const addressId = user.addresses[addressIndex];
-            await Address.findByIdAndUpdate(addressId, { $set: newAddressData });
+           const result = await Address.findByIdAndUpdate(addressId, { $set: newAddressData });
+            if (result) {
+                req.flash('success', "Address edited successfully");
+                res.redirect("/profile");
+            } else {
+                req.flash('error', "Try again editing address");
+                res.redirect("/profile");
+            }
         }
 
-        const existingUser = await User.findOne({ username });
-        if (existingUser && existingUser._id.toString() !== userId) {
-            req.flash('error', "Username already exists");
-            return res.redirect("/profile");
-        }
-
-        user.username = username;
-        user.age = age;
-        user.gender = gender;
-
-        const result = await user.save();
-        if (result) {
-            req.flash('success', "Address edited successfully");
-            res.redirect("/profile");
-        } else {
-            req.flash('error', "Try again editing address");
-            res.redirect("/profile");
-        }
+       
+      
     } catch (error) {
         console.error("Error updating address:", error);
         req.flash('error', "Try again editing address");
@@ -182,7 +233,7 @@ exports.getOrderHistory = async (req, res) => {
                 model: 'Product'  
             });
 
-        console.log("checkOut >>>>>>>>>>>>>>>>>>>>>");
+        // console.log("checkOut >>>>>>>>>>>>>>>>>>>>>");
     //    console.log(checkOut);
        
        
@@ -203,8 +254,8 @@ exports.getOrderOneHistory = async(req,res)=>{
                 model: 'Product'
               })
     
-    console.log("checkout >>>>>>>>>>>");
-    console.log(checkout);
+    // console.log("checkout >>>>>>>>>>>");
+    // console.log(checkout);
     
     res.render('checkOutDetails.ejs',{checkout})
 
@@ -239,7 +290,7 @@ exports.getOrderCancel = async (req, res) => {
             );
         }
 
-        console.log('Updated order:', updatedCheckout);
+        // console.log('Updated order:', updatedCheckout);
         res.redirect('/orderhistory');
     } catch (err) {
         console.log(err);
@@ -262,11 +313,19 @@ exports.getCheckout = async (req, res) => {
 };
 
 exports.checkout = async (req, res) => {
+    // console.log(req.body);
     try {
         const userId = req.session.userId;
-        const { address, paymentMethod } = req.body;
-
+        // console.log("checkout >>>>>>>>>>>>>>>>>>>>>>>> ",req.body);
+        const { address: addressId, paymentMethod, shippingCost } = req.body;
+        const addressObject = await Address.findById(addressId);
+        // console.log(addressObject);
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
+
+        if (!addressObject) {
+            req.flash('error', 'Address not found');
+            return res.redirect('/cart');
+        }
 
         if (!cart || cart.items.length === 0) {
             req.flash('error', 'Cart is empty');
@@ -286,18 +345,24 @@ exports.checkout = async (req, res) => {
             await product.save();
         }
 
+         
+          const totalPrice = cart.totalAmount + parseFloat(shippingCost || 0);
+
         const checkout = new Checkout({
             user: userId,
             cart: cart,
-            address: address,
+            address: addressObject,
             paymentMethod: paymentMethod,
             paymentStatus: 'Pending',
-            orderStatus: 'Processing'
+            orderStatus: 'Processing',
+            shippingCost: parseFloat(shippingCost || 0),
+            totalPrice: totalPrice
         });
+
 
         await checkout.save();
 
-        // Clear the cart
+        // Clear the cart after successful checkout
         await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [], totalAmount: 0 } });
 
         req.flash('success', 'Checkout successful');
@@ -392,6 +457,7 @@ exports.addToCartFromWishlist = async (req, res) => {
 
 
 exports.addAddress = async (req, res) => {
+    console.log("add address >> ",req.body);
     try {
         const userId = req.session.userId;
         const { state, zip, country, landmark, locality, phone, email, username } = req.body;

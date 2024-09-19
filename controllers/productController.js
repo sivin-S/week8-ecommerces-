@@ -21,8 +21,8 @@ exports.getProductDetails = async (req, res) => {
     if (!product) {
       return res.status(404).render("404.ejs");
     }
-    console.log("product ==>"+ product);
-    console.log("all product ==>"+ allProducts);
+    // console.log("product ==>"+ product);
+    // console.log("all product ==>"+ allProducts);
     
     res.render("productDetails.ejs", { product, allProducts });
   } catch (error) {
@@ -50,7 +50,7 @@ exports.getProductDetails = async (req, res) => {
 // filtering variants
 
 exports.filterVariant = async (req, res) => {
-  console.log('Query Parameters:', req.query); // Log the query parameters
+  // console.log('Query Parameters:', req.query); // Log the query parameters
 
   try {
       const { productId, variantColor, size } = req.query;

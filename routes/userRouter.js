@@ -50,6 +50,8 @@ router.post("/checkout", isUserLogin, checkUserBlocked, userController.checkout)
 router.post("/addToCart", isUserLogin, checkUserBlocked, cartController.addToCart);
 router.post("/addToCartFromWishlist", isUserLogin, checkUserBlocked,userController.addToCartFromWishlist);
 router.post("/editAddress", isUserLogin, checkUserBlocked, userController.editAddress);
+router.post("/deleteAddress", isUserLogin, checkUserBlocked, userController.deleteAddress);
+router.post("/updateProfile", isUserLogin, checkUserBlocked, userController.updateProfile);
 router.post("/request-otp", authController.sendOtp);
 router.post("/wishlist/productRemove", isUserLogin, userController.removeFromWishlist);
 router.post("/sendOtp", authController.sendOtp);
