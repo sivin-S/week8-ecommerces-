@@ -42,7 +42,7 @@ exports.addToCart = async (req, res) => {
 
   try {
     const userId = req.session.userId;
-    const { productId, variantSize, variantColor, qty, variantImageUrls } = req.body;
+    const { productId, productName, variantSize, variantColor, qty, variantImageUrls } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       req.flash('error', 'Invalid product ID');
@@ -101,6 +101,7 @@ exports.addToCart = async (req, res) => {
 
       cart.items.push({
         product: productId,
+        productName: productName,
         quantity: parseInt(qty),
         variant: {
           color: variantColor,

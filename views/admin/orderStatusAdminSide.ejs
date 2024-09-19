@@ -131,22 +131,22 @@
                                     <th>Order Date</th>
                                     <th>Customer Name</th>
                                     <th>Quantity</th>
-                                    <th>Amount</th>
+                                    <th>Total Amount</th>
                                     <th>Payment method</th>
                                     <th>Options</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% if(orderStatus){ %>
-                                    <% orderStatus.forEach(function(data,index){ %>
+                                <% if(checkOut){ %>
+                                    <% checkOut.forEach(function(data,index){ %>
                                        <tr>
                                         <td><%=index+1 %></td>
                                         <td id="productCount"><b class="ms-3"><%=data.cart.items.length %></b></td>
                                         <td><%=data.orderStatus%></td>
                                         <td><%=new Date(data.updatedAt).toLocaleDateString('en-US')  %></td>
-                                        <td><%=data.user.username  %></td>
-                                        <td><%=data.cart?.items[index]?.quantity  %></td>
-                                        <td><%=data.address.totalAmount  %></td>
+                                        <td><%=data.address.username  %></td>
+                                        <td><%=data.cart.items[index].quantity  %></td>
+                                        <td><%=data.totalPrice  %></td>
                                         <td><%=data.paymentMethod  %></td>
                                         <!-- cancellation  btn -->
                                         <td>
@@ -187,14 +187,14 @@
                 <div class="" style="height: 500px;overflow-y: scroll;">
                     <h2>User info</h2>
                     <hr>
-                    <input type="text" class="w-100 py-2"  placeholder="user name" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="phone no" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="country" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="email" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="landmark" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="locality" readonly>
-                    <input type="text" class="w-100 mt-2 py-2"  placeholder="phone" readonly>
-                    <input type="text" class="w-100 mt-2 py-2 mb-3"  placeholder="state" readonly>
+                    <input type="text" class="w-100 py-2 border-0 text-capitalize"  placeholder="user name" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="phone no" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="country" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="email" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="landmark" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="locality" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize"  placeholder="phone" readonly style="color:#4d859c;">
+                    <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize mb-3"  placeholder="state" readonly style="color:#4d859c;">
                     <h2>Product info</h2>
                     <hr>
                     <div id="productInfoContainer"></div>
@@ -234,7 +234,7 @@
                 .then(response => response.json())
                 .then(data => {
                     // Populate user info
-                    document.querySelector('#orderInfoModal input[placeholder="user name"]').value = data.user.username;
+                    document.querySelector('#orderInfoModal input[placeholder="user name"]').value = data.address.username;
                     document.querySelector('#orderInfoModal input[placeholder="phone no"]').value = data.address.phone;
                     document.querySelector('#orderInfoModal input[placeholder="country"]').value = data.address.country;
                     document.querySelector('#orderInfoModal input[placeholder="email"]').value = data.address.email;
@@ -249,15 +249,15 @@
 
                     // Populate product info for each item in the cart
                     data.cart.items.forEach((item, index) => {
-                        const product = item.product;
+                        
                         const variant = item.variant;
 
                         const productInfoHtml = `
                             <h4 class="mt-2">Product ${index + 1}</h4>
-                            <input type="text" class="w-100 mt-2 py-2" placeholder="Product name" value="${product.name}" readonly>
-                            <input type="text" class="w-100 mt-2 py-2" placeholder="size" value="${variant.size}" readonly>
-                            <input type="text" class="w-100 mt-2 py-2" placeholder="color" value="${variant.color}" readonly>
-                            <input type="text" class="w-100 mt-2 py-2" placeholder="price" value="${item.price}" readonly>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize" placeholder="Product name" value="${item.productName}" readonly style="color:#4d859c;">
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize" placeholder="size" value="${variant.size}" readonly style="color:#4d859c;">
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize" placeholder="color" value="${variant.color}" readonly style="color:#4d859c;">
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize" placeholder="price" value="${item.price}" readonly style="color:#4d859c;">
                         `;
 
                         productInfoContainer.insertAdjacentHTML('beforeend', productInfoHtml);

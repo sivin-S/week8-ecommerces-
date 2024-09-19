@@ -165,8 +165,8 @@
                                     <td><%=user.username %></td>
                                     <td><%=user.email %></td>
                                     <td><%=new Date(user.createdAt).toLocaleDateString('en-US')%> %></td>
-                                    <td><%=user.phone %></td>
-                                    <td><%=user.state %></td>
+                                    <td><%=user.addresses[index].phone %></td>
+                                    <td><%=user.addresses[index].state %></td>
                                     <td> 
                                         <a href="/admin/toggleUserState/<%=encodeURIComponent( user._id) %>" onclick="return confirm('Are you sure you want to <%= user.isBlocked ? 'unblock' : 'block' %> this user?')">
                                             <button class="btn btn-primary" style="background-color: #4D869C;color: #EEF7FF;">

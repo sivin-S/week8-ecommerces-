@@ -52,7 +52,8 @@ async function addProductsPage(req, res) {
 // Function to render the user list page
 async function userList(req, res) {
     try {
-        const user = await User.find({});
+        const user = await User.find({}).populate("addresses");
+        console.log("userList >>>>>>>>>>>>",user);
         res.render('userList.ejs', { user });
     } catch (err) {
         console.log(err);
@@ -84,7 +85,7 @@ async function orderList(req, res) {
     try {
         const checkOut = await Checkout.find({}).populate("user").populate("cart.items.0.product");
         console.log("checkOut >> ",checkOut );
-        res.render('ordersList.ejs', { orderStatus: checkOut });
+        res.render('ordersList.ejs', {checkOut });
     } catch (err) {
         console.log(err);
         res.redirect('/orderList');
@@ -97,7 +98,6 @@ async function getOrderDetails(req, res) {
     try {
         const orderId = req.params.id;
         const order = await Checkout.findById(orderId).populate("user").populate("cart.items.product")
-        .populate('address')
         ;
 
         console.log("order >>>>>>>");
@@ -197,7 +197,7 @@ async function softDeleteCategory(req, res) {
 async function orderStatus(req, res) {
     try {
         const checkOut = await Checkout.find({}).populate("user").populate("cart.items.0.product");
-        res.render('orderStatusAdminSide.ejs', { orderStatus: checkOut });
+        res.render('orderStatusAdminSide.ejs', { checkOut });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');

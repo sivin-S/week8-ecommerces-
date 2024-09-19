@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
-const fileUpload = require("express-fileupload");
 const passport = require('passport');
 const flash = require('connect-flash');
 require("dotenv").config();
@@ -57,7 +56,7 @@ app.use("/admin", adminRouter);
 app.set("views", [
     path.join(__dirname, "views/user"),
     path.join(__dirname, "views/admin"),
-    // path.join(__dirname, "views/shared")
+  
 ]);
 
 // 404 error handler

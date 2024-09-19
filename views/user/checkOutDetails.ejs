@@ -23,7 +23,7 @@
            <div class="col-6 p-3">
             <h3>Order Address</h3>
             <div class="border rounded shadow h-75 p-4">
-              <p><b>Name: <%=checkout.user.username %> </b></p>
+              <p><b>Name: <%=checkout.address.username %> </b></p>
               <p><b>phone: <%=checkout.address.phone %> </b></p>
               <p><b>country: <%=checkout.address.country %>  </b></p>
               <p><b>state: <%=checkout.address.state %> </b></p>
@@ -52,7 +52,7 @@
                             <% } %>
                         </div>
                         <div class="px-4 mt-3" style="line-height: 1;">
-                            <p><%= item.product?.name %></p>
+                            <p><%= item?.productName %></p>
                             <p>quantity: <%= item?.quantity %></p>
                             <p>color: <%= item.variant?.color %></p>
                             <p>size: <%= item.variant?.size %></p>
@@ -65,7 +65,7 @@
                  <div class="" style="height: 100px;">
                     
                     <div class="col-3 w-100" style="height: 50px;">
-                        <p style="float: right;padding-right: 50px;margin-top: 12px;">Total: ₹ <%= checkout.cart.totalAmount %></p>
+                        <p style="float: right;padding-right: 50px;margin-top: 12px;">Total: ₹ <%= checkout.cart?.totalAmount %></p>
                     </div>
                     <div class="col-3 w-100 d-flex justify-content-between align-items-center px-5" style="height: 50px;">
                         <div>

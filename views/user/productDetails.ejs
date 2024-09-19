@@ -238,7 +238,8 @@
 										<form action="/addToCart" method="post" id="addToCartForm">
 											<div class="s_product_text">
 												<!-- sending hidden data -->
-												<input type="hidden" name="productId" value="<%=product._id %>">
+												<input type="hidden" name="productId" value="<%=product?._id %>">
+												<input type="hidden" name="productName" value="<%=product?.name %>">
 												<input type="hidden" name="variantSize" id="selectedSize"
 													value="<%= product.variants[0]?.size %>">
 												<input type="hidden" name="variantColor" id="selectedColor"
