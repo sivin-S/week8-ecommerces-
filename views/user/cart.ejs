@@ -171,14 +171,16 @@
                                     </td>
                                     <td>
                                         <div class="product_count">
-                                            <% if (data.product.variants[0] && data.product.variants[0].stock) { %>
-                                                <input type="text" name="qty" class="qty" value="<%=data.quantity  %>" title="Quantity:" readonly>
-                                                
-                                                <button onclick="changeQuantity(this, 1, <%= data.product.variants[0].stock %>)" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                                                <button onclick="changeQuantity(this, -1, <%= data.product.variants[0].stock %>)" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-                                            <% } else { %>
-                                                <p>Stock information unavailable..........</p>
-                                            <% } %>
+                                           
+                                        
+                                         <!-- variant stock find according to color and size -->
+                                          <% const variant = data.product.variants.find(variant => variant.color === data.variant.color && variant.size === data.variant.size); %>
+                                          <!--  -->
+                                                <input type="text" name="qty" class="qty" value="<%=data?.quantity  %>" title="Quantity:" readonly>
+                                                 
+                                                <button onclick="changeQuantity(this, 1, <%=variant.stock%>)" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                                                  <button onclick="changeQuantity(this, -1, <%=variant.stock%>)" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+                                           
                                         </div>
                                     </td>                                    
                                     <td>

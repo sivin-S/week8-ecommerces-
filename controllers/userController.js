@@ -11,7 +11,7 @@ const { Product } = require("../model/productSchema");
 exports.getProfile = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.email }).populate('addresses');
-        console.log("userData >>>", userData);
+        // console.log("userData >>>", userData);
         if (!userData) {
             return res.status(404).send("User not found");
         }

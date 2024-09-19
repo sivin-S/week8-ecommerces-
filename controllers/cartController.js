@@ -6,7 +6,8 @@ exports.getCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
-    // console.log(cart);
+    console.log("cart >>>>>>>>> ", cart.items);
+     
     res.render("cart.ejs", { cart });
   } catch (error) {
     console.error("Error retrieving cart:", error);
@@ -20,7 +21,7 @@ exports.getCart = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-  // console.log("addToCart >>>>>>>>>>>>>>>>>>>>>>>> ", req.body);
+  console.log("addToCart >>>>>>>>>>>>>>>>>>>>>>>> ", req.body);
 
   try {
     const userId = req.session.userId;
@@ -130,6 +131,7 @@ exports.removeProductFromCart = async (req, res) => {
 };
 
 exports.updateQuantity = async (req, res) => {
+  console.log("updateQuantity >>>>>>>>>>>>>>>>>>>>>>>> ", req.body);
   try {
       const { productId, variantColor, variantSize, quantity } = req.body;
       const userId = req.session.userId;

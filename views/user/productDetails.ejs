@@ -264,12 +264,14 @@
 												</ul>
 
 												<ul class="list">
-													<li id="displayStock"><span>Availibility</span> :
+													<li id="displayStock"><span>Availability</span> : <b>
 														<%=(product.variants[0].stock>0)?"In Stock":"Out of Stock" %>
 															<span>
 																<%=(product?.variants[0]?.stock>
 																	0)?product?.variants[0]?.stock:"0" %>
-															</span></li>
+															</span>
+														</b>
+													</li>
 												</ul>
 												<p>
 													Description: <%=product.description %>
@@ -985,7 +987,7 @@ function changeQuantity(change) {
 									document.getElementById('selectedPrice').value = variant.price;
 									colorElement.innerHTML = `<b>${variant.color}</b>`;
 									sizeElement.innerHTML = `<b>${variant.size}</b>`;
-									displayStock.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
+									displayStock.innerHTML = `<span>Availability</span>: <b> ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} </b> <span>${variant.stock}</span>`;
 
 									selectedSize.value = variant.size;
 									selectedColor.value = variant.color;
