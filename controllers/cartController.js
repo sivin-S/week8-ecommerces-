@@ -6,16 +6,33 @@ exports.getCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
     const cart = await Cart.findOne({ user: userId }).populate("items.product");
+   
+     // Check and update stock for each item in the cart
+     for (let item of cart.items) {
+      const product = await Product.findById(item.product._id);
+      const variant = product.variants.find(v => v.size === item.variant.size && v.color === item.variant.color);
+      
+      if (variant && item.quantity > variant.stock) {
+        item.quantity = variant.stock;
+        req.flash('error', `Quantity for ${product.name} (${item.variant.color}, ${item.variant.size}) has been updated due to stock changes.`);
+      }
+    }
+    
+    await cart.save();
     console.log("cart >>>>>>>>> ", cart.items);
      
+  
+
+
+
+
+
+
     res.render("cart.ejs", { cart });
   } catch (error) {
     console.error("Error retrieving cart:", error);
     req.flash('error', 'Please try again.');
-    // res.status(500).render("cart.ejs", {
-    //   cart: null,
-    //   error: "Error retrieving cart",
-    // });
+   
     res.redirect('/');
   }
 };
@@ -69,14 +86,16 @@ exports.addToCart = async (req, res) => {
       const newQuantity = existingItem.quantity + parseInt(qty);
 
       if (newQuantity > selectedVariant.stock) {
-        req.flash('error', 'Total quantity exceeds available stock');
+        req.flash('error', `Only ${selectedVariant?.stock} items available in stock`);
+
         return res.redirect('/cart');
       }
 
       existingItem.quantity = newQuantity;
     } else {
-      if (parseInt(qty) > selectedVariant.stock) {
-        req.flash('error', 'Total quantity exceeds available stock');
+      if (parseInt(qty) > selectedVariant?.stock) {
+        req.flash('error', `Only ${selectedVariant?.stock} items available in stock`);
+
         return res.redirect('/cart');
       }
 
@@ -103,6 +122,7 @@ exports.addToCart = async (req, res) => {
 };
 
 
+// remove product from cart
 exports.removeProductFromCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
@@ -140,6 +160,30 @@ exports.updateQuantity = async (req, res) => {
           return res.status(400).json({ success: false, message: 'Invalid product ID' });
       }
 
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+  
+      const selectedVariant = product.variants.find(
+        (variant) => variant.size === variantSize && variant.color === variantColor
+      );
+  
+      if (!selectedVariant) {
+        return res.status(404).json({ success: false, message: 'Variant not found' });
+      }
+  
+      if (quantity > selectedVariant.stock) {
+        return res.status(400).json({ success: false, message: `Only ${selectedVariant.stock} items available in stock` });
+      }
+
+
+
+
+
+
+
+
       const cart = await Cart.findOne({ user: userId });
       if (!cart) {
           return res.status(404).json({ success: false, message: 'Cart not found' });
@@ -159,8 +203,8 @@ exports.updateQuantity = async (req, res) => {
       item.quantity = quantity;
       await cart.save();
 
-      res.json({ success: true, message: 'Quantity updated successfully' });
-  } catch (error) {
+      res.json({ success: true, message: 'Quantity updated successfully', newStock: selectedVariant.stock });
+    } catch (error) {
       console.error('Error updating quantity:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
   }
