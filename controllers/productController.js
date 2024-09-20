@@ -31,20 +31,7 @@ exports.getProductDetails = async (req, res) => {
   }
 };
 
-//   // get Variant Details Ajax  
-// exports.getVariantDetails = async (req, res) => {
-//     try {
-//         const variantId = req.params.variantId;
-//         const product = await Product.findOne({ "variants._id": variantId }, { "variants.$": 1 });
-//         if (!product) {
-//           return res.status(404).json({ success: false, message: "Variant not found" });
-//       }
-//       res.json({ success: true, variant: product.variants[0] });
-//     } catch (error) {
-//         console.error("Error fetching variant details:", error);
-//         res.status(500).json({ success: false, message: "Internal Server Error" });
-//     }
-// };
+
 
 
 // filtering variants

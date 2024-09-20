@@ -35,6 +35,7 @@
     <!-- icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!--  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha512-DUC8yqWf7ez3JD1jszxCWSVB0DMP78eOyBpMa5aJki1bIRARykviOuImIczkxlj1KhVSyS16w2FSQetkD4UU2w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body id="category">
     <!-- Start Header Area -->
@@ -135,7 +136,7 @@
                     </button>
                 </a>
             
-            <form action="/shop" method="GET" class="form-inline justify-content-end">
+            <!-- <form action="/shop" method="GET" class="form-inline justify-content-end">
                 <select name="sort" class="form-control mr-2" onchange="this.form.submit()">
                   <option value="">Sort by</option>
                   <option value="nameAsc">Name A-Z</option>
@@ -143,6 +144,23 @@
                   <option value="priceAsc">Price Low to High</option>
                   <option value="priceDesc">Price High to Low</option>
                 </select>
+            </form> -->
+
+            <form action="/shop" method="GET" class="form-inline justify-content-end">
+                <select name="sort" class="form-control mr-2" onchange="this.form.submit()">
+                  <option value="">Sort by</option>
+                  <option value="nameAsc" <%= query.sort === 'nameAsc' ? 'selected' : '' %>>Name A-Z</option>
+                  <option value="nameDesc" <%= query.sort === 'nameDesc' ? 'selected' : '' %>>Name Z-A</option>
+                  <option value="priceAsc" <%= query.sort === 'priceAsc' ? 'selected' : '' %>>Price Low to High</option>
+                  <option value="priceDesc" <%= query.sort === 'priceDesc' ? 'selected' : '' %>>Price High to Low</option>
+                </select>
+                
+               
+                <% for (const [key, value] of Object.entries(query)) { %>
+                  <% if (key !== 'sort' && key !== 'page') { %>
+                    <input type="hidden" name="<%= key %>" value="<%= value %>">
+                  <% } %>
+                <% } %>
               </form>
           <!-- </div>// -->
         </div>
