@@ -66,7 +66,7 @@
                     </div>
                     <div class="mb-3 px-3">
                         <label for="price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="price" name="price" value="<%= locals.productDetails.price %>">
+                        <input type="number" min="0" class="form-control" id="price" name="price" value="<%= locals.productDetails.price %>">
                     </div>
                     <div class="mb-3 px-3">
                         <label for="gender" class="form-label">Gender</label>
@@ -134,7 +134,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="stock-<%= variantIndex %>" class="form-label">Stock</label>
-                                    <input type="number" class="form-control" id="stock-<%= variantIndex %>" name="variants[<%= variantIndex %>][stock]" value="<%= variant.stock %>" min="1">
+                                    <input type="number" min="0" class="form-control" id="stock-<%= variantIndex %>" name="variants[<%= variantIndex %>][stock]" value="<%= variant.stock %>" min="1">
                                 </div>
 
                                 <% for (let i = 0; i < 3; i++) { %>
@@ -338,7 +338,7 @@ document.getElementById("editProductForm").addEventListener("submit", function (
               return;
             }
 
-            if (!validator.isNumeric(price) || validator.isEmpty(price)) {
+            if (!validator.isNumeric(price) || validator.isEmpty(price) || parseFloat(price) < 0) {
               Swal.fire(
                 "Validation Error",
                 "Price must be a valid number",
@@ -388,7 +388,7 @@ document.getElementById("editProductForm").addEventListener("submit", function (
                 return;
               }
 
-              if (!validator.isNumeric(stock) || validator.isEmpty(stock)) {
+              if (!validator.isNumeric(stock) || validator.isEmpty(stock) || parseFloat(stock) < 0) {
                 Swal.fire(
                   "Validation Error",
                   `Stock for Variant ${i + 1} must be a valid number`,
@@ -465,7 +465,7 @@ document.getElementById("editProductForm").addEventListener("submit", function (
         </div>
         <div class="mb-3">
             <label for="stock-${variantCount}" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
+            <input type="number" min="0" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
         </div>
         ${[...Array(3)].map((_, i) => `
             <div class="mb-3">

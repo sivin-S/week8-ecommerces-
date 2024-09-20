@@ -115,7 +115,7 @@
             </div>
             <div class="mb-3 px-3">
               <label for="price" class="form-label">Price</label>
-              <input type="number" class="form-control" id="price" name="price" />
+              <input type="number" min="0" class="form-control" id="price" name="price" />
             </div>
             <div class="mb-3 px-3">
               <label for="gender" class="form-label">Gender</label>
@@ -203,6 +203,7 @@
               <div class="mb-3 px-3">
                 <label for="stock-0" class="form-label">Stock</label>
                 <input
+              
                   type="number"
                   class="form-control"
                   id="stock-0"
@@ -405,7 +406,7 @@
                     </div>
                     <div class="mb-3  px-3">
                         <label for="stock-${variantCount}" class="form-label">Stock</label>
-                        <input type="number" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
+                        <input type="number" min="0" class="form-control" id="stock-${variantCount}" name="variants[${variantCount}][stock]" min="1">
                     </div>
                     <div class="mb-3 mt-4  px-3">
                         <label for="variantImage1-${variantCount}" class="form-label">Image 1</label>
@@ -446,7 +447,7 @@
               return;
             }
 
-            if (!validator.isNumeric(price) || validator.isEmpty(price)) {
+            if (!validator.isNumeric(price) || validator.isEmpty(price) || parseFloat(price) < 0) {
               Swal.fire(
                 "Validation Error",
                 "Price must be a valid number",
@@ -504,7 +505,7 @@
                 return;
               }
 
-              if (!validator.isNumeric(stock) || validator.isEmpty(stock)) {
+              if (!validator.isNumeric(stock) || validator.isEmpty(stock) || parseFloat(stock) < 0) {
                 Swal.fire(
                   "Validation Error",
                   `Stock for Variant ${i + 1} must be a valid number`,
