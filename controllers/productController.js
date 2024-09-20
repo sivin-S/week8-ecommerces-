@@ -3,7 +3,14 @@ const Category = require("../model/categorySchema");
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+  
+    const nonDeletedCategories = await Category.find({ deleted: false });
+    const nonDeletedCategoryIds = nonDeletedCategories.map(cat => cat._id);
+
+
+    const products = await Product.find({ category: { $in: nonDeletedCategoryIds } })
+      .populate('category');
+
     res.setHeader("Cache-Control", "no-store");
     res.render("index.ejs", { products });
   } catch (error) {
@@ -91,15 +98,22 @@ exports.getShop = async (req, res) => {
   try {
     const { category, gender, color, size, brand, minPrice, maxPrice, sort, page = 1, limit = 12, search } = req.query;
     let query = {};
+
+   
+     const nonDeletedCategories = await Category.find({ deleted: false });
+     const nonDeletedCategoryIds = nonDeletedCategories.map(cat => cat._id);
+
+     query.category = { $in: nonDeletedCategoryIds };
+
     if (category) {
       const categories = category.split(',').map(cat => cat.trim());
-      
-      const categoryDocs = await Category.find({ 'name': { $in: categories } });
+      const categoryDocs = await Category.find({ 'name': { $in: categories }, 'deleted': false });
       
       if (categoryDocs.length > 0) {
-        query['category'] = { $in: categoryDocs.map(doc => doc._id) };
+       
+        query.category = { $in: categoryDocs.map(doc => doc._id) };
       } else {
-        query['category'] = null;
+        query.category = null;
       }
     }
     if (gender) query['gender'] = gender;
