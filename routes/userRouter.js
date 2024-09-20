@@ -62,6 +62,11 @@ router.post("/login", authController.login);
 router.post("/updateQuantity", isUserLogin, checkUserBlocked, cartController.updateQuantity);
 
 
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/verify-otp", authController.verifyOTP);
+router.post("/reset-password", authController.resetPassword);
+
+
 
 router.post("/addAddress", isUserLogin, checkUserBlocked, userController.addAddress);
 router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.updateCheckoutStatus);

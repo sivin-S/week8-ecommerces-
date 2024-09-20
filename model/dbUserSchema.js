@@ -95,7 +95,9 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
         sparse: true
-    }
+    },
+    resetPasswordOTP: String,
+    resetPasswordOTPExpiresAt: Date
 });
 
 // Pre-save hook to update the updatedAt field

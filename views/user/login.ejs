@@ -41,6 +41,13 @@
     <script defer src="js/login.js"></script>
     <!-- icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- bootstrap cdn  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- sweetalert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     
@@ -107,6 +114,9 @@
                                 <div class="invalid-feedback" id="passwordError"></div>
                             </div>
                             <div class="col-md-12 form-group">
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                                    Forgot Password?
+                                </button>
                             </div>
                             <div class="col-md-12 form-group">
                                 <button type="submit" value="submit" class="primary-btn" style="border-radius: 30px;padding: 7px 0;">Log In</button>
@@ -158,7 +168,68 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
             </div>
         </div>
     </footer>
+
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="forgotPasswordForm">
+                    <div class="mb-3">
+                        <label for="emailId" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="emailId" >
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send OTP</button>
+                </form>
+                <form id="otpForm" style="display: none;">
+                    <div class="mb-3">
+                        <label for="otp" class="form-label">Enter OTP</label>
+                        <input type="text" class="form-control" id="otp">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Verify OTP</button>
+                </form>
+                <form id="resetPasswordForm" style="display: none;">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" >
+                    </div>
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div id="message"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
     <script>
+
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+const otpRegex = /^[^\s]{6}$/;
+
+function validateInput(input, regex, errorMessage) {
+    if (!regex.test(input)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: errorMessage
+        });
+        return false;
+    }
+    return true;
+}
+
         // Function to hide an  (flash message) element 
         function hideElement(elementId) {
           const element = document.getElementById(elementId);
@@ -214,6 +285,149 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
                 }
             });
         });
+
+        // forgot password
+
+        
+        let userEmail = '';
+
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            userEmail = document.getElementById('emailId').value;
+            console.log('User email for password reset:', userEmail);
+
+            if (!validateInput(userEmail, emailRegex, 'Please enter a valid email address')) {
+        return;
+    }
+
+            try {
+                const response = await fetch('/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                const data = await response.json();
+                if (response.ok) {
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('otpForm').style.display = 'block';
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again.'
+        });
+    }
+        });
+
+        document.getElementById('otpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const otp = document.getElementById('otp').value.trim();
+
+            if (!validateInput(otp, otpRegex, 'Please enter a valid 6-digit OTP')) {
+        return;
+    }
+            try {
+                const response = await fetch('/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, otp })
+                });
+                const data = await response.json();
+                if (response.ok) {
+            document.getElementById('otpForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'block';
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again.'
+        });
+    }
+        });
+
+        document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (!validateInput(newPassword, passwordRegex, 'Password must be at least 8 characters long and contain at least one letter and one number')) {
+        return;
+    }
+
+            try {
+                const response = await fetch('/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, newPassword })
+                });
+                const data = await response.json();
+                document.getElementById('message').textContent = data.message;
+               if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again.'
+        });
+    }
+        });
+ 
+
       </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
