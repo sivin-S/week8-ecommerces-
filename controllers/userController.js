@@ -300,15 +300,25 @@ exports.getOrderCancel = async (req, res) => {
 
 
 
-
 exports.getCheckout = async (req, res) => {
     try {
-        const user = await User.find({ _id: req.session.userId }).populate('addresses');
-        const cart = await Cart.find({ user: req.session.userId });
-        res.render("checkout.ejs", { user, cart });
+        const userId = req.session.userId;
+        const user = await User.find({ _id: userId }).populate('addresses');
+        const cart = await Cart.findOne({ user: userId }).populate('items.product');
+
+        if (!cart || cart.items.length === 0) {
+            req.flash('error', 'Your cart is empty. Please add items before proceeding to checkout.');
+            return res.redirect('/cart');
+        }
+
+        console.log("User:", user);
+        console.log("Cart:", cart);
+
+        res.render("checkout.ejs", { user, cart: [cart] });
     } catch (err) {
-        console.log(err);
-        res.redirect("/checkOut");
+        console.error("Error in getCheckout:", err);
+        req.flash('error', 'An error occurred. Please try again.');
+        res.redirect("/cart");
     }
 };
 
