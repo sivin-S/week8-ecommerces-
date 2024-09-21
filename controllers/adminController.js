@@ -83,14 +83,18 @@ async function toggleUserState(req, res) {
 // Function to render the order list page
 async function orderList(req, res) {
     try {
-        const checkOut = await Checkout.find({}).populate("user").populate("cart.items.0.product");
-        console.log("checkOut >> ",checkOut );
-        res.render('ordersList.ejs', {checkOut });
+        const checkOut = await Checkout.find({})
+            .populate("user")
+            .populate("cart.items.0.product")
+            .sort({ createdAt: -1 }); 
+        console.log("checkOut >> ", checkOut);
+        res.render('ordersList.ejs', { checkOut });
     } catch (err) {
         console.log(err);
         res.redirect('/orderList');
     }
 }
+
 
 
 // function to get order details fetch "ajax method"
@@ -196,7 +200,10 @@ async function softDeleteCategory(req, res) {
 // Function to render the order status page
 async function orderStatus(req, res) {
     try {
-        const checkOut = await Checkout.find({}).populate("user").populate("cart.items.0.product");
+        const checkOut = await Checkout.find({})
+        .populate("user")
+        .populate("cart.items.0.product")
+        .sort({ createdAt: -1 });
         res.render('orderStatusAdminSide.ejs', { checkOut });
     } catch (err) {
         console.log(err);
@@ -288,13 +295,27 @@ async function checkOutStatus(req, res) {
     try {
         const { orderStatus, userId } = req.body;
 
-        await Checkout.updateOne({ user: userId }, { $set: { orderStatus } });
+        const checkout = await Checkout.findOne({ user: userId });
+        if (!checkout) {
+            // return res.status(404).send('Checkout not found');
+            req.flash('error', "Checkout not found");
+            return res.redirect('/admin/orderStatus');
+        }
+
+
+        checkout.previousOrderStatus = checkout.orderStatus;
+        checkout.orderStatus = orderStatus;
+        await checkout.save();
+
         res.redirect('/admin/orderStatus');
     } catch (err) {
         console.log(err);
+       
+        req.flash('error', "An error occurred while updating the order status.");
         res.redirect('/admin/orderStatus');
     }
 }
+
 
 // Function to edit a category
 async function editCategory(req, res) {

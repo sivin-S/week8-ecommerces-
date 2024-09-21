@@ -107,6 +107,12 @@ const checkoutSchema = new mongoose.Schema({
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending'
     },
+    previousOrderStatus: {
+        type: String,
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        default: 'Pending'
+    }
+    ,
     shippingCost: { 
         type: Number,
          default: 0 
@@ -125,9 +131,36 @@ const checkoutSchema = new mongoose.Schema({
     }
 });
 
-// Pre-save hook to update the updatedAt field
-checkoutSchema.pre('save', function(next) {
+// Pre-save hook to update stock and handle status changes
+checkoutSchema.pre('save', async function(next) {
     this.updatedAt = Date.now();
+
+    if (this.isModified('orderStatus')) {
+        const Product = mongoose.model('Product');
+
+        for (const item of this.cart.items) {
+            const product = await Product.findById(item.product);
+            if (!product) continue;
+
+            const variant = product.variants.find(v => 
+                v.color === item.variant.color && v.size === item.variant.size
+            );
+            if (!variant) continue;
+
+            if (this.previousOrderStatus === 'Cancelled' && this.orderStatus === 'Processing') {
+                // Decrease stock when changing from Cancelled to Processing
+                variant.stock -= item.quantity;
+            } else if (this.previousOrderStatus === 'Processing' && this.orderStatus === 'Cancelled') {
+                // Increase stock when changing from Processing to Cancelled
+                variant.stock += item.quantity;
+            }
+
+            await product.save();
+        }
+
+        this.previousOrderStatus = this.orderStatus;
+    }
+
     next();
 });
 

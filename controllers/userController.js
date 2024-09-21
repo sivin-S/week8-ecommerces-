@@ -313,13 +313,10 @@ exports.getCheckout = async (req, res) => {
 };
 
 exports.checkout = async (req, res) => {
-    // console.log(req.body);
     try {
         const userId = req.session.userId;
-        // console.log("checkout >>>>>>>>>>>>>>>>>>>>>>>> ",req.body);
         const { address: addressId, paymentMethod, shippingCost } = req.body;
         const addressObject = await Address.findById(addressId);
-        // console.log(addressObject);
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
 
         if (!addressObject) {
@@ -332,6 +329,7 @@ exports.checkout = async (req, res) => {
             return res.redirect('/cart');
         }
 
+        // Check stock for each item in the cart
         for (const item of cart.items) {
             const product = await Product.findById(item.product._id);
             const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
@@ -340,13 +338,18 @@ exports.checkout = async (req, res) => {
                 req.flash('error', `Not enough stock for ${product.name} (${item.variant.color}, ${item.variant.size})`);
                 return res.redirect('/cart');
             }
+        }
 
+        // If stock check passes, proceed with order creation and stock update
+        for (const item of cart.items) {
+            const product = await Product.findById(item.product._id);
+            const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
+            
             variant.stock -= item.quantity;
             await product.save();
         }
 
-         
-          const totalPrice = cart.totalAmount + parseFloat(shippingCost || 0);
+        const totalPrice = cart.totalAmount + parseFloat(shippingCost || 0);
 
         const checkout = new Checkout({
             user: userId,
@@ -358,7 +361,6 @@ exports.checkout = async (req, res) => {
             shippingCost: parseFloat(shippingCost || 0),
             totalPrice: totalPrice
         });
-
 
         await checkout.save();
 

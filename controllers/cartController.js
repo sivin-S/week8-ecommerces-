@@ -5,34 +5,39 @@ const { Product } = require("../model/productSchema");
 exports.getCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
-    const cart = await Cart.findOne({ user: userId }).populate("items.product");
+    let cart = await Cart.findOne({ user: userId }).populate("items.product");
    
-     // Check and update stock for each item in the cart
-     for (let item of cart.items) {
+    let quantityUpdated = false;
+    let itemsToRemove = [];
+
+    // Check and update stock for each item in the cart
+    for (let item of cart.items) {
       const product = await Product.findById(item.product._id);
       const variant = product.variants.find(v => v.size === item.variant.size && v.color === item.variant.color);
       
-      if (variant && item.quantity > variant.stock) {
-        item.quantity = variant.stock;
-        req.flash('error', `Quantity for ${product.name} (${item.variant.color}, ${item.variant.size}) has been updated due to stock changes.`);
+      if (variant) {
+        if (variant.stock === 0) {
+          itemsToRemove.push(item._id);
+          quantityUpdated = true;
+        } else if (item.quantity > variant.stock) {
+          item.quantity = variant.stock;
+          quantityUpdated = true;
+        }
       }
     }
     
-    await cart.save();
-    console.log("cart >>>>>>>>> ", cart.items);
-     
-  
-
-
-
-
-
+    if (quantityUpdated) {
+      // Remove items with zero stock
+      cart.items = cart.items.filter(item => !itemsToRemove.includes(item._id));
+      
+      await cart.save();
+      req.flash('warning', 'Some item quantities have been updated due to stock changes.');
+    }
 
     res.render("cart.ejs", { cart });
   } catch (error) {
     console.error("Error retrieving cart:", error);
-    req.flash('error', 'Please try again.');
-   
+    req.flash('error', 'An error occurred while retrieving your cart. Please try again.');
     res.redirect('/');
   }
 };

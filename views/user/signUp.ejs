@@ -185,7 +185,8 @@
                 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum eight characters, at least one letter and one number
                 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[\w\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]{8,}$/;
                 const phonePattern = /^[0-9]{10}$/; // Exactly 10 digits
-                const postCodePattern = /^[0-9]{5,6}$/; // 5 or 6 digits
+                const postCodePattern = /^(?!0{5,6}$)[0-9]{5,6}$/;
+
                 const textPatternWithSpaces = /^[a-zA-Z0-9,.' -]{3,}$/; // Letters, numbers, some punctuation, and spaces allowed
 
                 // Validate name
@@ -209,7 +210,7 @@
                 }
 
                 // Validate age
-                if (ageInput.value === "") {
+                if (ageInput.value === "" || ageInput.value < 0) {
                     isValid = false;
                     ageError.textContent = 'Please enter your age';
                     ageInput.classList.add('is-invalid');

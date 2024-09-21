@@ -379,7 +379,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show search input box when search button is clicked
             $('.search').on('click', function (e) {
                 e.preventDefault();
-                $('#search_input_box').slideToggle();
+                // $('#search_input_box').slideToggle();
+                $('#search_input_box').fadeIn(300);
                 $('#search_input').focus();
             });
 
