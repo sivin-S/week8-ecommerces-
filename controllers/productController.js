@@ -1,5 +1,7 @@
 const { Product } = require("../model/productSchema");
 const Category = require("../model/categorySchema");
+const mongoose = require('mongoose');
+
 
 exports.getProducts = async (req, res) => {
   try {
@@ -20,13 +22,22 @@ exports.getProducts = async (req, res) => {
 };
 
 exports.getProductDetails = async (req, res) => {
+  const productId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(404).render('404Page.ejs',{message:"No Product Was Found"});
+}
   try {
+   
+
+   
+
     const allProducts = await Product.find({}).populate("category");
     
     
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("category");
+    // console.log("product ==>"+ product);
     if (!product) {
-      return res.status(404).render("404.ejs");
+      return res.status(404).render("404Page.ejs",{message:"No Product Was Found"});
     }
     // console.log("product ==>"+ product);
     // console.log("all product ==>"+ allProducts);

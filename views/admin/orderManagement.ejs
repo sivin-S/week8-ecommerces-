@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+        integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #eef7ff;
+        }
+
+        .sidebar {
+            background-color: #4D869C;
+            color: #eef7ff;
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            overflow-y: auto;
+            border: 3px solid #4D869C;
+            padding: 15px 10px;
+        }
+
+        .sidebar .nav-link {
+            margin-bottom: 15px;
+            padding: 12px 12px;
+            text-align: center;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #eef7ff;
+            color: #4D869C;
+            border-radius: 12px;
+        }
+
+        .in-active {
+            border: 3px solid #eef7ff;
+            color: #eef7ff !important;
+            border-radius: 12px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .search-bar {
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+
+        input[type="search"] {
+            color: #4D869C;
+            padding: 12px 12px;
+            margin-top: 5px;
+            border: 1px solid #4D869C;
+            outline-color: #4D869C;
+        }
+
+        
+     
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="mb-4 px-3 text-center">
+                        <i class="fas fa-user-circle"></i> Admin Dashboard
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin"><i class="fas fa-tachometer-alt"></i>
+                                Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/userList"><i class="fas fa-users"></i> Users</a>
+                        </li>
+                      
+                        <!-- <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/paymentMethods"><i
+                                    class="fas fa-credit-card"></i> Payment</a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/salesReport"><i class="fas fa-chart-bar"></i>
+                                Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/categories"><i class="fas fa-folder"></i>
+                                Category</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/products"><i class="fas fa-folder"></i>
+                                Product Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/orders"><i class="fas fa-truck"></i> Order Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/transactionHistory"><i
+                                    class="fas fa-history"></i> Transaction history</a>
+                        </li>
+                       
+
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i>
+                                Coupons history</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/notifications"><i class="fas fa-bell"></i>
+                                Notifications</a>
+                        </li>
+                    </ul>
+                    <div class="mt-5 px-3">
+                        <a href="/admin/logout"><button class="btn btn-outline-light w-100"
+                                style="padding: 12px;background-color: #EEF7FF;color: #4D869C;margin-top: -20px;">LOGOUT</button></a>
+                    </div>
+                </div>
+            </nav>
+
+
+            <!-- Main content -->
+            <main class="ms-sm-auto  px-md-4 main-content  p-5" style="width: 80%;">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+                    style="border-bottom-color: #4D869C !important;">
+                    <h1 class="h2" style="color: #4D869C;">Dashboard / Orders Management</h1>
+                </div>
+                <div class="bg-white p-4 rounded shadow-sm" style="border: 1px solid #4D869C;">
+                    <div class="search-bar  ms-auto">
+                        <input type="search" class="form-control" id="orderSearch" placeholder="Search for orders.."
+                            onkeyup="searchTable()">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="orderTable" style="color: #4D869C;">
+                            <thead class="text-capitalize">
+                                <tr style="border-bottom-color: #4D869C !important;">
+                                    <th>Order id</th>
+                                    <th>Order Status</th>
+                                    <th>Order Date</th>
+                                   
+                                    <th>Quantity</th>
+                                    <th>Total Amount</th>
+                                    <th>Payment method</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                <% if(checkOut){ %>
+                                    <% checkOut.sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt))%>
+                                   <% checkOut.forEach(function(data,index){ %>
+                                        <tr>
+                                           
+                                            <td>
+                                                 <%=data._id %>
+                                            </td>
+                                            <td id="orderStatus">
+                                                <%=data.orderStatus%>
+                                            </td>
+                                            <td>
+                                                <%=new Date(data.updatedAt).toLocaleDateString('en-US') %>
+                                            </td>
+                                           
+                                            <td>
+                                                <%=data.cart.items[index].quantity %>
+                                            </td>
+                                            <td>
+                                                <%=data.totalPrice %>
+                                            </td>
+                                            <td>
+                                                <%=data.paymentMethod %>
+                                            </td>
+                                            <!-- cancellation  btn -->
+                                            <td>
+                                                <form action="/admin/checkOutStatus" method="post">
+                                                    <select name="orderStatus" onchange="updateOrderStatus(this,'<%= data.user?._id %>')" class="form-select">
+                                                        <option value="Processing" <%= data.orderStatus === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                                        <!-- <option value="Shipped" <%= data.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option> -->
+                                                        <!-- <option value="Delivered" <%= data.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option> -->
+                                                        <option value="Cancelled" <%= data.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                    </select>      
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#orderInfoModal"
+                                                    onclick="showOrderInfo('<%= data._id %>')">more info</button>
+                                            </td>
+                                        </tr>
+                                      
+                                        <% })%>
+                                            <% }%>
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!--  Pagination items will be inserted here by js -->
+                        </ul>
+                    </nav>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="orderInfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="orderInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderInfoModalLabel">Order Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- product and user info -->
+                    <div class="" style="height: 500px;overflow-y: scroll;">
+                        <h2>User info</h2>
+                        <hr>
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="username" class="w-50">user name : </label>
+                            <input type="text" class="w-100 py-2 border-0 text-capitalize text-center" id="username" placeholder="user name" readonly
+                            style="color:#4d859c;">
+                        </div>
+
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="country" class="w-50">country :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-capitalize text-center" placeholder="country"
+                            readonly style="color:#4d859c;">
+                        </div>
+
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="email" class="w-50">email :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-center" placeholder="email" readonly
+                            style="color:#4d859c;">
+                        </div>
+
+
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="landmark" class="w-50">landmark :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-center" placeholder="landmark" readonly
+                            style="color:#4d859c;">
+                        </div>
+
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="locality" class="w-50">locality :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-center" placeholder="locality" readonly
+                            style="color:#4d859c;">
+                        </div>
+
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="phone" class="w-50">phone :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-center" placeholder="phone" readonly
+                            style="color:#4d859c;">
+                        </div>
+                        <div class="mb-3 d-flex border-0 align-items-center justify-content-center w-100">
+                            <label for="state" class="w-50">state :</label>
+                            <input type="text" class="w-100 mt-2 py-2 border-0 text-center" placeholder="state" readonly
+                            style="color:#4d859c;">
+                        </div>
+                        
+                        
+                       
+                        
+                       <hr>
+                        <h2>Product info</h2>
+                        <hr>
+                        <div id="productInfoContainer"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+
+const rowsPerPage = 5;
+    const table = document.getElementById('orderTable');
+    const pagination = document.getElementById('pagination');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    const rowsCount = rows.length;
+    const pageCount = Math.ceil(rowsCount / rowsPerPage);
+    let currentPage = 1;
+
+    function displayRows(page) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        for (let i = 0; i < rowsCount; i++) {
+            rows[i].style.display = i >= start && i < end ? '' : 'none';
+        }
+    }
+
+    function setupPagination() {
+        pagination.innerHTML = '';
+        for (let i = 1; i <= pageCount; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item';
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.addEventListener('click', function() {
+                currentPage = i;
+                displayRows(currentPage);
+                updatePagination();
+            });
+            pagination.appendChild(li);
+        }
+    }
+
+    function updatePagination() {
+        const pageItems = pagination.getElementsByClassName('page-item');
+        for (let i = 0; i < pageItems.length; i++) {
+            pageItems[i].classList.remove('active');
+        }
+        pageItems[currentPage - 1].classList.add('active');
+    }
+
+    displayRows(currentPage);
+    setupPagination();
+    updatePagination();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function searchTable() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("orderSearch");
+            filter = input.value.toLowerCase();
+            table = document.getElementById("orderTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function showOrderInfo(orderId) {
+            fetch(`/admin/orderDetails/${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate user info
+                    document.querySelector('#orderInfoModal input[placeholder="user name"]').value = data.address.username;
+                    document.querySelector('#orderInfoModal input[placeholder="country"]').value = data.address.country;
+                    document.querySelector('#orderInfoModal input[placeholder="email"]').value = data.address.email;
+                    document.querySelector('#orderInfoModal input[placeholder="landmark"]').value = data.address.landmark;
+                    document.querySelector('#orderInfoModal input[placeholder="locality"]').value = data.address.locality;
+                    document.querySelector('#orderInfoModal input[placeholder="phone"]').value = data.address.phone;
+                    document.querySelector('#orderInfoModal input[placeholder="state"]').value = data.address.state;
+
+                    // Clear previous product info
+                    const productInfoContainer = document.getElementById('productInfoContainer');
+                    productInfoContainer.innerHTML = '';
+
+                    // Populate product info for each item in the cart
+                    data.cart.items.forEach((item, index) => {
+
+                        const variant = item.variant;
+
+                        const productInfoHtml = `
+                           
+                           
+                          
+
+
+
+                            
+                          <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
+        <label for="productName${index}" class="form-label border-0 w-100">product name :</label>
+        <input type="text" class="form-control border-0 w-100" id="productName${index}" value="${item.productName}" readonly style="color:#4d859c;">
+    </div>
+
+    <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
+        <label for="size${index}" class="form-label border-0 w-100">size :</label>
+        <input type="text" class="form-control border-0 w-100" id="size${index}" value="${variant.size}" readonly style="color:#4d859c;">
+    </div>
+
+    <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
+        <label for="color${index}" class="form-label border-0 w-100">color :</label>
+        <input type="text" class="form-control border-0 w-100" id="color${index}" value="${variant.color}" readonly style="color:#4d859c;">
+    </div>
+
+    <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
+        <label for="price${index}" class="form-label border-0 w-100">price :</label>
+        <input type="text" class="form-control border-0 w-100" id="price${index}" value="${item.price}" readonly style="color:#4d859c;">
+    </div>
+    <hr>
+                        `;
+
+                        productInfoContainer.insertAdjacentHTML('beforeend', productInfoHtml);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching order details:', error);
+                });
+        }
+
+        function updateOrderStatus(selectElement, orderId) {
+           const newStatus = selectElement.value;
+           fetch('/admin/checkOutStatus',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({orderStatus:newStatus,userId:orderId})
+           }).then((response=> response.json()))
+           .then((data)=>{
+            if(data.success){
+                // console.log("data >>>",data);
+                document.getElementById('orderStatus').textContent = data.updatedCheckout.orderStatus;
+                swal.fire({
+                    // icon:'success',
+                    title:'Order status updated successfully!',
+                    timer:1000,
+                    timerProgressBar:true,
+                    showConfirmButton:false,
+                    didOpen: () => {
+                        const progressBar = Swal.getHtmlContainer().querySelector('.swal2-timer-progress-bar');
+                        progressBar.style.backgroundColor = '#dc3545'; 
+                    }
+
+                })
+            }else{
+                swal.fire({
+                    // icon:'error',
+                    title:'Failed to update order status!',
+                    timer:1000,
+                    timerProgressBar:true,
+                    showConfirmButton:false,
+                })
+            }
+           })
+           .catch((error)=>{
+            console.log("error >>>",error);
+            swal.fire({
+                    // icon:'error',
+                    title:'Failed to update order status!',
+                    timer:1000,
+                    timerProgressBar:true,
+                    showConfirmButton:false,
+                    didOpen: () => {
+                        const progressBar = Swal.getHtmlContainer().querySelector('.swal2-timer-progress-bar');
+                        progressBar.style.backgroundColor = '#dc3545'; 
+                    }
+                })
+           })
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -123,12 +123,10 @@
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/userList"><i class="fas fa-users"></i> Users</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/orderList"><i class="fas fa-list"></i> Order list</a>
-                        </li>
-                        <li class="nav-item">
+                   
+                        <!-- <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/paymentMethods"><i class="fas fa-credit-card"></i> Payment</a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/salesReport"><i class="fas fa-chart-bar"></i> Report</a>
                         </li>
@@ -136,14 +134,16 @@
                             <a class="nav-link in-active" href="/admin/categories"><i class="fas fa-folder"></i> Category</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/orderStatus"><i class="fas fa-truck"></i> Orders Status</a>
+                            <a class="nav-link in-active" href="/admin/products"><i class="fas fa-folder"></i>
+                                Product Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/orders"><i class="fas fa-truck"></i> Orders Management</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/transactionHistory"><i class="fas fa-history"></i> Transaction history</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/addProducts"><i class="bi bi-bag-plus-fill"></i> Add products</a>
-                        </li>
+                      
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i> Coupons history</a>
                         </li>
@@ -216,70 +216,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-4 rounded shadow-sm mt-3 border" style="border-color: #4D869C !important;">
-                    <div class="user-list-header">
-                        <h2>Products List</h2>
-                        <div class="search-bar">
-                            <input type="search" class="search-input" id="productSearch" placeholder="Search for products.." onkeyup="searchTable()">
-                        </div>
-                    </div>
-                    <div class="table-responsive" style="color: #4D869C;overflow: auto;">
-                        <table class="table table-hover" id="productTable" style="color: #4D869C;width: 70em;">
-                            <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Product</th>
-                                    <th>Date</th>
-                                    <th>Variants</th>
-                                    <th>Total Count</th>
-                                    <th>Gender</th>
-                                    <th>Price</th>
-                                    <th>Brand</th>
-                                    <th>Category</th>
-                                    <th>Options</th>
-                                </tr>
-                            </thead>
-                            <tbody style="color: #4D869C;">
-                                <% productData.forEach(function(product, index) { %>
-                                    <tr>
-                                        <td><%= index + 1 %></td>
-                                        <td><%= product?.name %></td>
-                                        <td><%= new Date(product?.updatedAt).toLocaleDateString('en-US') %></td>
-                                        <td>
-                                            <% product.variants.forEach(function(variant) { %>
-                                                <div class="variant-info">
-                                                    <img src="<%= variant.imageUrls[0] %>" alt="Image" width="50">
-                                                    <span><b>Color:</b> <%= variant.color %></span>
-                                                    <span><b>Size:</b> <%= variant.size %></span>
-                                                    <span><b>Stock:</b> <%= variant.stock %></span>
-                                                </div>
-                                            <% }) %>
-                                        </td>
-                                        <td>
-                                            <%= product.variants.reduce((total, variant) => total + variant?.stock, 0) %>
-                                        </td>
-                                        <td><%= product?.gender %></td>
-                                        <td><%= product?.price %></td>
-                                        <td><%= product?.brand %></td>
-                                        <td><%= product?.category?.name %></td>
-                                        <td>
-                                            <a href="/admin/editProduct/<%= encodeURIComponent(product?._id) %>">
-                                                <button class="btn btn-primary mx-3" style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">Edit</button>
-                                            </a>
-                                            <a href="/admin/softDeleteProduct/<%= encodeURIComponent(product?._id) %>">
-                                                <button class="btn btn-danger" style="border: 1px solid #4D869C;background-color: #4D869C;color: #eef7ff;">
-                                                    <%= (product.deleted === true) ? "Unhide" : "Hide" %>
-                                                </button>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    
-                </div>
+
+               
+
+
             </main>
         </div>
     </div>

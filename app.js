@@ -56,12 +56,12 @@ app.use("/admin", adminRouter);
 app.set("views", [
     path.join(__dirname, "views/user"),
     path.join(__dirname, "views/admin"),
-  
+    path.join(__dirname,"views/errorPage")
 ]);
 
 // 404 error handler
 app.use((req, res, next) => {
-    res.status(404).render("404Page.ejs");
+    res.status(404).render('404Page.ejs', { message: 'Page Not Found!' });
 });
 
 // General error handler for dev 

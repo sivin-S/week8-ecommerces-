@@ -26,6 +26,16 @@ async function dashboard(req, res) {
     }
 }
 
+async function products(req, res) {
+    try {
+        const productData = await Product.find({}).populate('category');
+        res.render('productManagement.ejs', { productData });
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
+}
+
 // Function to render the login page
 function loginPage(req, res) {
     if (req.session.adminStatus) {
@@ -172,13 +182,17 @@ async function softDeleteProduct(req, res) {
     try {
         const product = await Product.findById(req.params.id);
         if (product) {
-            product.deleted = !product.deleted; // Toggle the deleted state
+            product.deleted = !product.deleted;
             await product.save();
         }
-        res.redirect('/admin');
+        // res.redirect('/admin');
+        res.json({success:true,deleted:product.deleted,message:"Product status updated successfully!"});
+
     } catch (err) {
         console.log(err);
-        res.redirect('/admin');
+        // res.redirect('/admin');
+        res.json({success:false,error:"An error occurred while updating the product status."});
+
     }
 }
 
@@ -198,13 +212,13 @@ async function softDeleteCategory(req, res) {
 }
 
 // Function to render the order status page
-async function orderStatus(req, res) {
+async function orders(req, res) {
     try {
         const checkOut = await Checkout.find({})
         .populate("user")
         .populate("cart.items.0.product")
         .sort({ createdAt: -1 });
-        res.render('orderStatusAdminSide.ejs', { checkOut });
+        res.render('orderManagement.ejs', { checkOut });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
@@ -292,27 +306,32 @@ async function addCategory(req, res) {
 
 // Function to update the checkout status
 async function checkOutStatus(req, res) {
+    // console.log(req.body);
     try {
         const { orderStatus, userId } = req.body;
 
         const checkout = await Checkout.findOne({ user: userId });
         if (!checkout) {
             // return res.status(404).send('Checkout not found');
-            req.flash('error', "Checkout not found");
-            return res.redirect('/admin/orderStatus');
+            // req.flash('error', "Checkout not found");
+            res.json({success:false,error:"Checkout not found"});
+            // return res.redirect('/admin/orders');
         }
 
 
         checkout.previousOrderStatus = checkout.orderStatus;
         checkout.orderStatus = orderStatus;
-        await checkout.save();
-
-        res.redirect('/admin/orderStatus');
+        const updatedCheckout = await checkout.save();
+        // console.log(cart.orderStatus);
+        // req.flash('success', "Order status updated to " + cart?.orderStatus + " successfully!");
+        // res.redirect('/admin/orders');
+        res.json({success:true,message:"Order status updated successfully!",updatedCheckout});
     } catch (err) {
         console.log(err);
        
-        req.flash('error', "An error occurred while updating the order status.");
-        res.redirect('/admin/orderStatus');
+        // req.flash('error', "An error occurred while updating the order status.");
+        // res.redirect('/admin/orders');
+        res.json({success:false,error:"An error occurred while updating the order status."});
     }
 }
 
@@ -556,7 +575,7 @@ module.exports = {
     categories,
     softDeleteProduct,
     softDeleteCategory,
-    orderStatus,
+    orders,
     transactionHistory,
     notifications,
     editProductPage,
@@ -565,6 +584,7 @@ module.exports = {
     checkOutStatus,
     editCategory,
     login,
+    products,
     editProduct,
     couponsCreate,
     addProductsPage,

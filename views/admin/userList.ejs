@@ -98,12 +98,10 @@
                         <li class="nav-item">
                             <a class="nav-link active" href="/admin/userList"><i class="fas fa-users"></i> Users</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/orderList"><i class="fas fa-list"></i> Order list</a>
-                        </li>
-                        <li class="nav-item">
+                      
+                        <!-- <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/paymentMethods"><i class="fas fa-credit-card"></i> Payment</a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/salesReport"><i class="fas fa-chart-bar"></i> Report</a>
                         </li>
@@ -111,14 +109,16 @@
                             <a class="nav-link in-active" href="/admin/categories"><i class="fas fa-folder"></i> Category</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/orderStatus"><i class="fas fa-truck"></i> Orders Status</a>
+                            <a class="nav-link in-active" href="/admin/products"><i class="fas fa-folder"></i>
+                                Product Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link in-active" href="/admin/orders"><i class="fas fa-truck"></i> Orders Management</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/transactionHistory"><i class="fas fa-history"></i> Transaction history</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link in-active" href="/admin/addProducts"><i class="bi bi-bag-plus-fill"></i> Add mens product</a>
-                        </li>
+                       
                        
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i> Coupons history</a>
@@ -140,7 +140,7 @@
                 </div>
                 <div class="bg-white p-4 rounded shadow-sm">
                     <div class="user-list-header d-flex justify-content-between align-items-center">
-                        <h2>Users List</h2>
+                        <h2>Users Management</h2>
                         <div class="search-bar">
                             <input type="search" class="search-input" id="userSearch" placeholder="Search for users.." onkeyup="searchTable()" style="outline-color: #4D869C;">
                         </div>
@@ -176,35 +176,139 @@
                                     </td>
                                 </tr>
                                <% }) %>
+                               <tr id="noResultsRow" style="display: none;">
+                                   <td colspan="7" class="text-center">No users found....</td>
+                               </tr>
                             </tbody>
                         </table>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Pagination items will be dynamically added here -->
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
+
     <script>
+        const rowsPerPage = 5;
+        let currentPage = 1;
+    
+        function displayTablePage(page) {
+            const table = document.getElementById("userTable");
+            const tr = table.getElementsByTagName("tr");
+            const totalRows = tr.length - 2; // Exclude the header and "No users found" row
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+    
+            // Hide all rows
+            for (let i = 1; i < tr.length - 1; i++) {
+                tr[i].style.display = "none";
+            }
+    
+            // Show rows for the current page
+            const start = (page - 1) * rowsPerPage + 1;
+            const end = page * rowsPerPage + 1;
+            for (let i = start; i < end && i < tr.length - 1; i++) {
+                tr[i].style.display = "";
+            }
+    
+            // Hide "No users found" row
+            document.getElementById("noResultsRow").style.display = "none";
+    
+            // Update pagination controls
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+    
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement("li");
+                li.className = "page-item" + (i === page ? " active" : "");
+                li.innerHTML = `<a class="page-link" href="#" onclick="displayTablePage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+        }
+    
         function searchTable() {
-            var input, filter, table, tr, td, i, j, txtValue;
+            var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("userSearch");
             filter = input.value.toLowerCase();
             table = document.getElementById("userTable");
             tr = table.getElementsByTagName("tr");
-            for (i = 1; i < tr.length; i++) {
+            let filteredRows = 0;
+    
+            for (i = 1; i < tr.length - 1; i++) {
                 tr[i].style.display = "none";
-                td = tr[i].getElementsByTagName("td");
-                for (j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            tr[i].style.display = "";
-                            break;
-                        }
+                td = tr[i].getElementsByTagName("td")[1]; 
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        filteredRows++;
                     }
                 }
             }
+    
+            const noResultsRow = document.getElementById("noResultsRow");
+            if (filteredRows === 0) {
+                noResultsRow.style.display = "";
+            } else {
+                noResultsRow.style.display = "none";
+            }
+    
+            // Update pagination based on filtered rows
+            const totalPages = Math.ceil(filteredRows / rowsPerPage);
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+    
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement("li");
+                li.className = "page-item" + (i === currentPage ? " active" : "");
+                li.innerHTML = `<a class="page-link" href="#" onclick="displayFilteredPage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+    
+            displayFilteredPage(1); 
         }
+    
+        function displayFilteredPage(page) {
+            const table = document.getElementById("userTable");
+            const tr = table.getElementsByTagName("tr");
+            let filteredRows = [];
+            for (let i = 1; i < tr.length - 1; i++) {
+                if (tr[i].style.display === "") {
+                    filteredRows.push(tr[i]);
+                }
+            }
+    
+            // Hide all rows
+            for (let i = 1; i < tr.length - 1; i++) {
+                tr[i].style.display = "none";
+            }
+    
+            // Show rows for the current page
+            const start = (page - 1) * rowsPerPage;
+            const end = page * rowsPerPage;
+            for (let i = start; i < end && i < filteredRows.length; i++) {
+                filteredRows[i].style.display = "";
+            }
+    
+            // Update pagination controls
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+    
+            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement("li");
+                li.className = "page-item" + (i === page ? " active" : "");
+                li.innerHTML = `<a class="page-link" href="#" onclick="displayFilteredPage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+        }
+    
+        displayTablePage(1);
     </script>
+  
 </body>
 </html>
