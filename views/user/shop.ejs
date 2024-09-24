@@ -128,7 +128,7 @@
         <div class="col-12 mb-3">
           <div class="row" style="float: right;">
             <!-- <div class="border border-danger"> -->
-                <input type="search" id="nameSearch" class="rounded border px-3 mx-2" placeholder="Search by name" style="outline: none;">
+                <input type="search" id="nameSearch" class="rounded border px-3 mx-2" placeholder="Search by name" style="outline: none;" value="<%= query.search || '' %>">
                 <button id="searchButton" class="btn"><span><i class="bi bi-search"></i></span></button>
                 <a href="/shop" class="px-3">
                     <button class="btn btn-primary">
@@ -173,9 +173,15 @@
                     <% if(uniqueCategories && uniqueCategories.length > 0) { %>
                       <% uniqueCategories.forEach(function(category) { %>
                         <li class="main-nav-list mt-2 mb-2">
-                          <a href="#" class="category-link" data-category="<%= category %>">
-                            <span class="text-capitalize text-center"><%= category %></span>
-                          </a>
+                            <a href="#" class="category-link" data-category="<%= category.toLowerCase() %>"
+                               style="color: <%= (query.category === category.toLowerCase()) ? '#ffff' : '#292929' %>; 
+                                      background-color: <%= (query.category === category.toLowerCase()) ? '#ff6c00' : 'transparent' %>; 
+                                      text-decoration: none; 
+                                      display: block; 
+                                      padding: 5px 10px; 
+                                      border-radius: 5px;">
+                                <span class="text-capitalize text-center"><%= category %></span>
+                            </a>
                         </li>
                       <% }) %>
                     <% } %>
@@ -186,49 +192,37 @@
                     <div class="head" style="background-color: #ff6c00;color: #fff;">Genders</div>
                     <ul>
                         <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
-                            style="background-color: <%= (query.gender === 'mens') ? '#ff6c00' : 'transparent' %>;">
-                            <a href="/shop?gender=mens" class="mx-4" 
-                               style="color: <%= (query.gender === 'mens') ? '#ffff' : '#292929' %>; text-decoration: none;">
-                                <span>Mens</span>
-                            </a>
-                        </li>
-                        <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
-                            style="background-color: <%= (query.gender === 'womens') ? '#ff6c00' : 'transparent' %>;">
-                            <a href="/shop?gender=womens" class="mx-4" 
-                               style="color: <%= (query.gender === 'womens') ? '#ffff' : '#292929' %>; text-decoration: none;">
-                                <span>Women's</span>
-                            </a>
-                        </li>
+    style="background-color: <%= (query.gender === 'mens') ? '#ff6c00' : 'transparent' %>;">
+    <a href="#" class="mx-4 gender-link" data-gender="mens"
+       style="color: <%= (query.gender === 'mens') ? '#ffff' : '#292929' %>; text-decoration: none;">
+        <span>Mens</span>
+    </a>
+</li>
+<li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
+style="background-color: <%= (query.gender === 'womens') ? '#ff6c00' : 'transparent' %>;">
+<a href="#" class="mx-4 gender-link" data-gender="womens"
+   style="color: <%= (query.gender === 'womens') ? '#ffff' : '#292929' %>; text-decoration: none;">
+    <span>Women's</span>
+</a>
+</li>
                     </ul>
                     
                 </div>
                 <div class="common-filter">
                     <div class="head" style="background-color: #ff6c00;color: #ffff;">Brands</div>
-                     <ul>
-                        <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
-                        style="background-color: <%= (query.brand === 'nike') ? '#ff6c00' : 'transparent' %>;">
-                            <a href="/shop?brand=nike" class="mx-4" 
-                             style="color: <%= (query.brand === 'nike') ? '#ffff' : '#292929' %>; text-decoration: none;">
-                                <span class="text-capitalize text-center">nike</span>
-                            </a>
-                        </li> 
-                        <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
-                        style="background-color: <%= (query.brand === 'adidas') ? '#ff6c00' : 'transparent' %>;">
-                            <a href="/shop?brand=adidas" class="mx-4" 
-                            style="color: <%= (query.brand === 'adidas') ? '#ffff' : '#292929' %>; text-decoration: none;">
-                                <span class="text-capitalize text-center">adidas</span>
-                            </a>
-                        </li> 
-                        <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
-                        style="background-color: <%= (query.brand === 'puma') ? '#ff6c00' : 'transparent' %>;">
-                            <a href="/shop?brand=puma" class="mx-4" 
-                            style="color: <%= (query.brand === 'puma') ? '#ffff' : '#292929' %>; text-decoration: none;">
-                                <span class="text-capitalize text-center">puma</span>
-                            </a>
-                        </li>
-                       
-                     </ul>
+                    <ul>
+                        <% uniqueBrands.forEach(function(brandName) { %>
+                            <li class="main-nav-list text-capitalize mt-2 mb-2 border-bottom shadow-sm py-3"
+                                style="background-color: <%= (query.brand === brandName) ? '#ff6c00' : 'transparent' %>;">
+                                <a href="#" class="mx-4 brand-link" data-brand="<%= brandName %>"
+                                   style="color: <%= (query.brand === brandName) ? '#ffff' : '#292929' %>; text-decoration: none;">
+                                    <span class="text-capitalize text-center"><%= brandName %></span>
+                                </a>
+                            </li>
+                        <% }); %>
+                    </ul>
                 </div>
+                
             </div>
         </div>
         <div class="col-xl-9 col-lg-8 col-md-7">
@@ -323,81 +317,216 @@
             </div>
         </div>
     </footer>
-    <!-- End footer Area -->
+   
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryLinks = document.querySelectorAll('.category-link');
+        const brandLinks = document.querySelectorAll('.brand-link');
+        const genderLinks = document.querySelectorAll('.gender-link');
+        const nameSearch = document.getElementById('nameSearch');
+        const searchButton = document.getElementById('searchButton');
 
-document.addEventListener('DOMContentLoaded', function() {
-    const categoryLinks = document.querySelectorAll('.category-link');
-    const selectedCategories = new Set();
-    const nameSearch = document.getElementById('nameSearch');
-    const searchButton = document.getElementById('searchButton');
+            let currentFilters = new URLSearchParams(window.location.search);
 
-    categoryLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const category = this.getAttribute('data-category');
-        
-        if (selectedCategories.has(category)) {
-          selectedCategories.delete(category);
-          this.classList.remove('active');
+            
+            function updateFilters(paramName, value) {
+        if (value) {
+            currentFilters.set(paramName, value);
         } else {
-          selectedCategories.add(category);
-          this.classList.add('active');
+            currentFilters.delete(paramName);
         }
+        fetchAndUpdateContent(`/shop?${currentFilters.toString()}`);
+    }
 
-        // Update the URL with selected categories
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set('category', Array.from(selectedCategories).join(','));
-        window.location.search = searchParams.toString();
-      });
+        
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const category = this.getAttribute('data-category');
+
+            if (currentFilters.get('category') === category) {
+                currentFilters.delete('category');
+                this.style.backgroundColor = 'transparent';
+                this.style.color = '#292929';
+                this.style.textDecoration = 'none';
+                this.style.display = 'block';
+                this.style.width = '100%'
+            } else {
+                currentFilters.set('category', category);
+                categoryLinks.forEach(l => {
+                    l.style.backgroundColor = 'transparent';
+                    l.style.color = '#292929';
+                    
+                });
+                this.style.backgroundColor = '#ff6c00';
+                this.style.color = '#ffff';
+                this.style.width = '100%'
+            }
+
+            fetchAndUpdateContent(`/shop?${currentFilters.toString()}`);
+        });
     });
 
-    searchButton.addEventListener('click', function() {
-                const searchParams = new URLSearchParams(window.location.search);
-                searchParams.set('search', nameSearch.value);
-                window.location.search = searchParams.toString();
-            });
-
-
-
-  });
-      
-
-
-
-
-
-
-
-
-
-
-
-
-        $(document).ready(function () {
-            // Show search input box when search button is clicked
-            $('.search').on('click', function (e) {
+    brandLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
                 e.preventDefault();
-                // $('#search_input_box').slideToggle();
-                $('#search_input_box').fadeIn(300);
-                $('#search_input').focus();
-            });
+                const brand = this.getAttribute('data-brand');
 
-            // Hide search input box when close button is clicked
-            $('#close_search').on('click', function (e) {
-                e.preventDefault();
-                $('#search_input_box').slideUp();
+                if (currentFilters.get('brand') === brand) {
+            // Deselect the current brand
+            currentFilters.delete('brand');
+            this.parentElement.style.backgroundColor = 'transparent';
+            this.style.color = '#292929';
+        } else {
+            // Select the new brand and deselect others
+            currentFilters.set('brand', brand);
+            brandLinks.forEach(link => {
+                link.parentElement.style.backgroundColor = 'transparent';
+                link.style.color = '#292929';
             });
+            this.parentElement.style.backgroundColor = '#ff6c00';
+            this.style.color = '#ffff';
+        }
 
-            // Handle search form submission
-            // $('#search_input_box form').on('submit', function (e) {
-            //     e.preventDefault();
-            //     var query = $('#search_input').val();
-            //     alert('Search for: ' + query);
-            //     // You can add your search logic here
-            // });
+            
+
+                fetchAndUpdateContent(`/shop?${currentFilters.toString()}`);
+            });
         });
-    </script>
+
+        genderLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const gender = this.getAttribute('data-gender');
+                
+                if (currentFilters.get('gender') === gender) {
+                    currentFilters.delete('gender');
+                    this.parentElement.style.backgroundColor = 'transparent';
+                    this.style.color = '#292929';
+                } else {
+                    currentFilters.set('gender', gender);
+                    genderLinks.forEach(l => {
+                        l.parentElement.style.backgroundColor = 'transparent';
+                        l.style.color = '#292929';
+                    });
+                    this.parentElement.style.backgroundColor = '#ff6c00';
+                    this.style.color = '#ffff';
+                }
+
+                fetchAndUpdateContent(`/shop?${currentFilters.toString()}`);
+            });
+        });
+        
+    searchButton.addEventListener('click', function() {
+        updateFilters('search', nameSearch.value);
+    });
+
+    nameSearch.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            updateFilters('search', this.value);
+        }
+    });
+        
+            // Convert jQuery AJAX calls to fetch
+            document.querySelector('.search').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('search_input_box').style.display = 'block';
+                document.getElementById('search_input').focus();
+            });
+        
+            document.getElementById('close_search').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('search_input_box').style.display = 'none';
+            });
+        
+            // Handle form submissions
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const searchParams = new URLSearchParams(formData);
+        
+                    fetchAndUpdateContent(`${this.action}?${searchParams.toString()}`);
+
+                });
+            });
+
+
+            function fetchAndUpdateContent(url) {
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Update only the product list and pagination
+                const productList = doc.querySelector('.lattest-product-area');
+                const pagination = doc.querySelector('.pagination');
+                
+                if (productList) {
+                    document.querySelector('.lattest-product-area').innerHTML = productList.innerHTML;
+                }
+                if (pagination) {
+                    document.querySelector('.pagination').innerHTML = pagination.innerHTML;
+                }
+
+                  // Update active states
+                  updateActiveStates(doc);
+
+                   // Update search input
+                const newSearchInput = doc.getElementById('nameSearch');
+                if (newSearchInput) {
+                    nameSearch.value = newSearchInput.value;
+                }
+
+
+                history.pushState(null, '', url);
+                currentFilters = new URLSearchParams(url.split('?')[1]);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function updateActiveStates(doc) {
+        const newCategoryLinks = doc.querySelectorAll('.category-link');
+        categoryLinks.forEach((link, index) => {
+            const newLink = newCategoryLinks[index];
+            link.style.backgroundColor = newLink.style.backgroundColor;
+            link.style.color = newLink.style.color;
+        });
+
+
+        const newBrandLinks = doc.querySelectorAll('.brand-link');
+        const selectedBrands = currentFilters.getAll('brand');
+        brandLinks.forEach((link, index) => {
+            const brand = link.getAttribute('data-brand');
+            if (selectedBrands.includes(brand)) {
+                link.parentElement.style.backgroundColor = '#ff6c00';
+                link.style.color = '#ffff';
+            } else {
+                link.parentElement.style.backgroundColor = 'transparent';
+                link.style.color = '#292929';
+            }
+        });
+
+        const newGenderLinks = doc.querySelectorAll('.gender-link');
+            genderLinks.forEach((link, index) => {
+                const newLink = newGenderLinks[index];
+                link.parentElement.style.backgroundColor = newLink.parentElement.style.backgroundColor;
+                link.style.color = newLink.style.color;
+            });
+
+
+
+    }
+
+
+
+
+        });
+        </script>
+
+
+   
 </body>
 </html>

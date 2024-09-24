@@ -107,27 +107,23 @@ exports.filterVariant = async (req, res) => {
 
 exports.getShop = async (req, res) => {
   try {
-    const { category, gender, color, size, brand, minPrice, maxPrice, sort, page = 1, limit = 12, search } = req.query;
-    let query = {};
+    const { category, gender, color, size, brand, minPrice, maxPrice, sort, page = 1, limit = 4, search } = req.query;
+    let query = { deleted: false };
 
-   
-     const nonDeletedCategories = await Category.find({ deleted: false });
-     const nonDeletedCategoryIds = nonDeletedCategories.map(cat => cat._id);
-
-     query.category = { $in: nonDeletedCategoryIds };
-
+    // Category filter
     if (category) {
       const categories = category.split(',').map(cat => cat.trim());
       const categoryDocs = await Category.find({ 'name': { $in: categories }, 'deleted': false });
-      
       if (categoryDocs.length > 0) {
-       
         query.category = { $in: categoryDocs.map(doc => doc._id) };
-      } else {
-        query.category = null;
       }
+    } else {
+      const nonDeletedCategories = await Category.find({ deleted: false });
+      query.category = { $in: nonDeletedCategories.map(cat => cat._id) };
     }
-    if (gender) query['gender'] = gender;
+
+    // Other filters
+    if (gender) query.gender = gender;
     if (color) query['variants.color'] = color;
     if (size) query['variants.size'] = size;
     if (brand) query.brand = brand;
@@ -137,45 +133,48 @@ exports.getShop = async (req, res) => {
       if (maxPrice) query.price.$lte = parseInt(maxPrice);
     }
     if (search) {
-      query['$or'] = [
-        { name: { $regex: search, $options: 'i' } }
-      ];
+      query.name = { $regex: search, $options: 'i' };
     }
+
+    // Sorting
     let sortOption = {};
     if (sort === 'priceAsc') sortOption.price = 1;
     else if (sort === 'priceDesc') sortOption.price = -1;
     else if (sort === 'nameAsc') sortOption.name = 1;
     else if (sort === 'nameDesc') sortOption.name = -1;
-    const totalProducts = await Product.countDocuments(query);
-    const totalPages = Math.ceil(totalProducts / limit);
-    // querying products
-    const products = await Product.find(query)
-      .populate("category")
-      .sort(sortOption)
-      .skip((page - 1) * limit)
-      .limit(limit);
-    const uniqueCategories = await Category.distinct('name');
-    const uniqueColors = await Product.distinct('variants.color');
-    const uniqueSizes = await Product.distinct('variants.size');
-    const uniqueBrands = await Product.distinct('brand');
-    const priceRange = await Product.aggregate([
-      { $group: { _id: null, minPrice: { $min: "$price" }, maxPrice: { $max: "$price" } } }
+
+    // Pagination
+    const skip = (page - 1) * limit;
+
+    // Execute queries
+    const [products, totalProducts, uniqueCategories, uniqueColors, uniqueSizes, uniqueBrands, priceRange] = await Promise.all([
+      Product.find(query).populate("category").sort(sortOption).skip(skip).limit(limit),
+      Product.countDocuments(query),
+      Category.distinct('name', { deleted: false }),
+      Product.distinct('variants.color', query),
+      Product.distinct('variants.size', query),
+      Product.distinct('brand', query),
+      Product.aggregate([
+        { $match: query },
+        { $group: { _id: null, minPrice: { $min: "$price" }, maxPrice: { $max: "$price" } } }
+      ])
     ]);
-    // console.log(products);
-    
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
     res.render("shop", {
       products,
       uniqueCategories,
-      uniqueColor: uniqueColors,
-      uniqueSize: uniqueSizes,
-      uniqueBrand: uniqueBrands,
-      priceRange: priceRange[0],
+      uniqueColors: uniqueColors,
+      uniqueSizes: uniqueSizes,
+      uniqueBrands: uniqueBrands,
+      priceRange: priceRange[0] || { minPrice: 0, maxPrice: 0 },
       currentPage: parseInt(page),
       totalPages,
       query: req.query
     });
   } catch (error) {
     console.error(error);
-    res.redirect('/shop');
+    res.status(500).render('error', { message: 'An error occurred while fetching products' });
   }
 };
