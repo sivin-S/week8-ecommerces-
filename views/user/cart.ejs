@@ -152,7 +152,7 @@
                            
                             <tbody id="cart-items">
                                 <% cart.items.forEach(function(data,index){ %>
-                                    <tr data-product-id="<%= data.product._id %>" data-variant-color="<%= data.variant.color %>" data-variant-size="<%= data.variant.size %>">
+                                    <tr data-index="<%= index %>" data-product-id="<%= data.product._id %>" data-variant-color="<%= data.variant.color %>" data-variant-size="<%= data.variant.size %>">
 
                                     <td>
                                         <div class="media">
@@ -187,7 +187,7 @@
                                         <h5 class="item-total">₹<%=data.product.price %></h5>
                                     </td>
                                     <td>
-                                        <a href="/removeProductFromCart/<%=encodeURIComponent(data.product._id)%>" style="text-decoration: none;color:red;border: 1px solid red;padding: 12px 20px;">Remove</a>
+                                        <a href="#" onclick="removeItem(<%= index %>)" style="text-decoration: none;color:red;border: 1px solid red;padding: 12px 20px;">Remove</a>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -270,6 +270,57 @@
     <!-- End footer Area -->
 
     <script>
+
+async function removeItem(index) {
+        try {
+            const response = await fetch('/removeProductFromCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ index: index })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                location.reload();
+            } else {
+                const errorAlert = document.createElement('div');
+                errorAlert.id = 'errorAlert';
+                errorAlert.className = 'alert alert-danger';
+                errorAlert.role = 'alert';
+                errorAlert.style.position = 'fixed';
+                errorAlert.style.top = '20px';
+                errorAlert.style.right = '20px';
+                errorAlert.style.zIndex = '1000';
+                errorAlert.textContent = 'Failed to remove the item. Please try again.';
+                document.body.appendChild(errorAlert);
+                hideFlashMessages();
+            }
+        } catch (error) {
+            const errorAlert = document.createElement('div');
+            errorAlert.id = 'errorAlert';
+            errorAlert.className = 'alert alert-danger';
+            errorAlert.role = 'alert';
+            errorAlert.style.position = 'fixed';
+            errorAlert.style.top = '20px';
+            errorAlert.style.right = '20px';
+            errorAlert.style.zIndex = '1000';
+            errorAlert.textContent = 'An error occurred while removing the item. Please try again.';
+            document.body.appendChild(errorAlert);
+            hideFlashMessages();
+        }
+    }
+
+
+
+
+
+
+
+
+
         // Function to change quantity
         function changeQuantity(button, increment, maxStock) {
             var row = button.closest('tr');

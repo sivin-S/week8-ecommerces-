@@ -129,32 +129,62 @@ exports.addToCart = async (req, res) => {
 
 
 // remove product from cart
+// exports.removeProductFromCart = async (req, res) => {
+//   try {
+//     const userId = new mongoose.Types.ObjectId(req.session.userId);
+//     const productId = new mongoose.Types.ObjectId(req.params.productId);
+//     const userCart = await Cart.findOne({ user: userId });
+//     const cart = await Cart.findOne({ user: userId }).populate("items.product");
+//     if (!userCart) {
+//       // return res.status(404).render("cart.ejs", { cartProducts: null, error: "Cart not found" });
+//       req.flash('error', 'Cart not found');
+//       return res.redirect('/');
+//     }
+//     userCart.items = userCart.items.filter((item) => {
+//       if (!item.product.equals(productId)) {
+//         return true;
+//       } else {
+//         return false;
+//       }
+//     });
+//     await userCart.save();
+//     res.redirect('/cart');
+//   } catch (error) {
+//     console.error("Error removing product from cart:", error);
+//     req.flash('error', 'Please try again.');
+//     res.redirect('/cart');
+//   }
+// };
+
+
 exports.removeProductFromCart = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.userId);
-    const productId = new mongoose.Types.ObjectId(req.params.productId);
+    const itemIndex = parseInt(req.body.index, 10);
+
     const userCart = await Cart.findOne({ user: userId });
-    const cart = await Cart.findOne({ user: userId }).populate("items.product");
     if (!userCart) {
-      // return res.status(404).render("cart.ejs", { cartProducts: null, error: "Cart not found" });
       req.flash('error', 'Cart not found');
-      return res.redirect('/');
+      return res.redirect('/cart');
     }
-    userCart.items = userCart.items.filter((item) => {
-      if (!item.product.equals(productId)) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    await userCart.save();
-    res.redirect('/cart');
+
+    if (itemIndex >= 0 && itemIndex < userCart.items.length) {
+      userCart.items.splice(itemIndex, 1); 
+      await userCart.save();
+      req.flash('success', 'Item removed from cart');
+      res.json({ success: true });
+    } else {
+      req.flash('error', 'Invalid item index');
+      res.json({ success: false });
+    }
   } catch (error) {
     console.error("Error removing product from cart:", error);
     req.flash('error', 'Please try again.');
-    res.redirect('/cart');
+    res.json({ success: false });
   }
 };
+
+
 
 exports.updateQuantity = async (req, res) => {
   console.log("updateQuantity >>>>>>>>>>>>>>>>>>>>>>>> ", req.body);

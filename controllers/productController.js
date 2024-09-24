@@ -55,7 +55,7 @@ exports.getProductDetails = async (req, res) => {
 // filtering variants
 
 exports.filterVariant = async (req, res) => {
-  // console.log('Query Parameters:', req.query); // Log the query parameters
+  console.log('Query Parameters:', req.query); 
 
   try {
       const { productId, variantColor, size } = req.query;

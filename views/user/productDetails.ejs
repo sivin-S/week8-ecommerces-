@@ -6,410 +6,343 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="shortcut icon" href="img/fav.png">
-	
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
 
-
-
+  
 	<title>Step Heaven</title>
 	<!--
 			CSS
 			============================================= -->
-	<link rel="stylesheet" href="/css/linearicons.css">
-	<link rel="stylesheet" href="/css/font-awesome.min.css">
-	<link rel="stylesheet" href="/css/themify-icons.css">
-	<link rel="stylesheet" href="/css/bootstrap.css">
-	<link rel="stylesheet" href="/css/owl.carousel.css">
-	<link rel="stylesheet" href="/css/nice-select.css">
-	<link rel="stylesheet" href="/css/nouislider.min.css">
-	<link rel="stylesheet" href="/css/ion.rangeSlider.css" />
-	<link rel="stylesheet" href="/css/ion.rangeSlider.skinFlat.css" />
-	<link rel="stylesheet" href="/css/main.css">
+			<link rel="stylesheet" href="/css/linearicons.css">
+			<link rel="stylesheet" href="/css/font-awesome.min.css">
+			<link rel="stylesheet" href="/css/themify-icons.css">
+			<link rel="stylesheet" href="/css/bootstrap.css">
+			<link rel="stylesheet" href="/css/owl.carousel.css">
+			<link rel="stylesheet" href="/css/nice-select.css">
+			<link rel="stylesheet" href="/css/nouislider.min.css">
+			<link rel="stylesheet" href="/css/ion.rangeSlider.css" />
+			<link rel="stylesheet" href="/css/ion.rangeSlider.skinFlat.css" />
+			<link rel="stylesheet" href="/css/main.css">
 
 
-	<!-- icon -->
-	<link rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
-		integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!--  -->
+			<!-- image zoom cdn  -->
+	
+			<script  src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
 
+			<!--  -->
 
-
-	<link rel="stylesheet" type="text/css"
-		href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
-	<link rel="stylesheet" type="text/css"
-		href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+		<!-- icon -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<!--  -->
 
 
 
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
 
-	<style>
-		
 
-		.zoom-img {
-			z-index: 10;
-		}
 
+
+		<style>
+			  .medium-zoom-overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .zoom-img {
+            z-index: 10;
+        }
 		.custom-zoom-width {
-			width: 100%;
-		}
-
-
-		.medium-zoom--opened .header_area {
-			display: none;
-		}
-
-		.carousel-item img {
-			max-width: 100%;
-			height: auto;
-			display: block;
-			margin: 0 auto;
-		}
-
-		.variantContainer::-webkit-scrollbar {
-			display: none;
-		}
-
-
-		
-
-  
-
-		.zoom-container {
-			position: relative;
-			overflow: hidden;
-		}
-		.zoom-container img {
-            transition: transform 0.5s ease;
+            width: 100%;
         }
-		.zoom-container:hover img {
-            transform: scale(1.1);
-        }
-		.zoomImg {
-			opacity: 0;
-			transition: opacity 0.5s;
-		}
-		.zoom-container:hover .zoomImg {
-			opacity: 1;
-		}
-	</style>
+
+	
+.medium-zoom--opened .header_area {
+    display: none;
+}
+
+	.carousel-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.variantContainer::-webkit-scrollbar {
+  display: none;
+}
+
+		/* Ensure the image container is responsive */
+		/* .carousel-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
+
+/* Control the image size */
+/* .carousel-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+} */
+
+
+
+		</style>
 </head>
 
 <body>
 	<!-- flash message -->
-	<%# if (locals.successMessage && locals.successMessage.length> 0) { %>
-		<!-- <div id="successAlert" class="alert alert-success" role="alert"
+	<%# if (locals.successMessage && locals.successMessage.length > 0) { %>
+        <!-- <div id="successAlert" class="alert alert-success" role="alert"
         style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
         >
           <%# = locals.successMessage %>
         </div> -->
-		<%# } %>
-
-			<%# if (locals.errorMessage && locals.errorMessage.length> 0) { %>
-				<!-- <div id="errorAlert" class="alert alert-danger" role="alert"
+      <%# } %>
+      
+      <%# if (locals.errorMessage && locals.errorMessage.length > 0) { %>
+        <!-- <div id="errorAlert" class="alert alert-danger" role="alert"
         style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;"
         > -->
-				<%#=locals.errorMessage %>
-					<!-- </div> -->
-					<%#} %>
-						<!-- Start Header Area -->
-						<header class="header_area sticky-header">
-							<div class="main_menu">
-								<nav class="navbar navbar-expand-lg navbar-light main_box">
-									<div class="container">
-										<!-- Brand and toggle get grouped for better mobile display -->
-										<a class="navbar-brand logo_h" href="index.html"><img src="img/logo.png"
-												alt=""></a>
-										<button class="navbar-toggler" type="button" data-toggle="collapse"
-											data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-											aria-expanded="false" aria-label="Toggle navigation">
-											<span class="icon-bar"></span>
-											<span class="icon-bar"></span>
-											<span class="icon-bar"></span>
-										</button>
-										<!-- Collect the nav links, forms, and other content for toggling -->
-										<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
-											<ul
-												class="nav navbar-nav menu_nav ml-auto align-items-center justify-content-center">
-												<li class="nav-item active"><a class="nav-link" href="/"
-														style="color: #ff6c00;">Home</a></li>
-												<li class="nav-item">
-													<a href="/shop" class="nav-link" style="color: #ff6c00;">Shop</a>
-												</li>
-												<li class="nav-item"><a class="nav-link" href="#"
-														style="color: #ff6c00;">Contact</a></li>
-												<li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag"
-															style="font-size: 1.3rem;color: #ff6c00;"></span></a></li>
-												<li class="nav-item">
-													<button class="search"
-														style="border: none;outline: none;background-color: transparent;"><span
-															class="lnr lnr-magnifier" id="search"
-															style="font-size: 1.3rem;color: #ff6c00;"></span></button>
-												</li>
-												<li class="nav-item">
-													<a href="/wishlist" class="nav-link"><span class="bi bi-heart-fill"
-															style="font-size: 1.3rem;color: #ff6c00;"></span></a>
-												</li>
-												<li class="nav-item">
-													<button style="font-size: 1.2rem;
+          <%# = locals.errorMessage %>
+        <!-- </div> -->
+      <%#} %>
+	<!-- Start Header Area -->
+	<header class="header_area sticky-header">
+		<div class="main_menu">
+			<nav class="navbar navbar-expand-lg navbar-light main_box">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<a class="navbar-brand logo_h" href="index.html"><img src="img/logo.png" alt=""></a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+						<ul class="nav navbar-nav menu_nav ml-auto align-items-center justify-content-center">
+							<li class="nav-item active"><a class="nav-link" href="/" style="color: #ff6c00;">Home</a></li>
+							<li class="nav-item">
+								<a href="/shop" class="nav-link" style="color: #ff6c00;">Shop</a>
+							</li>
+							<li class="nav-item"><a class="nav-link" href="#" style="color: #ff6c00;">Contact</a></li>
+							<li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag" style="font-size: 1.3rem;color: #ff6c00;"></span></a></li>
+							<li class="nav-item">
+								<button class="search" style="border: none;outline: none;background-color: transparent;"><span class="lnr lnr-magnifier" id="search" style="font-size: 1.3rem;color: #ff6c00;"></span></button>
+							</li>
+							<li class="nav-item">
+								<a href="/wishlist" class="nav-link" ><span class="bi bi-heart-fill" style="font-size: 1.3rem;color: #ff6c00;"></span></a>
+							</li>
+							<li class="nav-item">
+								 <button style="font-size: 1.2rem;
 							padding: 10px 15px;
 							border-radius: 27px;
 							border: none;
 							background-image: linear-gradient(90deg, #ffba00 0%, #ff6c00 100%) !important;
 							outline: none;"><a href="/orderhistory" style="color:#ffff;">Order history</a></button>
-												</li>
-												<li class="nav-item mx-3">
-													<a href="/profile" class="nav-link" aria-expanded="false"><button
-															class="btn-primary"
-															style="font-size: 2.5rem;border: none;outline: none; background-color: transparent;"><i
-																class="bi bi-person-circle"
-																style="color: #ff6c00;"></i></button></a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</nav>
+							</li>
+							<li class="nav-item mx-3">
+								<a href="/profile" class="nav-link" 
+								 aria-expanded="false"><button class="btn-primary" style="font-size: 2.5rem;border: none;outline: none; background-color: transparent;"><i class="bi bi-person-circle" style="color: #ff6c00;"></i></button></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<div class="search_input" id="search_input_box">
+			<div class="container">
+				<form class="d-flex justify-content-between">
+					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
+					<button type="submit" class="btn"></button>
+					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+				</form>
+			</div>
+		</div>
+	</header>
+	<!-- End Header Area -->
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Product Details Page</h1>
+					<nav class="d-flex align-items-center">
+						<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="/shop">Shop<span class="lnr lnr-arrow-right"></span></a>
+						<p>product-details</p>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Single Product Area =================-->
+	<div class="product_image_area">
+		<div class="container">
+			<div class="row s_product_inner">
+				<div class="col-lg-6">
+					<div id="productCarousel" class="carousel slide" data-ride="carousel">
+						<div class="carousel-inner">
+							<div class="carousel-item active">
+								<img class="d-block w-100 zoom-img imgOne" src="<%=product.variants[0].imageUrls[0]%>" alt="First slide">
 							</div>
-							<div class="search_input" id="search_input_box">
-								<div class="container">
-									<form class="d-flex justify-content-between">
-										<input type="text" class="form-control" id="search_input"
-											placeholder="Search Here">
-										<button type="submit" class="btn"></button>
-										<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
-									</form>
-								</div>
+							<div class="carousel-item">
+								<img class="d-block w-100 zoom-img imgOne" src="<%=product.variants[0].imageUrls[1]%>" alt="Second slide">
 							</div>
-						</header>
-						<!-- End Header Area -->
-
-						<!-- Start Banner Area -->
-						<section class="banner-area organic-breadcrumb">
-							<div class="container">
-								<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-									<div class="col-first">
-										<h1>Product Details Page</h1>
-										<nav class="d-flex align-items-center">
-											<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-											<a href="/shop">Shop<span class="lnr lnr-arrow-right"></span></a>
-											<p>product-details</p>
-										</nav>
-									</div>
-								</div>
+							<div class="carousel-item">
+								<img class="d-block w-100 zoom-img imgOne" src="<%=product.variants[0].imageUrls[2]%>" alt="Third slide">
 							</div>
-						</section>
-						<!-- End Banner Area -->
-
-						<!--================Single Product Area =================-->
-						<div class="product_image_area">
-							<div class="container">
-								<div class="row s_product_inner">
-									<div class="col-lg-6">
-										<div id="productCarousel" class="carousel slide" data-ride="carousel">
-											<div class="carousel-inner">
-												<% product.variants[0].imageUrls.forEach((url, index) => { %>
-													<div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-														<div class="zoom-container">
-															<img class="d-block w-100" src="<%= url %>" alt="Product image <%= index + 1 %>">
-														</div>
-													</div>
-												<% }); %>
-											</div>
-											<a class="carousel-control-prev" href="#productCarousel" role="button"
-												data-slide="prev">
-												<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-												<span class="sr-only">Previous</span>
-											</a>
-											<a class="carousel-control-next" href="#productCarousel" role="button"
-												data-slide="next">
-												<span class="carousel-control-next-icon" aria-hidden="true"></span>
-												<span class="sr-only">Next</span>
-											</a>
-										</div>
-
-									</div>
-
-									<div class="col-lg-5 offset-lg-1">
-										<form action="/addToCart" method="post" id="addToCartForm">
-											<div class="s_product_text">
-												<!-- sending hidden data -->
-												<input type="hidden" name="productId" value="<%=product?._id %>">
-												<input type="hidden" name="productName" value="<%=product?.name %>">
-												<input type="hidden" name="variantSize" id="selectedSize"
-													value="<%= product.variants[0]?.size %>">
-												<input type="hidden" name="variantColor" id="selectedColor"
-													value="<%= product.variants[0]?.color %>">
-												<input type="hidden" name="variantImageUrls" id="selectedImageUrls"
-													value="<%= product.variants[0]?.imageUrls.join(',') %>">
-												<input type="hidden" name="price" id="selectedPrice"
-													value="<%= product.price %>">
+						</div>
+						<a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					</div>
+					
+				</div>
+				
+				<div class="col-lg-5 offset-lg-1">
+					<form action="/addToCart" method="post" id="addToCartForm">
+						<div class="s_product_text">
+							<!-- sending hidden data -->
+							<input type="hidden" name="productId" value="<%=product._id %>">
+                            <input type="hidden" name="variantSize" id="selectedSize" value="<%= product.variants[0]?.size %>">
+                            <input type="hidden" name="variantColor" id="selectedColor" value="<%= product.variants[0]?.color %>">
+                            <input type="hidden" name="variantImageUrls" id="selectedImageUrls" value="<%= product.variants[0]?.imageUrls.join(',') %>">
+                            <input type="hidden" name="price" id="selectedPrice" value="<%= product.price %>">
 
 
-												<h3>
-													<%=product?.name %>
-												</h3>
-												<h2>₹<%=product?.price %>
-												</h2>
-												<ul style="line-height: 2;">
-													<li>color : <span id="displayColor">
-															<%=product.variants[0]?.color %>
-														</span></li>
-													<li>size : <span id="displaySize">
-															<%=product.variants[0]?.size %>
-														</span></li>
-												</ul>
+							<h3><%=product?.name %></h3>
+							<h2>₹<%=product?.price %></h2>
+							<ul style="line-height: 2;">
+								<li>color : <span id="displayColor"><%=product.variants[0]?.color  %></span></li>
+							<li>size : <span id="displaySize"> <%=product.variants[0]?.size  %></span></li>
+							</ul>
+						
+							<ul class="list">
+								<li id="displayStock"><span>Availibility</span> : <%=(product.variants[0].stock>0)?"In Stock":"Out of Stock"  %> <span><%=(product?.variants[0]?.stock>0)?product?.variants[0]?.stock:"0"  %></span></li>
+							</ul>
+							<p>
+								Description: <%=product.description %>
+							</p>
+							<div class="product_count">
+								<label for="qty">Quantity:</label>
+								<input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty" readonly>
+								<button onclick="changeQuantity(1)" class="increase items-count" type="button">
+									<i class="lnr lnr-chevron-up"></i>
+								</button>
+								<button onclick="changeQuantity(-1)" class="reduced items-count" type="button">
+									<i class="lnr lnr-chevron-down"></i>
+								</button>
+							</div>
 
-												<ul class="list">
-													<li id="displayStock"><span>Availability</span> : <b>
-														<%=(product.variants[0].stock>0)?"In Stock":"Out of Stock" %>
-															<span>
-																<%=(product?.variants[0]?.stock>
-																	0)?product?.variants[0]?.stock:"0" %>
-															</span>
-														</b>
-													</li>
-												</ul>
-												<p>
-													Description: <%=product.description %>
-												</p>
-												<div class="product_count">
-													<label for="qty">Quantity:</label>
-													<input type="text" name="qty" id="sst" maxlength="12" value="1"
-														title="Quantity:" class="input-text qty" readonly>
-													<button onclick="changeQuantity(1)" class="increase items-count"
-														type="button">
-														<i class="lnr lnr-chevron-up"></i>
-													</button>
-													<button onclick="changeQuantity(-1)" class="reduced items-count"
-														type="button">
-														<i class="lnr lnr-chevron-down"></i>
-													</button>
+							
+							<div class="card_area d-flex align-items-center mt-4">
+								<button class="primary-btn" type="submit" style="border: none;outline: none;">ADD TO CART</button>
+								<!-- <a class="icon_btn" href="/wishlist/add/<%# = encodeURIComponent(product._id) %>"><i class="lnr lnr lnr-heart"></i></a> -->
+								<a class="icon_btn" href="/wishlist/add/<%= encodeURIComponent(product._id) %>" id="wishlistButton"><i class="lnr lnr lnr-heart"></i></a>
+							</div>
+						</div>
+					</form>
+					
+					
+					<!--//  variant filer-->
+   
+					<div class="row variantContainer" style="height: 250px;overflow: scroll;">
+						<form action="/filterVariant" method="get" id="filterForm">
+							<input type="hidden" name="productId" value="<%=product._id %>">
+						<div class="row mx-1 mt-5 mb-2">
+							<label for="variantColor" style="display: block;">Available Colors:</label>
+							<div class="variantsColor mx-3">
+								<div class="d-flex  justify-content-center " style="width: 250px;">
+									<% product.variants.forEach(function(variant) { %>
+									
+											
+											  <div class=""  style="width: 80px;height: 60px;">
+												
+												<div style="margin-top: -20px;"><p ><b><%= variant.color %></b></p></div>
+												<div class="my-auto">
+													<input type="radio" name="variantColor" value="<%= variant.color %>"  id="color_<%= variant.color %>">
 												</div>
-
-
-												<div class="card_area d-flex align-items-center mt-4">
-													<button class="primary-btn" type="submit"
-														style="border: none;outline: none;">ADD TO CART</button>
-													<!-- <a class="icon_btn" href="/wishlist/add/<%# = encodeURIComponent(product._id) %>"><i class="lnr lnr lnr-heart"></i></a> -->
-													<a class="icon_btn"
-														href="/wishlist/add/<%= encodeURIComponent(product._id) %>"
-														id="wishlistButton"><i class="lnr lnr lnr-heart"></i></a>
-												</div>
-											</div>
-										</form>
-
-
-										<!--//  variant filer-->
-
-										<div class="row variantContainer" style="height: 250px;overflow: scroll;">
-											<form action="/filterVariant" method="get" id="filterForm">
-												<input type="hidden" name="productId" value="<%=product._id %>">
-												<div class="row mx-1 mt-5 mb-2">
-													<label for="variantColor" style="display: block;">Available
-														Colors:</label>
-													<div class="variantsColor mx-3">
-														<div class="d-flex  justify-content-center "
-															style="width: 250px;">
-															<% product.variants.forEach(function(variant) { %>
-
-
-																<div class="" style="width: 80px;height: 60px;">
-
-																	<div style="margin-top: -20px;">
-																		<p><b>
-																				<%= variant.color %>
-																			</b></p>
-																	</div>
-																	<div class="my-auto">
-																		<input type="radio" name="variantColor"
-																			value="<%= variant.color %>"
-																			id="color_<%= variant.color %>">
-																	</div>
-
-																</div>
-
-
-																<% }); %>
-
-														</div>
-													</div>
-												</div>
-												<div class="row mx-1 mt-3 mb-2">
-													<label for="variantSize" style="display: block;">Available
-														Sizes:</label>
-													<div class="variantsSize mx-4">
-														<div class="d-flex justify-content-between"
-															style="width: 250px;">
-															<% product.variants.forEach(function(variant) { %>
-
-
-																<div class="" style="width: 80px;height: 60px;">
-																	<div style="margin-top: -20px;">
-																		<p><b>
-																				<%= variant.size %>
-																			</b></p>
-																	</div>
-																	<div class="my-auto">
-																		<input type="radio" name="size"
-																			value="<%= variant.size %>"
-																			id="size_<%= variant.size %>">
-
-																	</div>
-
-																</div>
-
-
-
-																<% }); %>
-														</div>
-													</div>
-												</div>
-												<div>
-													<button class="btn mx-3" type="button"
-														id="filterButton">Filter</button>
-
-												</div>
-
-
-											</form>
-										</div>
-
-
-
-
-
-									</div>
+												
+											  </div>
+											
+								
+									<% }); %>
+	
 								</div>
 							</div>
 						</div>
-						<!--================End Single Product Area =================-->
+						<div class="row mx-1 mt-3 mb-2">
+							<label for="variantSize" style="display: block;">Available Sizes:</label>
+							<div class="variantsSize mx-4">
+								<div class="d-flex justify-content-between" style="width: 250px;">
+									<% product.variants.forEach(function(variant) { %>
+										
+											
+											<div class=""  style="width: 80px;height: 60px;">
+												<div style="margin-top: -20px;"><p><b><%= variant.size %></b></p></div>
+													<div class="my-auto">
+														<input type="radio" name="size" value="<%= variant.size %>" id="size_<%= variant.size %>">
+													
+													</div>
+												
+											</div>
+										
+											
+										
+									<% }); %>
+								</div>
+							</div>
+						</div>
+						<div>
+							<button class="btn mx-3" type="button" id="filterButton">Filter</button>
+							
+						</div>
+						
+	
+						</form>
+					</div>
 
-						<!-- related product start -->
 
-						<div class="container mt-5" style="height: 550px;">
-							<h1 class="text-capitalize text-center" style="font-size: 3rem;">Related products</h1>
-							<div class="row align-items-center justify-content-around"
-								style="height: 500px; overflow-x: auto; display: flex; flex-direction: row;">
-								<% if(allProducts && allProducts.length> 0) { %>
-									<% allProducts.forEach(function(product) { %>
-										<div class="col-4 single-product"
-											style="width: 250px; height: auto; flex: 0 0 auto;">
-											<a href="/productDetails/<%= encodeURIComponent(product._id) %>">
-												<img class="img-fluid" src="<%= product.variants[0]?.imageUrls[0] %>"
-													alt="img">
-											</a>
-											<div class="product-details">
-												<h6>
-													<%= product.name %>
-												</h6>
-												<div class="price">
-													<h6>₹<%= product.price %>
-													</h6>
-													<h6 class="l-through">₹<%= product.price + 5000 %>
-													</h6>
-												</div>
-												<!-- <div class="prd-bottom">
+
+
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--================End Single Product Area =================-->
+
+    <!-- related product start -->
+   
+	<div class="container mt-5" style="height: 550px;">
+     <h1 class="text-capitalize text-center" style="font-size: 3rem;">Related products</h1>
+	 <div class="row align-items-center justify-content-around"
+     style="height: 500px; overflow-x: auto; display: flex; flex-direction: row;">
+    <% if(allProducts && allProducts.length > 0) { %>
+        <% allProducts.forEach(function(product) { %>
+            <div class="col-4 single-product" style="width: 250px; height: auto; flex: 0 0 auto;">
+                <a href="/productDetails/<%= encodeURIComponent(product._id) %>">
+                    <img class="img-fluid" src="<%= product.variants[0]?.imageUrls[0] %>" alt="img">
+                </a>
+                <div class="product-details">
+                    <h6><%= product.name %></h6>
+                    <div class="price">
+                        <h6>₹<%= product.price %></h6>
+                        <h6 class="l-through">₹<%= product.price + 5000 %></h6>
+                    </div>
+                    <!-- <div class="prd-bottom">
                         <a href="/addToCart/<%# = encodeURIComponent(product._id) %>" class="social-info">
                             <span class="ti-bag"></span>
                             <p class="hover-text">add to cart</p>
@@ -419,648 +352,742 @@
                             <p class="hover-text">Wishlist</p>
                         </a>
                     </div> -->
-											</div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p class="text-center">No products found.</p>
+    <% } %>
+      </div>
+	</div>
+
+
+	<!-- related product end -->
+	
+	<!--================Product Description Area =================-->
+	<section class="product_description_area">
+		<div class="container">
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" id="home-tab" data-toggle="tab" href="/" role="tab" aria-controls="home" aria-selected="true">Description</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="profile-tab" data-toggle="tab" href="/profile" role="tab" aria-controls="profile"
+					 aria-selected="false">Specification</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="contact-tab" data-toggle="tab" href="/contact" role="tab" aria-controls="contact"
+					 aria-selected="false">Comments</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#" role="tab" aria-controls="review"
+					 aria-selected="false">Reviews</a>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+					<p>.....</p>
+					<p>.....</p>
+				</div>
+				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+					<div class="table-responsive">
+						<table class="table">
+							<tbody>
+								<tr>
+									<td>
+										<h5>Width</h5>
+									</td>
+									<td>
+										<h5>128mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Height</h5>
+									</td>
+									<td>
+										<h5>508mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Depth</h5>
+									</td>
+									<td>
+										<h5>85mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Weight</h5>
+									</td>
+									<td>
+										<h5>52gm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Quality checking</h5>
+									</td>
+									<td>
+										<h5>yes</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Freshness Duration</h5>
+									</td>
+									<td>
+										<h5>03days</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>When packeting</h5>
+									</td>
+									<td>
+										<h5>Without touch of hand</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Each Box contains</h5>
+									</td>
+									<td>
+										<h5>60pcs</h5>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="comment_list">
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-1.png" alt="">
 										</div>
-										<% }) %>
-											<% } else { %>
-												<p class="text-center">No products found.</p>
-												<% } %>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<h5>12th Feb, 2018 at 05:56 pm</h5>
+											<a class="reply_btn" href="#">Reply</a>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
+								<div class="review_item reply">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-2.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<h5>12th Feb, 2018 at 05:56 pm</h5>
+											<a class="reply_btn" href="#">Reply</a>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-3.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<h5>12th Feb, 2018 at 05:56 pm</h5>
+											<a class="reply_btn" href="#">Reply</a>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
 							</div>
 						</div>
-
-
-						<!-- related product end -->
-
-						<!--================Product Description Area =================-->
-						<section class="product_description_area">
-							<div class="container">
-								<ul class="nav nav-tabs" id="myTab" role="tablist">
-									<li class="nav-item">
-										<a class="nav-link" id="home-tab" data-toggle="tab" href="/" role="tab"
-											aria-controls="home" aria-selected="true">Description</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" id="profile-tab" data-toggle="tab" href="/profile"
-											role="tab" aria-controls="profile" aria-selected="false">Specification</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" id="contact-tab" data-toggle="tab" href="/contact"
-											role="tab" aria-controls="contact" aria-selected="false">Comments</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link active" id="review-tab" data-toggle="tab" href="#" role="tab"
-											aria-controls="review" aria-selected="false">Reviews</a>
-									</li>
+						<div class="col-lg-6">
+							<div class="review_box">
+								<h4>Post a comment</h4>
+								<form class="row contact_form" action="#" method="post" id="contactForm" novalidate="novalidate">
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="text" class="form-control" id="number" name="number" placeholder="Phone Number">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="row total_rate">
+								<div class="col-6">
+									<div class="box_total">
+										<h5>Overall</h5>
+										<h4>4.0</h4>
+										<h6>(03 Reviews)</h6>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="rating_list">
+										<h3>Based on 3 Reviews</h3>
+										<ul class="list">
+											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">1 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="review_list">
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-1.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-2.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="img/product/review-3.png" alt="">
+										</div>
+										<div class="media-body">
+											<h4>Blake Ruiz</h4>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+									</div>
+									<p>.....</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="review_box">
+								<h4>Add a Review</h4>
+								<p>Your Rating:</p>
+								<ul class="list">
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
-								<div class="tab-content" id="myTabContent">
-									<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-										<p>.....</p>
-										<p>.....</p>
-									</div>
-									<div class="tab-pane fade" id="profile" role="tabpanel"
-										aria-labelledby="profile-tab">
-										<div class="table-responsive">
-											<table class="table">
-												<tbody>
-													<tr>
-														<td>
-															<h5>Width</h5>
-														</td>
-														<td>
-															<h5>128mm</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Height</h5>
-														</td>
-														<td>
-															<h5>508mm</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Depth</h5>
-														</td>
-														<td>
-															<h5>85mm</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Weight</h5>
-														</td>
-														<td>
-															<h5>52gm</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Quality checking</h5>
-														</td>
-														<td>
-															<h5>yes</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Freshness Duration</h5>
-														</td>
-														<td>
-															<h5>03days</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>When packeting</h5>
-														</td>
-														<td>
-															<h5>Without touch of hand</h5>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<h5>Each Box contains</h5>
-														</td>
-														<td>
-															<h5>60pcs</h5>
-														</td>
-													</tr>
-												</tbody>
-											</table>
+								<p>Outstanding</p>
+								<form class="row contact_form" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your Full name'">
 										</div>
 									</div>
-									<div class="tab-pane fade" id="contact" role="tabpanel"
-										aria-labelledby="contact-tab">
-										<div class="row">
-											<div class="col-lg-6">
-												<div class="comment_list">
-													<div class="review_item">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-1.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<h5>12th Feb, 2018 at 05:56 pm</h5>
-																<a class="reply_btn" href="#">Reply</a>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-													<div class="review_item reply">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-2.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<h5>12th Feb, 2018 at 05:56 pm</h5>
-																<a class="reply_btn" href="#">Reply</a>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-													<div class="review_item">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-3.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<h5>12th Feb, 2018 at 05:56 pm</h5>
-																<a class="reply_btn" href="#">Reply</a>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-6">
-												<div class="review_box">
-													<h4>Post a comment</h4>
-													<form class="row contact_form" action="#" method="post"
-														id="contactForm" novalidate="novalidate">
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="text" class="form-control" id="name"
-																	name="name" placeholder="Your Full name">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="email" class="form-control" id="email"
-																	name="email" placeholder="Email Address">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="text" class="form-control" id="number"
-																	name="number" placeholder="Phone Number">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<textarea class="form-control" name="message"
-																	id="message" rows="1"
-																	placeholder="Message"></textarea>
-															</div>
-														</div>
-														<div class="col-md-12 text-right">
-															<button type="submit" value="submit"
-																class="btn primary-btn">Submit Now</button>
-														</div>
-													</form>
-												</div>
-											</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'">
 										</div>
 									</div>
-									<div class="tab-pane fade show active" id="review" role="tabpanel"
-										aria-labelledby="review-tab">
-										<div class="row">
-											<div class="col-lg-6">
-												<div class="row total_rate">
-													<div class="col-6">
-														<div class="box_total">
-															<h5>Overall</h5>
-															<h4>4.0</h4>
-															<h6>(03 Reviews)</h6>
-														</div>
-													</div>
-													<div class="col-6">
-														<div class="rating_list">
-															<h3>Based on 3 Reviews</h3>
-															<ul class="list">
-																<li><a href="#">5 Star <i class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i> 01</a></li>
-																<li><a href="#">4 Star <i class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i> 01</a></li>
-																<li><a href="#">3 Star <i class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i> 01</a></li>
-																<li><a href="#">2 Star <i class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i> 01</a></li>
-																<li><a href="#">1 Star <i class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i><i
-																			class="fa fa-star"></i> 01</a></li>
-															</ul>
-														</div>
-													</div>
-												</div>
-												<div class="review_list">
-													<div class="review_item">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-1.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-													<div class="review_item">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-2.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-													<div class="review_item">
-														<div class="media">
-															<div class="d-flex">
-																<img src="img/product/review-3.png" alt="">
-															</div>
-															<div class="media-body">
-																<h4>Blake Ruiz</h4>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
-															</div>
-														</div>
-														<p>.....</p>
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-6">
-												<div class="review_box">
-													<h4>Add a Review</h4>
-													<p>Your Rating:</p>
-													<ul class="list">
-														<li><a href="#"><i class="fa fa-star"></i></a></li>
-														<li><a href="#"><i class="fa fa-star"></i></a></li>
-														<li><a href="#"><i class="fa fa-star"></i></a></li>
-														<li><a href="#"><i class="fa fa-star"></i></a></li>
-														<li><a href="#"><i class="fa fa-star"></i></a></li>
-													</ul>
-													<p>Outstanding</p>
-													<form class="row contact_form" action="contact_process.php"
-														method="post" id="contactForm" novalidate="novalidate">
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="text" class="form-control" id="name"
-																	name="name" placeholder="Your Full name"
-																	onfocus="this.placeholder = ''"
-																	onblur="this.placeholder = 'Your Full name'">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="email" class="form-control" id="email"
-																	name="email" placeholder="Email Address"
-																	onfocus="this.placeholder = ''"
-																	onblur="this.placeholder = 'Email Address'">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<input type="text" class="form-control" id="number"
-																	name="number" placeholder="Phone Number"
-																	onfocus="this.placeholder = ''"
-																	onblur="this.placeholder = 'Phone Number'">
-															</div>
-														</div>
-														<div class="col-md-12">
-															<div class="form-group">
-																<textarea class="form-control" name="message"
-																	id="message" rows="1" placeholder="Review"
-																	onfocus="this.placeholder = ''"
-																	onblur="this.placeholder = 'Review'"></textarea></textarea>
-															</div>
-														</div>
-														<div class="col-md-12 text-right">
-															<button type="submit" value="submit"
-																class="primary-btn">Submit Now</button>
-														</div>
-													</form>
-												</div>
-											</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<input type="text" class="form-control" id="number" name="number" placeholder="Phone Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone Number'">
 										</div>
 									</div>
-								</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Review" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea></textarea>
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" value="submit" class="primary-btn">Submit Now</button>
+									</div>
+								</form>
 							</div>
-						</section>
-						<!--================End Product Description Area =================-->
-
-
-						<footer class="footer-area section_gap">
-							<div class="container">
-								<div class="row ">
-									<div class="col-6">
-										<div class="single-footer-widget mail-chimp">
-											<h6 class="mb-20">Brand</h6>
-											<ul class="instafeed d-flex flex-wrap">
-												<li><img src="img/brand/img1.jpg" alt=""></li>
-												<li><img src="img/brand/img2.jpg" alt=""></li>
-												<li><img src="img/brand/img3.jpg" alt=""></li>
-											</ul>
-										</div>
-									</div>
-									<div class="col-6  d-flex justify-content-end align-content-center">
-										<div class="single-footer-widget  w-50">
-											<h6>Follow Us</h6>
-											<p>Let us be social</p>
-											<div class="footer-social d-flex align-items-center">
-												<a href="#"><i class="fa fa-facebook"></i></a>
-												<a href="#"><i class="fa fa-twitter"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="footer-bottom d-flex justify-content-center align-items-center flex-wrap">
-									<p class="footer-text m-0">
-										Copyright &copy;&nbsp;
-										<script>document.write(new Date().getFullYear());</script>
-									</p>
-								</div>
-							</div>
-						</footer>
-
-
-
-
-						<script>
-	let currentStock = <%= product.variants[0].stock %>;
-	let currentQuantity = 1;
-function changeQuantity(change) {
-									let newQuantity = currentQuantity + change;
-									if (newQuantity > 0 && newQuantity <= currentStock) {
-										currentQuantity = newQuantity;
-										document.getElementById('sst').value = currentQuantity;
-									} else {
-										Swal.fire({
-											icon: 'warning',
-											title: 'Oops...',
-											text: 'Quantity exceeds available stock!',
-											confirmButtonColor: '#3085d6',
-											confirmButtonText: 'OK'
-										});
-										return;
-									}
-								}
-
-
-
-
-
-							document.addEventListener('DOMContentLoaded', function () {
-							
-
-								
-
-								document.querySelector('.increase').addEventListener('click', function (event) {
-									event.preventDefault();
-									changeQuantity(1);
-								});
-
-								document.querySelector('.reduced').addEventListener('click', function (event) {
-									event.preventDefault();
-									changeQuantity(-1);
-								});
-
-								
-
-
-
-								const filterForm = document.forms['filterForm'];
-								const filterButton = document.getElementById('filterButton');
-								const carouselInner = document.querySelector('.carousel-inner');
-								const priceElement = document.querySelector('.s_product_text h2');
-								const colorElement = document.getElementById('displayColor');
-								const sizeElement = document.getElementById('displaySize');
-								const displayStock = document.getElementById('displayStock');
-								const selectedSize = document.getElementById('selectedSize');
-								const selectedColor = document.getElementById('selectedColor');
-								const selectedImageUrls = document.getElementById('selectedImageUrls');
-
-								document.getElementById('selectedPrice').value = <%= product.price %>;
-
-								filterButton.addEventListener('click', function (event) {
-									event.preventDefault();
-
-									const formData = new FormData(filterForm);
-									const colorSelected = formData.get('variantColor');
-									const sizeSelected = formData.get('size');
-
-									if (!colorSelected || !sizeSelected) {
-										Swal.fire({
-											icon: 'warning',
-											title: 'Oops...',
-											text: 'Please select both color and size.',
-											confirmButtonColor: '#3085d6',
-											confirmButtonText: 'OK'
-										});
-										return;
-									}
-
-									const queryString = new URLSearchParams(formData).toString();
-
-									fetch('/filterVariant?' + queryString)
-										.then(response => response.json())
-										.then(data => {
-											if (data.variants && data.variants.length > 0) {
-												updateProductDetails(data.variants[0]);
-											} else {
-												Swal.fire({
-													icon: 'warning',
-													title: 'No Variants Found',
-													text: 'No variants found for the selected criteria. Please try different options.',
-													confirmButtonColor: '#3085d6',
-													confirmButtonText: 'OK'
-												});
-												
-											}
-										})
-										.catch(error => {
-											console.error('Error:', error);
-											Swal.fire({
-												icon: 'error',
-												title: 'Oops...',
-												text: 'An error occurred while filtering variants',
-												confirmButtonColor: '#3085d6',
-												confirmButtonText: 'OK'
-											});
-											
-										});
-
-									document.getElementById('sst').value = 1;
-									currentQuantity = 1;
-								});
-
-								function updateProductDetails(variant) {
-									carouselInner.innerHTML = '';
-
-									variant.imageUrls.forEach((url, index) => {
-										const item = document.createElement('div');
-										item.classList.add('carousel-item');
-										if (index === 0) {
-											item.classList.add('active');
-										}
-										const zoomContainer = document.createElement('div');
-    zoomContainer.classList.add('zoom-container');
-    const img = document.createElement('img');
-    img.classList.add('d-block', 'w-100', 'zoom-img');
-    img.src = url;
-    img.alt = 'Product Image';
-    zoomContainer.appendChild(img);
-    item.appendChild(zoomContainer);
-    carouselInner.appendChild(item);
-									});
-
-									priceElement.textContent = '₹' + variant.price;
-									document.getElementById('selectedPrice').value = variant.price;
-									colorElement.innerHTML = `<b>${variant.color}</b>`;
-									sizeElement.innerHTML = `<b>${variant.size}</b>`;
-									displayStock.innerHTML = `<span>Availability</span>: <b> ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} </b> <span>${variant.stock}</span>`;
-
-									selectedSize.value = variant.size;
-									selectedColor.value = variant.color;
-									selectedImageUrls.value = variant.imageUrls.join(',');
-
-									currentStock = variant.stock;
-
-
-									$('.s_Product_carousel').slick('unslick');
-									$('.s_Product_carousel').slick({
-										dots: true,
-										infinite: true,
-										speed: 300,
-										slidesToShow: 1,
-										adaptiveHeight: true
-									});
-
-									
-									applyZoomEffect();
-								}
-
-								const addToCartForm = document.getElementById('addToCartForm');
-
-								addToCartForm.addEventListener('submit', function (event) {
-									if (currentQuantity > currentStock) {
-										event.preventDefault();
-										Swal.fire({
-											icon: 'error',
-											title: 'Oops...',
-											text: 'Quantity exceeds available stock!',
-											confirmButtonColor: '#3085d6',
-											confirmButtonText: 'OK'
-										});
-										
-									}
-								});
-
-								filterForm.addEventListener('submit', function (event) {
-									const selectedColor = filterForm.querySelector('input[name="variantColor"]:checked');
-									const selectedSize = filterForm.querySelector('input[name="size"]:checked');
-
-									if (!selectedColor || !selectedSize) {
-										event.preventDefault();
-										Swal.fire({
-											icon: 'warning',
-											title: 'Selection Required',
-											text: 'Please select both color and size.',
-											confirmButtonColor: '#3085d6',
-											confirmButtonText: 'OK'
-										});
-										
-									}
-								});
-
-								const defaultColor = '<%= product.variants[0].color %>';
-								const defaultSize = '<%= product.variants[0].size %>';
-
-								const colorRadioButton = document.getElementById('color_' + defaultColor);
-								if (colorRadioButton) {
-									colorRadioButton.checked = true;
-								}
-
-								const sizeRadioButton = document.getElementById('size_' + defaultSize);
-								if (sizeRadioButton) {
-									sizeRadioButton.checked = true;
-								}
-
-
-
-								function applyZoomEffect() {
-  $('.zoom-container').zoom({
-    url: $(this).find('img').attr('src'),
-    magnify: 2
-  });
-}
-
-
-							});
-
-
-
-
-
-						</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-						<script src="/js/vendor/jquery-2.2.4.min.js"></script>
-						<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-							integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-							crossorigin="anonymous"></script>
-						<script src="/js/vendor/bootstrap.min.js"></script>
-						<script src="/js/jquery.ajaxchimp.min.js"></script>
-						<script src="/js/jquery.nice-select.min.js"></script>
-						<script src="/js/jquery.sticky.js"></script>
-						<script src="/js/nouislider.min.js"></script>
-						<script src="/js/jquery.magnific-popup.min.js"></script>
-						<script src="/js/owl.carousel.min.js"></script>
-						<script src="/js/main.js"></script>
-
-
-						<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-						<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
-
-						<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Product Description Area =================-->
+
+
+	<footer class="footer-area section_gap">
+		<div class="container">
+			<div class="row ">
+				<div class="col-6">
+					<div class="single-footer-widget mail-chimp">
+						<h6 class="mb-20">Brand</h6>
+						<ul class="instafeed d-flex flex-wrap">
+							<li><img src="img/brand/img1.jpg" alt=""></li>
+							<li><img src="img/brand/img2.jpg" alt=""></li>
+							<li><img src="img/brand/img3.jpg" alt=""></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-6  d-flex justify-content-end align-content-center">
+					<div class="single-footer-widget  w-50">
+						<h6>Follow Us</h6>
+						<p>Let us be social</p>
+						<div class="footer-social d-flex align-items-center">
+							<a href="#"><i class="fa fa-facebook"></i></a>
+							<a href="#"><i class="fa fa-twitter"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer-bottom d-flex justify-content-center align-items-center flex-wrap">
+				<p class="footer-text m-0">
+Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script> 
+</p>
+			</div>
+		</div>
+	</footer>
+
+
+
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+    let currentStock = <%= product.variants[0].stock %>;
+    let currentQuantity = 1;
+
+    function changeQuantity(change) {
+        let newQuantity = currentQuantity + change;
+        if (newQuantity > 0 && newQuantity <= currentStock) {
+            currentQuantity = newQuantity;
+            document.getElementById('sst').value = currentQuantity;
+        } else {
+            alert('Quantity exceeds available stock');
+        }
+    }
+
+    document.querySelector('.increase').addEventListener('click', function(event) {
+        event.preventDefault();
+        changeQuantity(1);
+    });
+
+    document.querySelector('.reduced').addEventListener('click', function(event) {
+        event.preventDefault();
+        changeQuantity(-1);
+    });
+
+    const zoom = mediumZoom('.zoom-img', {
+        background: '#000',
+        scrollOffset: 40,
+    });
+
+    zoom.on('open', (event) => {
+        const zoomedImage = document.querySelector('.medium-zoom-image--opened');
+        if (zoomedImage) {
+            zoomedImage.classList.add('custom-zoom-width');
+        }
+
+        const wishlistButton = document.getElementById('wishlistButton');
+        if (wishlistButton) {
+            wishlistButton.style.display = 'none';
+        }
+
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.style.position = 'fixed';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '10px';
+        closeButton.style.zIndex = '1000';
+        closeButton.style.backgroundColor = '#fff';
+        closeButton.style.border = 'none';
+        closeButton.style.padding = '10px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.id = 'zoomCloseButton';
+        document.body.appendChild(closeButton);
+
+        closeButton.addEventListener('click', () => {
+            zoom.close();
+        });
+    });
+
+    zoom.on('close', (event) => {
+        const zoomedImage = document.querySelector('.medium-zoom-image--opened');
+        if (zoomedImage) {
+            zoomedImage.classList.remove('custom-zoom-width');
+        }
+
+        const wishlistButton = document.getElementById('wishlistButton');
+        if (wishlistButton) {
+            wishlistButton.style.display = 'block';
+        }
+
+        const closeButton = document.getElementById('zoomCloseButton');
+        if (closeButton) {
+            closeButton.remove();
+        }
+    });
+
+    const filterForm = document.forms['filterForm'];
+    const filterButton = document.getElementById('filterButton');
+    const carouselInner = document.querySelector('.carousel-inner');
+    const priceElement = document.querySelector('.s_product_text h2');
+    const colorElement = document.getElementById('displayColor');
+    const sizeElement = document.getElementById('displaySize');
+    const displayStock = document.getElementById('displayStock');
+    const selectedSize = document.getElementById('selectedSize');
+    const selectedColor = document.getElementById('selectedColor');
+    const selectedImageUrls = document.getElementById('selectedImageUrls');
+
+    document.getElementById('selectedPrice').value = <%= product.price %>;
+
+    filterButton.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(filterForm);
+        const colorSelected = formData.get('variantColor');
+        const sizeSelected = formData.get('size');
+
+        if (!colorSelected || !sizeSelected) {
+            alert('Please select both color and size.');
+            return;
+        }
+
+        const queryString = new URLSearchParams(formData).toString();
+
+        fetch('/filterVariant?' + queryString)
+            .then(response => response.json())
+            .then(data => {
+                if (data.variants && data.variants.length > 0) {
+                    updateProductDetails(data.variants[0]);
+                } else {
+                    alert('No variants found for the selected criteria . Try different one');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while filtering variants');
+            });
+
+        document.getElementById('sst').value = 1;
+        currentQuantity = 1;
+    });
+
+    function updateProductDetails(variant) {
+        carouselInner.innerHTML = '';
+
+        variant.imageUrls.forEach((url, index) => {
+            const item = document.createElement('div');
+            item.classList.add('carousel-item');
+            if (index === 0) {
+                item.classList.add('active');
+            }
+            const img = document.createElement('img');
+            img.classList.add('d-block', 'w-100', 'zoom-img');
+            img.src = url;
+            img.alt = 'Product Image';
+            item.appendChild(img);
+            carouselInner.appendChild(item);
+        });
+
+        priceElement.textContent = '₹' + variant.price;
+        document.getElementById('selectedPrice').value = variant.price; 
+        colorElement.innerHTML = `<b>${variant.color}</b>`;
+        sizeElement.innerHTML = `<b>${variant.size}</b>`;
+        displayStock.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
+
+        selectedSize.value = variant.size;
+        selectedColor.value = variant.color;
+        selectedImageUrls.value = variant.imageUrls.join(',');
+
+        currentStock = variant.stock;
+
+        const zoom = mediumZoom('.zoom-img', {
+            background: '#000',
+            scrollOffset: 40,
+        });
+
+        zoom.on('open', (event) => {
+            const zoomedImage = document.querySelector('.medium-zoom-image--opened');
+            if (zoomedImage) {
+                zoomedImage.classList.add('custom-zoom-width');
+            }
+
+            const wishlistButton = document.getElementById('wishlistButton');
+            if (wishlistButton) {
+                wishlistButton.style.display = 'none';
+            }
+
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'Close';
+            closeButton.style.position = 'fixed';
+            closeButton.style.top = '10px';
+            closeButton.style.right = '10px';
+            closeButton.style.zIndex = '1000';
+            closeButton.style.backgroundColor = '#fff';
+            closeButton.style.border = 'none';
+            closeButton.style.padding = '10px';
+            closeButton.style.cursor = 'pointer';
+            closeButton.id = 'zoomCloseButton';
+            document.body.appendChild(closeButton);
+
+            closeButton.addEventListener('click', () => {
+                zoom.close();
+            });
+        });
+
+        zoom.on('close', (event) => {
+            const zoomedImage = document.querySelector('.medium-zoom-image--opened');
+            if (zoomedImage) {
+                zoomedImage.classList.remove('custom-zoom-width');
+            }
+
+            const wishlistButton = document.getElementById('wishlistButton');
+            if (wishlistButton) {
+                wishlistButton.style.display = 'block';
+            }
+
+            const closeButton = document.getElementById('zoomCloseButton');
+            if (closeButton) {
+                closeButton.remove();
+            }
+        });
+
+        $('.s_Product_carousel').slick('unslick');
+        $('.s_Product_carousel').slick({
+            dots: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            adaptiveHeight: true
+        });
+    }
+
+    const addToCartForm = document.getElementById('addToCartForm');
+
+    addToCartForm.addEventListener('submit', function(event) {
+        if (currentQuantity > currentStock) {
+            event.preventDefault();
+            alert('Quantity exceeds available stock');
+        }
+    });
+
+    filterForm.addEventListener('submit', function(event) {
+        const selectedColor = filterForm.querySelector('input[name="variantColor"]:checked');
+        const selectedSize = filterForm.querySelector('input[name="size"]:checked');
+
+        if (!selectedColor || !selectedSize) {
+            event.preventDefault();
+            alert('Please select both color and size.');
+        }
+    });
+
+    const defaultColor = '<%= product.variants[0].color %>';
+    const defaultSize = '<%= product.variants[0].size %>';
+
+    const colorRadioButton = document.getElementById('color_' + defaultColor);
+    if (colorRadioButton) {
+        colorRadioButton.checked = true;
+    }
+
+    const sizeRadioButton = document.getElementById('size_' + defaultSize);
+    if (sizeRadioButton) {
+        sizeRadioButton.checked = true;
+    }
+});
+
+	</script>
+		
+	
+
+
+
+	
+
+
+
+	 <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            const addToCartForm = document.getElementById('addToCartForm');
+            let selectedVariant = null;
+            let currentStock = <%# = product.variants[0].stock %>;
+            let currentQuantity = 1;
+
+            // Image zoom functionality
+            const zoom = mediumZoom('.zoom-img', {
+                background: '#000',
+                scrollOffset: 40,
+            });
+
+            // Quantity change functionality
+            function changeQuantity(change) {
+                let newQuantity = currentQuantity + change;
+                if (newQuantity > 0 && newQuantity <= currentStock) {
+                    currentQuantity = newQuantity;
+                    document.getElementById('sst').value = currentQuantity;
+                }
+            }
+
+            // Event listeners for quantity buttons
+            document.querySelector('.increase').addEventListener('click', function(event) {
+                event.preventDefault();
+                changeQuantity(1);
+            });
+
+            document.querySelector('.reduced').addEventListener('click', function(event) {
+                event.preventDefault();
+                changeQuantity(-1);
+            });
+
+            // Variant filtering functionality
+            const filterForm = document.getElementById('filterForm');
+            filterForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(filterForm);
+                const queryString = new URLSearchParams(formData).toString();
+
+                fetch('/filterVariant?' + queryString)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.variants && data.variants.length > 0) {
+                            updateProductDetails(data.variants[0]);
+                        } else {
+                            alert('No variants found for the selected criteria');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while filtering variants');
+                    });
+            });
+
+            // Function to update product details
+            function updateProductDetails(variant) {
+                // Update carousel images
+                const carousel = document.querySelector('.s_Product_carousel');
+                carousel.innerHTML = variant.imageUrls.map(url => `
+                    <div class="single-prd-item">
+                        <img class="img-fluid zoom-img" src="${url}" alt="Product Image">
+                    </div>
+                `).join('');
+
+                // Update price and stock information
+                document.querySelector('.s_product_text h2').textContent = '₹' + variant.price;
+                const stockElement = document.querySelector('.s_product_text ul li');
+                stockElement.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
+
+                // Update hidden inputs
+                document.getElementById('selectedSize').value = variant.size;
+                document.getElementById('selectedColor').value = variant.color;
+                document.getElementById('selectedImageUrls').value = variant.imageUrls.join(',');
+
+                // Reinitialize zoom on new images
+                mediumZoom.detach('.zoom-img');
+                mediumZoom('.zoom-img', {
+                    background: '#000',
+                    scrollOffset: 40,
+                });
+            }
+
+            // Add to cart form submission
+            addToCartForm.addEventListener('submit', function(event) {
+                if (!selectedVariant) {
+                    event.preventDefault();
+                    alert('Please select a variant before adding to cart.');
+                }
+            });
+        });
+
+        // Flash message functionality
+        function hideElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.5s ease-out';
+                    element.style.opacity = '0';
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 500);
+                }, 2000);
+            }
+        }
+
+        // Hide flash messages
+        hideElement('successAlert');
+        hideElement('errorAlert');
+    </script> -->
+
+
+
+
+
+	<script src="/js/vendor/jquery-2.2.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+	 crossorigin="anonymous"></script>
+	<script src="/js/vendor/bootstrap.min.js"></script>
+	<script src="/js/jquery.ajaxchimp.min.js"></script>
+	<script src="/js/jquery.nice-select.min.js"></script>
+	<script src="/js/jquery.sticky.js"></script>
+	<script src="/js/nouislider.min.js"></script>
+	<script src="/js/jquery.magnific-popup.min.js"></script>
+	<script src="/js/owl.carousel.min.js"></script>
+	<script src="/js/main.js"></script>
+
+
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 
 
 
 </body>
 
-</html>
+</html> 
