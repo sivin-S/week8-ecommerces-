@@ -187,7 +187,9 @@
                                         <h5 class="item-total">₹<%=data.product.price %></h5>
                                     </td>
                                     <td>
-                                        <a href="#" onclick="removeItem(<%= index %>)" style="text-decoration: none;color:red;border: 1px solid red;padding: 12px 20px;">Remove</a>
+                                        <button class="btn"  onclick="removeItem(<%= index %>)" style="color:red;border: 1px solid red;padding: 12px 20px;background-color: transparent;">
+                                            Remove
+                                        </button>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -284,34 +286,61 @@ async function removeItem(index) {
             const result = await response.json();
 
             if (result.success) {
-                location.reload();
+                 // Remove the item row from the DOM
+            const row = document.querySelector(`tr[data-index="${index}"]`);
+            if (row) {
+                row.remove();
+            }
+
+            // Update the indices of remaining items
+            updateIndices();
+
+            // Update the subtotal
+            updateSubtotal();
+
+            // Show success alert
+            showAlert('success', 'Item removed successfully.');
             } else {
-                const errorAlert = document.createElement('div');
-                errorAlert.id = 'errorAlert';
-                errorAlert.className = 'alert alert-danger';
-                errorAlert.role = 'alert';
-                errorAlert.style.position = 'fixed';
-                errorAlert.style.top = '20px';
-                errorAlert.style.right = '20px';
-                errorAlert.style.zIndex = '1000';
-                errorAlert.textContent = 'Failed to remove the item. Please try again.';
-                document.body.appendChild(errorAlert);
-                hideFlashMessages();
+                showAlert('error', result.message);
             }
         } catch (error) {
-            const errorAlert = document.createElement('div');
-            errorAlert.id = 'errorAlert';
-            errorAlert.className = 'alert alert-danger';
-            errorAlert.role = 'alert';
-            errorAlert.style.position = 'fixed';
-            errorAlert.style.top = '20px';
-            errorAlert.style.right = '20px';
-            errorAlert.style.zIndex = '1000';
-            errorAlert.textContent = 'An error occurred while removing the item. Please try again.';
-            document.body.appendChild(errorAlert);
-            hideFlashMessages();
+            showAlert('error', 'An error occurred while removing the item. Please try again.');
         }
     }
+
+// Function to update the indices of remaining items
+function updateIndices() {
+    const rows = document.querySelectorAll('#cart-items tr');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        const removeButton = row.querySelector('button[onclick^="removeItem"]');
+
+        if (removeButton) {
+            removeButton.setAttribute('onclick', `removeItem(${index})`);
+        }
+    });
+}
+
+
+
+
+
+    //  custom alert function 
+
+    function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.role = 'alert';
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '1000';
+            alert.textContent = message;
+            document.body.appendChild(alert);
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 1000);
+        }
 
 
 

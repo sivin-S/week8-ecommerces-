@@ -164,23 +164,19 @@ exports.removeProductFromCart = async (req, res) => {
 
     const userCart = await Cart.findOne({ user: userId });
     if (!userCart) {
-      req.flash('error', 'Cart not found');
-      return res.redirect('/cart');
+      return res.json({ success: false, message: 'Cart not found' });
     }
 
     if (itemIndex >= 0 && itemIndex < userCart.items.length) {
       userCart.items.splice(itemIndex, 1); 
       await userCart.save();
-      req.flash('success', 'Item removed from cart');
-      res.json({ success: true });
+      return res.json({ success: true, message: 'Item removed from cart' });
     } else {
-      req.flash('error', 'Invalid item index');
-      res.json({ success: false });
+      return res.json({ success: false, message: 'Invalid item index' });
     }
   } catch (error) {
     console.error("Error removing product from cart:", error);
-    req.flash('error', 'Please try again.');
-    res.json({ success: false });
+    return res.json({ success: false, message: 'Please try again.' });
   }
 };
 
