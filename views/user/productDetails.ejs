@@ -41,6 +41,9 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 
 		<style>
@@ -711,7 +714,11 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
             currentQuantity = newQuantity;
             document.getElementById('sst').value = currentQuantity;
         } else {
-            alert('Quantity exceeds available stock');
+			Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Quantity exceeds available stock',
+                    });
         }
     }
 
@@ -797,7 +804,11 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
         const sizeSelected = formData.get('size');
 
         if (!colorSelected || !sizeSelected) {
-            alert('Please select both color and size.');
+            Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please select both color and size.',
+                    });
             return;
         }
 
@@ -809,12 +820,20 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
                 if (data.variants && data.variants.length > 0) {
                     updateProductDetails(data.variants[0]);
                 } else {
-                    alert('No variants found for the selected criteria . Try different one');
+                    Swal.fire({
+                                icon: 'info',
+                                title: 'No variants found',
+                                text: 'No variants found for the selected criteria. Try different one.',
+                            });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while filtering variants');
+				Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while filtering variants',
+                        });
             });
 
         document.getElementById('sst').value = 1;
@@ -916,7 +935,11 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
     addToCartForm.addEventListener('submit', function(event) {
         if (currentQuantity > currentStock) {
             event.preventDefault();
-            alert('Quantity exceeds available stock');
+			Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Quantity exceeds available stock',
+                    });
         }
     });
 
@@ -926,7 +949,11 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 
         if (!selectedColor || !selectedSize) {
             event.preventDefault();
-            alert('Please select both color and size.');
+			Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please select both color and size.',
+                    });
         }
     });
 
