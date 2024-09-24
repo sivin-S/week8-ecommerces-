@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="shortcut icon" href="img/fav.png">
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
+	
 
   
 	<title>Step Heaven</title>
@@ -27,7 +27,7 @@
 
 			<!-- image zoom cdn  -->
 	
-			<script  src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
+			<script defer src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js"></script>
 
 			<!--  -->
 
@@ -47,22 +47,58 @@
 
 
 		<style>
-			  .medium-zoom-overlay {
-            background-color: rgba(0, 0, 0, 0.8);
+			
+
+		/*  img zoom */
+
+		.medium-zoom--opened .header_area {
+            display: none;
         }
-        .zoom-img {
-            z-index: 10;
+
+        .carousel-item img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
-		.custom-zoom-width {
-            width: 100%;
+
+        .variantContainer::-webkit-scrollbar {
+            display: none;
         }
+
+        /* Zoom container styles */
+
+        .zoom-container {
+		
+        position: absolute;
+		transform: translate(0%,50%);
+        border: 1px solid #d4d4d4;
+        background: #fff;
+        z-index: 1000;
+        display: none;
+        overflow: hidden;
+        width: 550px; 
+        height: 500px; 
+       }
+
+
+
+
+
+
+
+
+	.zoom-container img {
+        position: absolute;
+        max-width: none;
+        max-height: none;
+    }
 
 	
-.medium-zoom--opened .header_area {
-    display: none;
-}
+
 
 	.carousel-item img {
+
     max-width: 100%;
     height: auto;
     display: block;
@@ -191,7 +227,7 @@
 			<div class="row s_product_inner">
 				<div class="col-lg-6">
 					<div id="productCarousel" class="carousel slide" data-ride="carousel">
-						<div class="carousel-inner">
+						<div class="carousel-inner ">
 							<div class="carousel-item active">
 								<img class="d-block w-100 zoom-img imgOne" src="<%=product.variants[0].imageUrls[0]%>" alt="First slide">
 							</div>
@@ -326,6 +362,11 @@
 		</div>
 	</div>
 	<!--================End Single Product Area =================-->
+
+	 <!-- Zoom container -->
+	 <div class="zoom-container" id="zoomContainer">
+        <img id="zoomedImage" src="" alt="Zoomed Image">
+    </div>
 
     <!-- related product start -->
    
@@ -705,8 +746,76 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 	
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+
+            initializeZoom();
+
+
+
+
+
+
     let currentStock = <%= product.variants[0].stock %>;
     let currentQuantity = 1;
+
+    //  img zooming 	
+
+
+	
+	function initializeZoom() {
+    const zoomContainer = document.getElementById('zoomContainer');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const carouselInner = document.querySelector('.carousel-inner');
+
+    carouselInner.addEventListener('mousemove', function(event) {
+        const activeImage = carouselInner.querySelector('.carousel-item.active img');
+        if (!activeImage) return;
+
+        const rect = carouselInner.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const zoomFactor = 4;
+
+        const zoomedImageWidth = activeImage.naturalWidth * zoomFactor;
+        const zoomedImageHeight = activeImage.naturalHeight * zoomFactor;
+
+        const offsetX = Math.min(Math.max(0, x * zoomFactor - zoomContainer.clientWidth / 2), zoomedImageWidth - zoomContainer.clientWidth);
+        const offsetY = Math.min(Math.max(0, y * zoomFactor - zoomContainer.clientHeight / 2), zoomedImageHeight - zoomContainer.clientHeight);
+
+        zoomedImage.src = activeImage.src;
+        zoomContainer.style.display = 'block';
+        zoomContainer.style.left = `${rect.right + 10}px`;
+        zoomContainer.style.top = `${rect.top}px`;
+        zoomedImage.style.width = `${zoomedImageWidth}px`;
+        zoomedImage.style.height = `${zoomedImageHeight}px`;
+        zoomedImage.style.left = `-${offsetX}px`;
+        zoomedImage.style.top = `-${offsetY}px`;
+    });
+
+    carouselInner.addEventListener('mouseleave', function() {
+        zoomContainer.style.display = 'none';
+    });
+}
+
+
+		
+        initializeZoom();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function changeQuantity(change) {
         let newQuantity = currentQuantity + change;
@@ -731,57 +840,7 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
         event.preventDefault();
         changeQuantity(-1);
     });
-
-    const zoom = mediumZoom('.zoom-img', {
-        background: '#000',
-        scrollOffset: 40,
-    });
-
-    zoom.on('open', (event) => {
-        const zoomedImage = document.querySelector('.medium-zoom-image--opened');
-        if (zoomedImage) {
-            zoomedImage.classList.add('custom-zoom-width');
-        }
-
-        const wishlistButton = document.getElementById('wishlistButton');
-        if (wishlistButton) {
-            wishlistButton.style.display = 'none';
-        }
-
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.style.position = 'fixed';
-        closeButton.style.top = '10px';
-        closeButton.style.right = '10px';
-        closeButton.style.zIndex = '1000';
-        closeButton.style.backgroundColor = '#fff';
-        closeButton.style.border = 'none';
-        closeButton.style.padding = '10px';
-        closeButton.style.cursor = 'pointer';
-        closeButton.id = 'zoomCloseButton';
-        document.body.appendChild(closeButton);
-
-        closeButton.addEventListener('click', () => {
-            zoom.close();
-        });
-    });
-
-    zoom.on('close', (event) => {
-        const zoomedImage = document.querySelector('.medium-zoom-image--opened');
-        if (zoomedImage) {
-            zoomedImage.classList.remove('custom-zoom-width');
-        }
-
-        const wishlistButton = document.getElementById('wishlistButton');
-        if (wishlistButton) {
-            wishlistButton.style.display = 'block';
-        }
-
-        const closeButton = document.getElementById('zoomCloseButton');
-        if (closeButton) {
-            closeButton.remove();
-        }
-    });
+  
 
     const filterForm = document.forms['filterForm'];
     const filterButton = document.getElementById('filterButton');
@@ -869,56 +928,8 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 
         currentStock = variant.stock;
 
-        const zoom = mediumZoom('.zoom-img', {
-            background: '#000',
-            scrollOffset: 40,
-        });
+		initializeZoom();
 
-        zoom.on('open', (event) => {
-            const zoomedImage = document.querySelector('.medium-zoom-image--opened');
-            if (zoomedImage) {
-                zoomedImage.classList.add('custom-zoom-width');
-            }
-
-            const wishlistButton = document.getElementById('wishlistButton');
-            if (wishlistButton) {
-                wishlistButton.style.display = 'none';
-            }
-
-            const closeButton = document.createElement('button');
-            closeButton.textContent = 'Close';
-            closeButton.style.position = 'fixed';
-            closeButton.style.top = '10px';
-            closeButton.style.right = '10px';
-            closeButton.style.zIndex = '1000';
-            closeButton.style.backgroundColor = '#fff';
-            closeButton.style.border = 'none';
-            closeButton.style.padding = '10px';
-            closeButton.style.cursor = 'pointer';
-            closeButton.id = 'zoomCloseButton';
-            document.body.appendChild(closeButton);
-
-            closeButton.addEventListener('click', () => {
-                zoom.close();
-            });
-        });
-
-        zoom.on('close', (event) => {
-            const zoomedImage = document.querySelector('.medium-zoom-image--opened');
-            if (zoomedImage) {
-                zoomedImage.classList.remove('custom-zoom-width');
-            }
-
-            const wishlistButton = document.getElementById('wishlistButton');
-            if (wishlistButton) {
-                wishlistButton.style.display = 'block';
-            }
-
-            const closeButton = document.getElementById('zoomCloseButton');
-            if (closeButton) {
-                closeButton.remove();
-            }
-        });
 
         $('.s_Product_carousel').slick('unslick');
         $('.s_Product_carousel').slick({
@@ -969,130 +980,12 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
     if (sizeRadioButton) {
         sizeRadioButton.checked = true;
     }
-});
+})
+	
 
 	</script>
 		
 	
-
-
-
-	
-
-
-
-	 <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize variables
-            const addToCartForm = document.getElementById('addToCartForm');
-            let selectedVariant = null;
-            let currentStock = <%# = product.variants[0].stock %>;
-            let currentQuantity = 1;
-
-            // Image zoom functionality
-            const zoom = mediumZoom('.zoom-img', {
-                background: '#000',
-                scrollOffset: 40,
-            });
-
-            // Quantity change functionality
-            function changeQuantity(change) {
-                let newQuantity = currentQuantity + change;
-                if (newQuantity > 0 && newQuantity <= currentStock) {
-                    currentQuantity = newQuantity;
-                    document.getElementById('sst').value = currentQuantity;
-                }
-            }
-
-            // Event listeners for quantity buttons
-            document.querySelector('.increase').addEventListener('click', function(event) {
-                event.preventDefault();
-                changeQuantity(1);
-            });
-
-            document.querySelector('.reduced').addEventListener('click', function(event) {
-                event.preventDefault();
-                changeQuantity(-1);
-            });
-
-            // Variant filtering functionality
-            const filterForm = document.getElementById('filterForm');
-            filterForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(filterForm);
-                const queryString = new URLSearchParams(formData).toString();
-
-                fetch('/filterVariant?' + queryString)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.variants && data.variants.length > 0) {
-                            updateProductDetails(data.variants[0]);
-                        } else {
-                            alert('No variants found for the selected criteria');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while filtering variants');
-                    });
-            });
-
-            // Function to update product details
-            function updateProductDetails(variant) {
-                // Update carousel images
-                const carousel = document.querySelector('.s_Product_carousel');
-                carousel.innerHTML = variant.imageUrls.map(url => `
-                    <div class="single-prd-item">
-                        <img class="img-fluid zoom-img" src="${url}" alt="Product Image">
-                    </div>
-                `).join('');
-
-                // Update price and stock information
-                document.querySelector('.s_product_text h2').textContent = '₹' + variant.price;
-                const stockElement = document.querySelector('.s_product_text ul li');
-                stockElement.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
-
-                // Update hidden inputs
-                document.getElementById('selectedSize').value = variant.size;
-                document.getElementById('selectedColor').value = variant.color;
-                document.getElementById('selectedImageUrls').value = variant.imageUrls.join(',');
-
-                // Reinitialize zoom on new images
-                mediumZoom.detach('.zoom-img');
-                mediumZoom('.zoom-img', {
-                    background: '#000',
-                    scrollOffset: 40,
-                });
-            }
-
-            // Add to cart form submission
-            addToCartForm.addEventListener('submit', function(event) {
-                if (!selectedVariant) {
-                    event.preventDefault();
-                    alert('Please select a variant before adding to cart.');
-                }
-            });
-        });
-
-        // Flash message functionality
-        function hideElement(elementId) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                setTimeout(() => {
-                    element.style.transition = 'opacity 0.5s ease-out';
-                    element.style.opacity = '0';
-                    setTimeout(() => {
-                        element.style.display = 'none';
-                    }, 500);
-                }, 2000);
-            }
-        }
-
-        // Hide flash messages
-        hideElement('successAlert');
-        hideElement('errorAlert');
-    </script> -->
-
 
 
 
@@ -1117,4 +1010,4 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 
 </body>
 
-</html> 
+</html>
