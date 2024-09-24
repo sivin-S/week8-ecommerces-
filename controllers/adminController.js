@@ -78,15 +78,15 @@ async function toggleUserState(req, res) {
         const user = await User.findById(userId);
 
         if (user) {
-            user.isBlocked = !user.isBlocked; // Toggle the state (true and false)
+            user.isBlocked = !user.isBlocked; 
             await user.save();
-            res.redirect('/admin/userList');
+            res.json({ success: true, isBlocked: user.isBlocked });
         } else {
-            res.status(404).send('User not found');
+            res.status(404).json({ success: false, message: 'User not found' });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server error');
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 }
 

@@ -23,7 +23,7 @@ router.get('/login', preventAutoLogin, adminController.loginPage);
 router.get('/products', isAdminLogin, adminController.products);
 router.get('/addProducts', isAdminLogin, adminController.addProductsPage);
 router.get('/userList', isAdminLogin, adminController.userList);
-router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
+// router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.get('/orderList', isAdminLogin, adminController.orderList);
 router.get('/paymentMethods', isAdminLogin, adminController.paymentMethods);
 router.get('/salesReport', isAdminLogin, adminController.salesReport);
@@ -38,7 +38,7 @@ router.get('/logout', adminController.logout);
 router.get('/orderDetails/:id', isAdminLogin, adminController.getOrderDetails);
 
 
-
+router.post('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.post('/softDeleteProduct/:id', isAdminLogin, adminController.softDeleteProduct);
 router.post('/category/add', isAdminLogin, adminController.addCategory);
 router.post('/checkOutStatus', isAdminLogin, adminController.checkOutStatus);
