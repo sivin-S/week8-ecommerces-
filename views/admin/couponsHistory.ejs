@@ -140,7 +140,10 @@
                 <div class="bg-white p-4 rounded shadow-sm" style="color: #4D869C !important;">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2>Coupons</h2>
-                        <a href="/admin/couponsCreate"> <button class="btn" style="border: 1px solid #4D869C;color: #4D869C;">Create Coupon</button></a>
+                        <!-- /admin/couponsCreate -->
+                        
+                            <button  data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn" style="border: 1px solid #4D869C;color: #4D869C;">Create Coupon</button>
+                        
                     </div>
                     <input type="search" class="form-control mt-3" id="couponSearch" onkeyup="searchTable('couponTable', 'couponSearch')" placeholder="Search for coupons.."
                     style="outline-color: #4D869C !important;"
@@ -152,7 +155,7 @@
                                     <th>Id</th>
                                     <th>Discount</th>
                                     <th>Expiry Date</th>
-                                    <th>Status</th>
+                                   
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -172,7 +175,209 @@
         </div>
     </div>
 
+   <!-- modal -->
+
+   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create Coupon</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Add your form or content here -->
+                <form  id="couponForm" action="/admin/couponsCreate" method="post">
+                    <div class="mb-3">
+                        <label for="couponCode" class="form-label">Coupon Code</label>
+                        <input type="text" class="form-control" id="couponCode" name="couponCode" placeholder="Enter coupon code">
+                    </div>
+                    <div class="mb-3">
+                        <label for="offerPrice" class="form-label">Offer Price</label>
+                        <input type="number" class="form-control" id="offerPrice" name="offerPrice" placeholder="Enter Offer Price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="minimumPrice" class="form-label">Minimum Price</label>
+                        <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" placeholder="Enter Minimum Price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="expiryDate" class="form-label">Expiry Date</label>
+                        <input type="date" class="form-control" id="expiryDate" name="expiryDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="validateForm()">Save Coupon</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/validator@13.7.0/validator.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+
     <script>
+
+    //    validation for form 
+
+  
+
+    function validateForm() {
+
+       
+
+var couponCode = document.getElementById('couponCode').value;
+var offerPrice = document.getElementById('offerPrice').value;
+
+var minPurchaseAmount = document.getElementById('minPurchaseAmount').value;
+var expiryDate = document.getElementById('expiryDate').value;
+
+
+
+ couponCode = validator.trim(couponCode);
+
+if (validator.isEmpty(couponCode)) {
+
+    Swal.fire('Error', 'Coupon Code is required', 'error');
+
+    return;
+
+}
+
+
+if (!validator.isInt(offerPrice, { min: 0 })) {
+    Swal.fire('Error', 'Offer Price must be a non-negative integer', 'error');
+
+    return;
+}
+
+if (!validator.isInt(minPurchaseAmount, { min: 0 })) {
+
+    Swal.fire('Error', 'Minimum Price must be a non-negative integer', 'error');
+    return;
+
+}
+
+
+if (!validator.isDate(expiryDate)) {
+
+    Swal.fire('Error', 'Invalid Expiry Date', 'error');
+
+    return;
+
+}
+ 
+createCoupon(couponCode,offerPrice,minimumPrice,expiryDate)
+
+}
+
+
+
+
+function createCoupon(couponCode,offerPrice,minPurchaseAmount,expiryDate){
+  fetch('/admin/couponsCreate',{
+    method:'POST',
+    body: JSON.stringify({
+        couponCode,
+        offerPrice,
+        minPurchaseAmount,
+        expiryDate: new Date(expiryDate)
+    }),
+    headers:{
+      'Content-Type':'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if(data.success){
+        Swal.fire('Success', 'Coupon created successfully', 'success');
+        $('#staticBackdrop').modal('hide');
+        refreshCouponList();
+    }else{
+        Swal.fire('Error', 'Coupon creation failed', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire('Error', 'An error occurred while creating the coupon', 'error');
+  });
+
+}
+
+
+function refreshCouponList() {
+   
+    fetch('/admin/getCoupons')
+        .then(response => response.json())
+        .then(data => {
+           
+            updateCouponTable(data);
+        })
+        .catch(error => {
+            console.error('Error refreshing coupon list:', error);
+        });
+}
+
+
+function updateCouponTable(coupons) {
+    const tableBody = document.querySelector('#couponTable tbody');
+    tableBody.innerHTML = '';
+    coupons.forEach(coupon => {
+        const row = `
+            <tr>
+                <td>${coupon.couponCode}</td>
+                <td>${coupon.offerPrice}</td>
+                <td>${coupon.minPurchaseAmount}</td>
+                <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
+                
+                <td><button class="btn btn-danger btn-sm" onclick="removeCoupon('${coupon._id}')">Remove</button></td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
+
+function removeCoupon(couponId) {
+    
+    fetch(`/admin/removeCoupon/${couponId}`,{ 
+        method: 'POST'
+     })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Success', 'Coupon removed successfully', 'success');
+                refreshCouponList();
+            } else {
+                Swal.fire('Error', data.message || 'Failed to remove coupon', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'An unexpected error occurred', 'error');
+        });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         function searchTable(tableId, inputId) {
             var input, filter, table, tr, td, i, j, txtValue;
             input = document.getElementById(inputId);

@@ -6,6 +6,7 @@ const fs = require("fs");
 const Admin = require("../model/dbAdminSchema");
 const Category = require("../model/categorySchema");
 const Checkout = require("../model/checkoutSchema");
+const Coupon = require("../model/couponSchema");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -156,12 +157,16 @@ function salesReport(req, res) {
 }
 
 // Function to render the coupons history page
-function couponsHistory(req, res) {
+async function couponsHistory(req, res) {
     try {
-        res.render('couponsHistroy.ejs');
+         const coupon = await Coupon.find({});
+
+          console.log("coupon >>>>>>>>>>>>>>>>",coupon);
+        res.render('couponsHistory.ejs', { coupon });
+
     } catch (err) {
         console.log(err);
-        res.redirect('/admin');
+        res.redirect('/admin/couponsHistory');
     }
 }
 
@@ -174,6 +179,18 @@ async function categories(req, res) {
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
+    }
+}
+
+
+
+async function refreshCouponList(req, res) {
+    try {
+        const coupon = await Coupon.find({});
+        res.json({coupon});
+    } catch (err) {
+        console.log(err);
+        res.json({success:false,error:"An error occurred while refreshing the coupon list."});
     }
 }
 
@@ -559,12 +576,84 @@ async function addProducts(req, res) {
 }
 
 // Function to render the coupons creation page
-function couponsCreate(req, res) {
-    res.render('couponsCreate.ejs');
+async function couponsCreate(req, res) {
+    console.log('couponsCreate >>>>>>>>>>>>>>>>>>>>',req.body);
+    try{
+         const coupon = await Coupon.find({});
+         const newCoupon = new Coupon({
+            couponCode: req.body.couponCode,
+            offerPrice: req.body.offerPrice,
+            expiryDate: req.body.expiryDate,
+            minPurchaseAmount: req.body.minPurchaseAmount
+         });
+         
+         
+    }catch(err){
+        console.log(err);
+        res.redirect('/admin/couponsCreate');
+    }
 }
+
+async function removeCoupon(req, res) {
+    console.log('removeCoupon >>>>>>>>>>>>>>>>>>>>',req.params.id);
+    try {
+        const couponId = req.params.id;
+        const coupon = await Coupon.findByIdAndDelete(couponId);
+        res.json({success:true,message:"Coupon removed successfully!",coupon});
+    } catch (err) {
+        console.log(err);
+        res.json({success:false,error:"An error occurred while removing the coupon."});
+    }
+}
+
+
+
+async function removeProductImage(req, res) {
+    try {
+        const { productId } = req.params;
+        const { variantIndex, imageIndex, imageUrl } = req.body;
+
+       
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+      
+        const variant = product.variants[variantIndex];
+        if (variant && variant.imageUrls) {
+            variant.imageUrls.splice(imageIndex, 1);
+        }
+
+      
+        await product.save();
+
+      
+        const imagePath = path.join(__dirname, 'public', imageUrl);
+        fs.unlink(imagePath, (err) => {
+            if (err) {
+                console.error('Error deleting image file:', err);
+            }
+        });
+
+        res.json({ success: true, message: 'Image removed successfully' });
+    } catch (error) {
+        console.error('Error removing image:', error);
+        res.status(500).json({ success: false, message: 'Failed to remove image' });
+    }
+}
+
+
+
+
+
 
 module.exports = {
     dashboard,
+    removeCoupon,
+    removeProductImage,
+    refreshCouponList,
     loginPage,
     userList,
     toggleUserState,

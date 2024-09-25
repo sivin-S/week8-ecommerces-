@@ -274,13 +274,71 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.body.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-preview')) {
-            const wrapper = e.target.closest('.preview-wrapper');
-            const variantIndex = wrapper.getAttribute('data-variant');
-            const imageIndex = wrapper.getAttribute('data-index');
-            document.getElementById(`variantImage${parseInt(imageIndex) + 1}-${variantIndex}`).value = '';
-            wrapper.remove();
-        }
+       
+                if (e.target.classList.contains('remove-preview')) {
+                    e.preventDefault();
+                const wrapper = e.target.closest('.preview-wrapper');
+                const variantIndex = wrapper.getAttribute('data-variant');
+                const imageIndex = wrapper.getAttribute('data-index');
+                const imageUrl = wrapper.querySelector('img').src;
+                const productId = '<%= productDetails._id %>'; 
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        return fetch(`/admin/removeProductImage/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ variantIndex, imageIndex, imageUrl }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                return data;
+                            } else {
+                                throw new Error(data.message || 'Failed to remove image');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Remove the preview image
+                        wrapper.remove();
+
+                        // Clear the file input
+                        const fileInput = document.getElementById(`variantImage${parseInt(imageIndex) + 1}-${variantIndex}`);
+                        fileInput.value = '';
+
+                        // Update the file name label
+                        const label = fileInput.nextElementSibling;
+                        if (label && label.tagName === 'LABEL') {
+                            label.textContent = 'No file selected';
+                        }
+
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'The image has been deleted.',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            }
+        
     });
 
     document.body.addEventListener('change', function(e) {

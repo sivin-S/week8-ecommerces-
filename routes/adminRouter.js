@@ -23,6 +23,7 @@ router.get('/login', preventAutoLogin, adminController.loginPage);
 router.get('/products', isAdminLogin, adminController.products);
 router.get('/addProducts', isAdminLogin, adminController.addProductsPage);
 router.get('/userList', isAdminLogin, adminController.userList);
+router.get('/refreshCouponList', isAdminLogin, adminController.refreshCouponList);
 // router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.get('/orderList', isAdminLogin, adminController.orderList);
 router.get('/paymentMethods', isAdminLogin, adminController.paymentMethods);
@@ -47,5 +48,7 @@ router.post('/login', adminController.login);
 router.post('/editProduct/:id', adminController.editProduct);
 router.post('/addProducts', adminController.addProducts);
 router.post('/couponsCreate', isAdminLogin, adminController.couponsCreate);
+router.post('/removeCoupon/:id', isAdminLogin, adminController.removeCoupon);
+router.post('/removeProductImage/:productId', isAdminLogin, adminController.removeProductImage);
 
 module.exports = router;
