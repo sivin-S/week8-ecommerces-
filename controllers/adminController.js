@@ -7,6 +7,7 @@ const Admin = require("../model/dbAdminSchema");
 const Category = require("../model/categorySchema");
 const Checkout = require("../model/checkoutSchema");
 const Coupon = require("../model/couponSchema");
+const mongoose = require("mongoose");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -159,10 +160,10 @@ function salesReport(req, res) {
 // Function to render the coupons history page
 async function couponsHistory(req, res) {
     try {
-         const coupon = await Coupon.find({});
+         const coupons = await Coupon.find({});
 
-          console.log("coupon >>>>>>>>>>>>>>>>",coupon);
-        res.render('couponsHistory.ejs', { coupon });
+          console.log("coupon >>>>>>>>>>>>>>>>",coupons);
+        res.render('couponsHistory.ejs', { coupons });
 
     } catch (err) {
         console.log(err);
@@ -182,18 +183,44 @@ async function categories(req, res) {
     }
 }
 
+async function getCoupons(req, res) {
+    try {
+        const coupons = await Coupon.find();
+        const currentDate = new Date();
+    
+        const updatedCoupons = coupons.map(coupon => {
+          if (coupon.expiryDate < currentDate && coupon.status) {
+            coupon.status = false;
+            coupon.save();
+          }
+          return {
+            _id: coupon._id,
+            couponCode: coupon.couponCode,
+            offerPrice: coupon.offerPrice,
+            minPurchaseAmount: coupon.minPurchaseAmount,
+            expiryDate: coupon.expiryDate,
+            status: coupon.status
+          };
+        });
+    
+        res.json(updatedCoupons);
+      } catch (error) {
+        console.error('Error fetching coupons:', error);
+        res.status(500).json({ success: false, message: 'Error fetching coupons' });
+      }
+}
+
 
 
 async function refreshCouponList(req, res) {
     try {
         const coupon = await Coupon.find({});
-        res.json({coupon});
+        res.json({success: true, coupon});
     } catch (err) {
         console.log(err);
-        res.json({success:false,error:"An error occurred while refreshing the coupon list."});
+        res.json({success: false, error: "An error occurred while refreshing the coupon list."});
     }
 }
-
 // Function to soft delete a product (toggle deleted state)
 async function softDeleteProduct(req, res) {
     try {
@@ -578,26 +605,39 @@ async function addProducts(req, res) {
 // Function to render the coupons creation page
 async function couponsCreate(req, res) {
     console.log('couponsCreate >>>>>>>>>>>>>>>>>>>>',req.body);
-    try{
-         const coupon = await Coupon.find({});
+    try {
+        const { couponCode, offerPrice, minPurchaseAmount, expiryDate } = req.body;
+
+        if (!couponCode || couponCode.trim() === '') {
+            return res.status(400).json({ success: false, message: 'Coupon code is required' });
+        }
+
+
+         const existingCoupon = await Coupon.findOne({ couponCode });
+         if (existingCoupon) {
+             return res.status(400).json({ success: false, message: 'A coupon with this code already exists' });
+         }
+ 
          const newCoupon = new Coupon({
-            couponCode: req.body.couponCode,
-            offerPrice: req.body.offerPrice,
-            expiryDate: req.body.expiryDate,
-            minPurchaseAmount: req.body.minPurchaseAmount
+             couponCode,
+             offerPrice,
+             minPurchaseAmount,
+             expiryDate
          });
-         
-         
-    }catch(err){
+ 
+         await newCoupon.save();
+        
+        res.json({ success: true, message: "Coupon created successfully", coupon: newCoupon });
+    } catch (err) {
         console.log(err);
-        res.redirect('/admin/couponsCreate');
+        res.status(500).json({ success: false, message: "Error creating coupon", error: err.message });
     }
 }
 
 async function removeCoupon(req, res) {
     console.log('removeCoupon >>>>>>>>>>>>>>>>>>>>',req.params.id);
     try {
-        const couponId = req.params.id;
+        const couponId = new mongoose.Types.ObjectId(req.params.id);
         const coupon = await Coupon.findByIdAndDelete(couponId);
         res.json({success:true,message:"Coupon removed successfully!",coupon});
     } catch (err) {
@@ -678,5 +718,6 @@ module.exports = {
     couponsCreate,
     addProductsPage,
     addProducts,
-    getOrderDetails
+    getOrderDetails,
+    getCoupons
 };

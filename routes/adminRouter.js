@@ -23,6 +23,7 @@ router.get('/login', preventAutoLogin, adminController.loginPage);
 router.get('/products', isAdminLogin, adminController.products);
 router.get('/addProducts', isAdminLogin, adminController.addProductsPage);
 router.get('/userList', isAdminLogin, adminController.userList);
+router.get('/getCoupons', isAdminLogin, adminController.getCoupons);
 router.get('/refreshCouponList', isAdminLogin, adminController.refreshCouponList);
 // router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.get('/orderList', isAdminLogin, adminController.orderList);
