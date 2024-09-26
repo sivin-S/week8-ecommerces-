@@ -80,14 +80,26 @@
     <!--================Checkout Area =================-->
     <!-- form -->
     <form id="checkoutForm" action="/checkout" method="post">
+      <input type="hidden" id="appliedCouponCode" name="appliedCoupon" value="">
+
       <section class="checkout_area section_gap">
         <div class="container">
-          <div class="cupon_area">
+          <div class="cupon_area ">
+           
             <div class="check_title">
               <h2>Have a coupon?</h2>
             </div>
-            <input type="text" placeholder="Enter coupon code" />
-            <button class="tp_btn">Apply Coupon</button>
+
+            <div class=" mt-2 d-flex align-items-center" style="width: 100%;height: 80px;overflow-x: auto;">
+                <% coupon.forEach((coupon) => { %>
+                 <div class="mx-3 py-3 text-center rounded shadow" style="width: 152px;font-size: 1.5rem;">
+                  <span><b><%= coupon.couponCode %></b></span>
+                 </div>
+                <% }) %>
+            </div>
+
+            <input type="text" id="couponInput" placeholder="Enter coupon code" />
+  <button type="button" id="applyCouponBtn" class="tp_btn">Apply Coupon</button>
           </div>
           <div class="billing_details">
             <div class="row">
@@ -203,11 +215,9 @@
                        </a>
                     </li>
                     <li>
-                      <!-- <input type="hidden" name="shippingCost" value="0"> -->
-                      <input type="hidden" name="totalPrice" value="<%= cart[0]?.totalAmount + 0 %>">
-                      <a href="#"
-                        >Total <span>₹<%= cart[0]?.totalAmount + 0 %></span></a
-                      >
+                      <input type="hidden" id="originalPrice" value="<%= cart[0]?.totalAmount %>">
+                      <input type="hidden" id="discountedPrice" name="totalPrice" value="<%= cart[0]?.totalAmount %>">
+                      <a href="#">Total <span id="totalPrice">₹<%= cart[0]?.totalAmount %></span></a>
                     </li>
                   </ul>
                   <div class="payment_item">
@@ -283,50 +293,215 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+
         const form = document.getElementById('checkoutForm');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponInput = document.getElementById('couponInput');
+    const couponDiscount = document.querySelector('.list_2 li:nth-child(3) span');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const originalPriceInput = document.getElementById('originalPrice');
+    const discountedPriceInput = document.getElementById('discountedPrice');
+    const payButton = document.querySelector('button[type="submit"]');
 
-        form.addEventListener('submit', function (event) {
-          event.preventDefault();
+        
 
-          const address = form.querySelector('input[name="address"]:checked');
-          const paymentMethod = form.querySelector(
-            'input[name="paymentMethod"]:checked'
-          );
 
-          if (!address) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Please select an address!',
-            });
-            return;
-          }
+    applyCouponBtn.addEventListener('click', function() {
+      const couponCode = couponInput.value.trim();
+      if (couponCode) {
+       
+        fetch('/validate-coupon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+           body: JSON.stringify({ 
+            couponCode: couponCode,
+            totalAmount: parseFloat(originalPriceInput.value)
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          const originalPrice = parseFloat(originalPriceInput.value);
+          if (data.valid) {
+            const discountAmount = data.offerPrice;
+            const discountedPrice = originalPrice - discountAmount;
 
-          if (!paymentMethod) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Please select a payment method!',
-            });
-            return;
-          }
+            if (originalPrice >= data.minPurchaseAmount) {
+              couponDiscount.textContent = `: -₹${discountAmount.toFixed(2)}`;
+              totalPriceElement.textContent = `₹${discountedPrice.toFixed(2)}`;
+              discountedPriceInput.value = discountedPrice.toFixed(2);
+              payButton.disabled = false;
 
-          // SweetAlert confirmation
-          Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to continue with the payment?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, continue!'
-          }).then((result) => {
-            if (result.isConfirmed) {
-             
-              form.submit();
+              document.getElementById('appliedCouponCode').value = couponCode;
+
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Coupon Applied',
+                text: `You saved ₹${discountAmount.toFixed(2)}!`,
+              });
+            } else {
+              const amountNeeded = data.minPurchaseAmount - originalPrice;
+              Swal.fire({
+                icon: 'warning',
+                title: 'Minimum Purchase Not Met',
+                html: `This coupon requires a minimum purchase of ₹${data.minPurchaseAmount}.<br>
+                       Your current total is ₹${originalPrice}.<br>
+                       Add ₹${amountNeeded.toFixed(2)} more to your cart to use this coupon.`,
+              });
+              resetCouponState();
             }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Invalid Coupon',
+              text: data.message || 'The coupon code you entered is not valid.',
+            });
+            resetCouponState();
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Unable to apply coupon. Please try again.',
           });
+          resetCouponState();
         });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Empty Coupon',
+          text: 'Please enter a coupon code.',
+        });
+      }
+    });
+
+
+    function resetCouponState() {
+      couponDiscount.textContent = ': not applied';
+      totalPriceElement.textContent = `₹${originalPriceInput.value}`;
+      discountedPriceInput.value = originalPriceInput.value;
+      payButton.disabled = false;
+      document.getElementById('appliedCouponCode').value = '';
+    }
+
+
+
+
+
+
+
+
+    form.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  const address = form.querySelector('input[name="address"]:checked');
+  const paymentMethod = form.querySelector(
+    'input[name="paymentMethod"]:checked'
+  );
+
+  if (!address) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please select an address!',
+    });
+    return;
+  }
+
+  if (!paymentMethod) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please select a payment method!',
+    });
+    return;
+  }
+
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to continue with the payment?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, continue!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      
+      const formData = new FormData(form);
+
+      formData.set('address', address.value);
+
+      formData.set('discountedPrice', discountedPriceInput.value);
+      formData.set('appliedCoupon', document.getElementById('appliedCouponCode').value);
+
+    
+
+      console.log("Address:", address.value);
+
+
+
+      console.log('Form data before sending:', Object.fromEntries(formData));
+
+
+
+      fetch('/checkout', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(Object.fromEntries(formData))
+})
+.then(response => {
+  console.log("Response status:", response.status);
+  return response.json().then(data => ({status: response.status, body: data}));
+  })
+  .then(({status, body}) => {
+  console.log("Response body:", body);
+  if (status === 200 && body.success) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Checkout Successful',
+      text: body.message,
+    }).then(() => {
+      window.location.href = '/orderhistory';
+    });
+  } else {
+    throw new Error(body.message || 'An error occurred during checkout');
+  }
+})
+.catch(error => {
+  console.error('Checkout Error:', error);
+  Swal.fire({
+    icon: 'error',
+    title: 'Checkout Failed',
+    text: error.message || 'An error occurred during checkout. Please try again.',
+  });
+});
+
+
+
+
+
+    }
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
       });
     </script>
 

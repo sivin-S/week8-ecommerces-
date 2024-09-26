@@ -7,6 +7,7 @@ const Wishlist = require("../model/wishList");
 const Checkout = require("../model/checkoutSchema");
 const Cart = require("../model/cartSchema");
 const { Product } = require("../model/productSchema");
+const Coupon = require("../model/couponSchema");
 
 exports.getProfile = async (req, res) => {
     try {
@@ -302,7 +303,9 @@ exports.getOrderCancel = async (req, res) => {
 
 exports.getCheckout = async (req, res) => {
     try {
+        
         const userId = req.session.userId;
+        const coupon = await Coupon.find({});
         const user = await User.find({ _id: userId }).populate('addresses');
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
 
@@ -314,7 +317,7 @@ exports.getCheckout = async (req, res) => {
         console.log("User:", user);
         console.log("Cart:", cart);
 
-        res.render("checkout.ejs", { user, cart: [cart] });
+        res.render("checkout.ejs", { user, cart: [cart], coupon });
     } catch (err) {
         console.error("Error in getCheckout:", err);
         req.flash('error', 'An error occurred. Please try again.');
@@ -322,35 +325,107 @@ exports.getCheckout = async (req, res) => {
     }
 };
 
+
+
+exports.validateCoupon = async (req, res) => {
+    try {
+        const { couponCode, totalAmount } = req.body;
+        const coupon = await Coupon.findOne({ couponCode: couponCode });
+
+        if (!coupon) {
+            return res.json({ valid: false, message: 'Invalid coupon code' });
+        }
+
+        if (!coupon.status) {
+            return res.json({ valid: false, message: 'This coupon is no longer active' });
+        }
+
+        if (new Date() > coupon.expiryDate) {
+            return res.json({ valid: false, message: 'This coupon has expired' });
+        }
+
+        if (totalAmount < coupon.minPurchaseAmount) {
+            return res.json({
+                valid: false,
+                message: `This coupon requires a minimum purchase of ₹${coupon.minPurchaseAmount}`,
+                minPurchaseAmount: coupon.minPurchaseAmount
+            });
+        }
+
+
+        return res.json({
+            valid: true,
+            offerPrice: coupon.offerPrice,
+            minPurchaseAmount: coupon.minPurchaseAmount
+        });
+
+    } catch (error) {
+        console.error('Error validating coupon:', error);
+        res.status(500).json({ valid: false, message: 'An error occurred while validating the coupon' });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.checkout = async (req, res) => {
     try {
+        console.log("Checkout request body:", req.body);
+        
         const userId = req.session.userId;
-        const { address: addressId, paymentMethod, shippingCost } = req.body;
-        const addressObject = await Address.findById(addressId);
+        
+        const { address: addressId, paymentMethod, discountedPrice, appliedCoupon } = req.body;
+
+        console.log("Extracted data:", { addressId, paymentMethod, discountedPrice, appliedCoupon });
+
+        if (!addressId) {
+            return res.status(400).json({ success: false, message: 'Address ID is missing' });
+        }
+
+        const address = await Address.findById(addressId);
+
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
 
-        if (!addressObject) {
-            req.flash('error', 'Address not found');
-            return res.redirect('/cart');
-        }
-
         if (!cart || cart.items.length === 0) {
-            req.flash('error', 'Cart is empty');
-            return res.redirect('/cart');
+            return res.status(400).json({ success: false, message: 'Cart is empty' });
         }
 
-        // Check stock for each item in the cart
+        console.log("Cart:", cart);
+
         for (const item of cart.items) {
             const product = await Product.findById(item.product._id);
             const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
             
             if (!variant || variant.stock < item.quantity) {
-                req.flash('error', `Not enough stock for ${product.name} (${item.variant.color}, ${item.variant.size})`);
-                return res.redirect('/cart');
+                return res.status(400).json({ success: false, message: `Not enough stock for ${product.name} (${item.variant.color}, ${item.variant.size})` });
             }
         }
 
-        // If stock check passes, proceed with order creation and stock update
         for (const item of cart.items) {
             const product = await Product.findById(item.product._id);
             const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
@@ -359,32 +434,41 @@ exports.checkout = async (req, res) => {
             await product.save();
         }
 
-        const totalPrice = cart.totalAmount + parseFloat(shippingCost || 0);
+        const shippingCost = 0; // Assuming free shipping, adjust if needed
+        const totalPrice = parseFloat(discountedPrice) + shippingCost;
 
         const checkout = new Checkout({
             user: userId,
             cart: cart,
-            address: addressObject,
+            address: {
+                username: address.username,
+                email: address.email,
+                state: address.state,
+                zip: address.zip,
+                phone: address.phone,
+                country: address.country,
+                landmark: address.landmark,
+                locality: address.locality
+            },
             paymentMethod: paymentMethod,
             paymentStatus: 'Pending',
             orderStatus: 'Processing',
-            shippingCost: parseFloat(shippingCost || 0),
-            totalPrice: totalPrice
+            shippingCost: shippingCost,
+            totalPrice: totalPrice,
+            appliedCoupon: appliedCoupon
         });
 
         await checkout.save();
 
-        // Clear the cart after successful checkout
         await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [], totalAmount: 0 } });
 
-        req.flash('success', 'Checkout successful');
-        res.render('paymentComplete.ejs');
+        res.json({ success: true, message: 'Checkout successful' });
     } catch (error) {
         console.error('Checkout error:', error);
-        req.flash('error', 'An error occurred during checkout');
-        res.redirect('/cart');
+        res.status(500).json({ success: false, message: 'An error occurred during checkout' });
     }
 };
+
 
 exports.loginUserPage = (req, res)=> {
     if (req.session.userStatus) {

@@ -151,7 +151,7 @@
 						<p class="card-title">Payment Method: <b><%=details?.paymentMethod%></b> </p>
 						<p class="card-text">quantity:<b><%=item?.quantity%></b></p>
 						<p class="card-text">Discount: ₹0</p>
-						<p class="card-text"><b>Total: ₹ <%=details.cart?.totalAmount%></b> </p>
+						<p class="card-text"><b>Total: ₹ <%=details.totalPrice%></b> </p>
 						<p class="card-text"><b>Status :  <%=details.orderStatus%>  </b> </p>
 						<a href="/orderhistory/details/<%=encodeURIComponent(details._id)%>" class="btn btn-primary mt-2" style="padding: 0.500em 10em;">Details</a>
 					  </div>
