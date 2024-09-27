@@ -258,7 +258,7 @@ exports.getOrderOneHistory = async(req,res)=>{
     // console.log("checkout >>>>>>>>>>>");
     // console.log(checkout);
     
-    res.render('checkOutDetails.ejs',{checkout})
+    res.render('orderHistoryDetails.ejs',{checkout})
 
    }catch(err){
       console.log(err);

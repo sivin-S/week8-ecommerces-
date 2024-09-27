@@ -99,7 +99,8 @@
             </div>
 
             <input type="text" id="couponInput" placeholder="Enter coupon code" />
-  <button type="button" id="applyCouponBtn" class="tp_btn">Apply Coupon</button>
+<button type="button" id="applyCouponBtn" class="tp_btn">Apply Coupon</button>
+<button type="button" id="removeCouponBtn" class="tp_btn" style="display: none;">Remove Coupon</button>
           </div>
           <div class="billing_details">
             <div class="row">
@@ -297,6 +298,7 @@
         const form = document.getElementById('checkoutForm');
     const applyCouponBtn = document.getElementById('applyCouponBtn');
     const couponInput = document.getElementById('couponInput');
+    const removeCouponBtn = document.getElementById('removeCouponBtn');
     const couponDiscount = document.querySelector('.list_2 li:nth-child(3) span');
     const totalPriceElement = document.getElementById('totalPrice');
     const originalPriceInput = document.getElementById('originalPrice');
@@ -324,6 +326,10 @@
         .then(data => {
           const originalPrice = parseFloat(originalPriceInput.value);
           if (data.valid) {
+
+            applyCouponBtn.style.display = 'none';
+            removeCouponBtn.style.display = 'inline-block';
+
             const discountAmount = data.offerPrice;
             const discountedPrice = originalPrice - discountAmount;
 
@@ -380,13 +386,27 @@
     });
 
 
-    function resetCouponState() {
-      couponDiscount.textContent = ': not applied';
-      totalPriceElement.textContent = `₹${originalPriceInput.value}`;
-      discountedPriceInput.value = originalPriceInput.value;
-      payButton.disabled = false;
-      document.getElementById('appliedCouponCode').value = '';
-    }
+    
+  removeCouponBtn.addEventListener('click', function() {
+    resetCouponState();
+    Swal.fire({
+      icon: 'success',
+      title: 'Coupon Removed',
+      text: 'The coupon has been removed successfully.',
+    });
+  });
+
+
+  function resetCouponState() {
+    couponInput.value = '';
+    couponDiscount.textContent = ': not applied';
+    totalPriceElement.textContent = `₹${originalPriceInput.value}`;
+    discountedPriceInput.value = originalPriceInput.value;
+    payButton.disabled = false;
+    document.getElementById('appliedCouponCode').value = '';
+    applyCouponBtn.style.display = 'inline-block';
+    removeCouponBtn.style.display = 'none';
+  }
 
 
 

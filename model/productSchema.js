@@ -43,6 +43,14 @@ const productSchema = new mongoose.Schema({
         // required: true,
         min: 0
     },
+    discountedPrice:{
+        type: Number,
+        min: 0
+    },
+    offerHasApplied: {
+        type: Boolean,
+        default: false
+      },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -69,6 +77,11 @@ const productSchema = new mongoose.Schema({
         default: Date.now()
     }
 });
+
+productSchema.methods.markAsAppeared = function() {
+    this.offerHasApplied = true;
+    return this.save();
+  };
 
 productSchema.pre('save', function (next) {
     this.updatedAt = Date.now();

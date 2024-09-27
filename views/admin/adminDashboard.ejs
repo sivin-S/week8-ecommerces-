@@ -27,6 +27,15 @@
             padding: 12px 12px;
             text-align: center;
         }
+
+        .selectOption{
+            color: #4D869C;
+            background-color: #eef7ff;
+            border: 3px solid  #eef7ff;
+            border-radius: 12px;
+        }
+       
+
         .sidebar .nav-link.active {
             background-color: #eef7ff;
             color: #4D869C;
@@ -146,6 +155,25 @@
                       
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/couponsHistory"><i class="fas fa-ticket-alt"></i> Coupons history</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- <a class="nav-link in-active"><i class="fas fa-ticket-alt"></i> Coupons history</a> -->
+                             <select class="form-select" id="offerSelect" aria-label="Default select example"
+                             style="
+                                margin-bottom: 15px;
+                                padding: 12px 12px;
+                                text-align: center;
+                                border: 3px solid  #eef7ff;
+                                color: #eef7ff;
+                                background-color: #4D869C;
+                                border-radius: 12px;
+                                " 
+                             >
+                                <option selected disabled class="selectOption">Offers</option>
+                                <option  value="/admin/productOffers" class="selectOption">Product Offers</option>
+                                <option  value="/admin/categoryOffers" class="selectOption">Category Offers</option>
+                                <!-- <option value="3" class="selectOption">Referral Offers</option> -->
+                              </select>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link in-active" href="/admin/notifications"><i class="fas fa-bell"></i> Notifications</a>
@@ -298,6 +326,12 @@
         }, 3000);
 
 
+        document.getElementById('offerSelect').addEventListener('change', function() {
+    var selectedOption = this.value;
+    if (selectedOption) {
+        window.location.href = selectedOption;
+    }
+});
 
     </script>
 </body>

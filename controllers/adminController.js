@@ -8,6 +8,7 @@ const Category = require("../model/categorySchema");
 const Checkout = require("../model/checkoutSchema");
 const Coupon = require("../model/couponSchema");
 const mongoose = require("mongoose");
+const ProductOffer = require("../model/productOfferSchema");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -107,6 +108,43 @@ async function orderList(req, res) {
     }
 }
 
+
+async function productOffers(req, res) {
+    try {
+        const products = await Product.find({});
+        
+        const itemsPerPage = 5;
+        const page = parseInt(req.query.page) || 1;
+
+        const totalOffers = await ProductOffer.countDocuments();
+        const totalPages = Math.ceil(totalOffers / itemsPerPage);
+
+        const productOffers = await ProductOffer.find()
+            .populate({
+                path: 'productId',
+                model: 'Product'
+            })
+            .skip((page - 1) * itemsPerPage)
+            .limit(itemsPerPage);
+
+        console.log("productOffers >>>>>>>>>>>>>>>>>>>>", productOffers);
+        res.render('productOfferAdminPage.ejs', { 
+            products, 
+            productOffers,
+            currentPage: page,
+            totalPages,
+            itemsPerPage
+        });
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
+}
+
+
+async function categoryOffers(req, res){
+
+}
 
 
 // function to get order details fetch "ajax method"
@@ -646,6 +684,83 @@ async function removeCoupon(req, res) {
     }
 }
 
+// ... existing code ...
+
+
+async function addProductOffer(req, res) {
+    try {
+        const { offerName, productId, offerPercentage, startDate, endDate, isActive } = req.body;
+        
+        if (!offerName || !productId || !offerPercentage || !startDate) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        const discountAmount = (product.price * offerPercentage) / 100;
+        const discountedPrice = product.price - discountAmount;
+
+        const newOffer = new ProductOffer({
+            offerName,
+            productId,
+            offerPercentage,
+            startDate,
+            endDate,
+            isActive
+        });
+
+        await newOffer.save();
+
+        product.discountedPrice = discountedPrice;
+        product.offerHasApplied = true;
+
+        await product.save();
+
+        res.json({ success: true, message: 'Product offer added successfully', offer: newOffer });
+    } catch (error) {
+        console.error('Error adding product offer:', error);
+        res.status(500).json({ success: false, message: 'Failed to add product offer' });
+    }
+}
+
+async function updateProductOfferStatus(req, res) {
+    try {
+        const { productId } = req.params;
+        const { offerHasApplied } = req.body;
+
+        await Product.findByIdAndUpdate(productId, { offerHasApplied });
+
+        res.json({ success: true, message: 'Product offer status updated successfully' });
+    } catch (error) {
+        console.error('Error updating product offer status:', error);
+        res.status(500).json({ success: false, message: 'Failed to update product offer status' });
+    }
+}
+
+async function removeProductOffer(req, res) {
+    try {
+        const offerId = req.params.offerId;
+        const offer = await ProductOffer.findByIdAndDelete(offerId);
+        
+        if (offer) {
+            const product = await Product.findById(offer.productId);
+            if (product) {
+                product.discountedPrice = undefined;
+                product.offerHasApplied = false;
+                await product.save();
+            }
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: 'Offer not found' });
+        }
+    } catch (error) {
+        console.error('Error removing offer:', error);
+        res.json({ success: false, message: 'Server error' });
+    }
+}
 
 
 async function removeProductImage(req, res) {
@@ -691,6 +806,7 @@ async function removeProductImage(req, res) {
 
 module.exports = {
     dashboard,
+    removeProductOffer,
     removeCoupon,
     removeProductImage,
     refreshCouponList,
@@ -719,5 +835,9 @@ module.exports = {
     addProductsPage,
     addProducts,
     getOrderDetails,
-    getCoupons
+    getCoupons,
+    productOffers,
+    categoryOffers,
+    addProductOffer,
+    updateProductOfferStatus
 };

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <style>
+        body {
+             font-family:  sans-serif;
+             background-color: #eef7ff;
+            
+         }
+         .sidebar {
+             background-color: #4D869C;
+             color: #eef7ff;
+             height: 100vh;
+             position: fixed;
+             width: 280px;
+             overflow-y: auto;
+             border: 3px solid  #4D869C;
+             padding: 15px 10px;
+         }
+         .sidebar .nav-link {
+             margin-bottom: 15px;
+             padding: 12px 12px;
+             text-align: center;
+         }
+ 
+         .search-bar {
+             max-width: 300px;
+             margin-bottom: 20px;
+         }
+ 
+         .in-active{
+             border: 3px solid  #eef7ff;
+             color: #eef7ff !important;
+             border-radius: 12px;
+         }
+ 
+         .sidebar .nav-link.active {
+             background-color: #eef7ff;
+             color: #4D869C;
+             border-radius: 12px;
+         }
+        
+       
+         .table-responsive {
+             overflow-x: auto;
+         }
+         .search-bar {
+             max-width: 300px;
+             margin-bottom: 20px;
+         }
+         .user-list-header {
+             background-color: #4D869C;
+             color: #eef7ff;
+             padding: 10px;
+             border-radius: 5px 5px 0 0;
+         }
+         .search-input {
+             padding: 5px 10px;
+             border: none;
+             border-radius: 5px;
+             margin-left: 10px;
+         }
+ 
+ 
+         input[type="search"]{
+            color: #4D869C;
+            padding: 12px 12px;
+            margin-top: 5px;
+            border: 1px solid #4D869C;
+            outline: #4D869C;
+         }
+ 
+     </style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.6.0/validator.min.js"></script>
+</head>
+<body>
+    <div class="container " style="height: 100vh !important;">
+        <div class="row ">
+           
+           
+            <!-- Main content -->
+            <main  class="w-100  px-md-4 main-content   p-5"">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+                style="border-bottom-color: #4D869C !important;"
+                >
+                    <h1 class="h2" style="color: #4D869C;"><a href="/admin" style="text-decoration: none; color: #4D869C;" title="to go Dashboard">Dashboard</a> / Product Offers</h1>
+                </div>
+                <div class="bg-white p-4 rounded shadow-sm">
+                    <div class="user-list-header d-flex" style="height: 100px;">
+                        <h2>Product Offers</h2>
+                        <div class="search-bar ms-auto pe-3">
+                            <input type="search" class="search-input" id="orderSearch" placeholder="Search for transactions.." onkeyup="searchTable()">
+                        </div>
+                       
+                        <button 
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addOfferModal"
+                        style="background-color: #4D869C;
+                        color: #eef7ff;
+                        border: 1px solid #eef7ff;
+                        padding: 0px 10px;
+                        border-radius: 5px;
+                        height: 50px;
+                        margin-top: 5px;"
+                        >
+                            Add Offer
+                        </button>
+                        
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="orderTable" style="color: #4D869C;">
+                            <thead>
+                              <tr>
+                                <th>No.</th>
+                                <th>Offer Name</th>
+                                <th>Product Name</th>
+                                <th>Original Price</th>
+                                <th>Discounted Price</th>
+                                <th>Offer Percentage</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <% productOffers.forEach((offer, index) => { %>
+                                  <tr>
+                                      <td><%= (currentPage - 1) * itemsPerPage + index + 1 %></td>
+                                      <td><%= offer.offerName %></td>
+                                      <td><%= offer.productId.name %></td>
+                                      <td>$<%= offer.productId.price.toFixed(2) %></td>
+                                      <td>$<%= offer.productId.discountedPrice ? offer.productId.discountedPrice.toFixed(2) : 'N/A' %></td>
+                                      <td><%= offer.offerPercentage %>%</td>
+                                      <td>
+                                          <button onclick="removeOffer('<%= offer._id %>', '<%= offer.productId._id %>')" 
+                                                  style="background-color: #4D869C; color: #eef7ff; border: none; padding: 5px 10px; border-radius: 5px;">
+                                              Remove
+                                          </button>
+                                      </td>
+                                  </tr>
+                              <% }); %>
+                          </tbody>
+                        </table>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <% for(let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <!-- Add Offer Modal -->
+    <div class="modal fade" id="addOfferModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addOfferModalLabel">Add New Offer</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addOfferForm">
+                <div class="mb-3">
+                  <label for="offerName" class="form-label">Offer Name</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="offerName" name="offerName">
+                    <button class="btn btn-outline-secondary" type="button" onclick="generateRandomOfferName()">Generate</button>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="productSelect" class="form-label">Select Product</label>
+                  <select class="form-select" id="productSelect" >
+                    <% products.forEach((product) => { %>
+                        <option 
+                          value="<%= product._id %>" 
+                          <%= product.offerHasApplied ? 'disabled' : '' %>
+                        >
+                          <%= product.name %><%= product.offerHasApplied ? ' - Already applied -' : '' %>
+                        </option>
+                      <% }); %>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="offerPercentage" class="form-label">Offer Percentage</label>
+                  <input type="number" class="form-control" id="offerPercentage" min="0" max="100">
+                </div>
+                <div class="mb-3">
+                  <label for="startDate" class="form-label">Start Date</label>
+                  <input type="date" class="form-control" id="startDate" >
+                </div>
+                <div class="mb-3">
+                  <label for="endDate" class="form-label">End Date</label>
+                  <input type="date" class="form-control" id="endDate">
+                </div>
+               
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Add Offer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <script>
+
+function generateRandomOfferName() {
+  const adjectives = ['Super', 'Mega', 'Fantastic', 'Incredible', 'Amazing'];
+  const nouns = ['Discount', 'Deal', 'Savings', 'Offer', 'Sale'];
+  const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  const randomName = `${randomAdjective} ${randomNoun}`;
+  
+  document.getElementById('offerName').value = randomName;
+}
+
+
+    function removeOffer(offerId, productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/removeProductOffer/${offerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Removed!',
+                        'The offer has been removed.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                    updateProductOfferStatus(productId, false);
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to remove the offer.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An unexpected error occurred.',
+                    'error'
+                );
+            });
+        }
+    });
+}
+
+
+function validateAndSubmit() {
+  const offerNameInput = document.getElementById('offerName');
+  const offerName = offerNameInput.value.trim();
+  offerNameInput.value = offerName || generateRandomOfferName();
+  const productSelect = document.getElementById('productSelect');
+  const offerPercentage = document.getElementById('offerPercentage').value;
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+
+  if (validator.isEmpty(offerName)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Offer name cannot be empty or just spaces'
+    });
+    return;
+  }
+
+
+  if (validator.isEmpty(productSelect.value)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Please select a product'
+    });
+    return;
+  }
+
+  if (!validator.isInt(offerPercentage, { min: 0, max: 100 })) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Offer percentage must be between 0 and 100'
+    });
+    return;
+  }
+
+  if (validator.isEmpty(startDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Start date is required'
+    });
+    return;
+  }
+
+  if (!validator.isEmpty(endDate) && !validator.isAfter(endDate, startDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'End date must be after the start date'
+    });
+    return;
+  }
+
+  
+  const formData = {
+    offerName: offerNameInput.value,
+    productId: productSelect.value,
+    offerPercentage: parseInt(offerPercentage),
+    startDate: new Date(startDate),
+    endDate: endDate ? new Date(endDate) : null,
+    isActive: true 
+  };
+
+
+ 
+  console.log('Form data to submit:', formData);
+
+  fetch('/admin/addProductOffer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Offer added successfully!',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        location.reload();
+      });
+
+      
+      updateProductOfferStatus(formData.productId, true);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to add offer. Please try again.',
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An unexpected error occurred. Please try again.',
+    });
+  });
+}
+
+
+
+function updateProductOfferStatus(productId, hasOffer) {
+  fetch(`/admin/updateProductOfferStatus/${productId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ offerHasApplied: hasOffer }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Product offer status updated successfully');
+    } else {
+      console.error('Failed to update product offer status');
+    }
+  })
+  .catch(error => {
+    console.error('Error updating product offer status:', error);
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function searchTable() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("orderSearch");
+            filter = input.value.toLowerCase();
+            table = document.getElementById("orderTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+      
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

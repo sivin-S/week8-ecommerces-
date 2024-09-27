@@ -38,6 +38,9 @@ router.get('/notifications', isAdminLogin, adminController.notifications);
 router.get('/editProduct/:id', isAdminLogin, adminController.editProductPage);
 router.get('/logout', adminController.logout);
 router.get('/orderDetails/:id', isAdminLogin, adminController.getOrderDetails);
+router.get('/productOffers', isAdminLogin, adminController.productOffers);
+router.get('/categoryOffers', isAdminLogin, adminController.categoryOffers);
+
 
 
 router.post('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
@@ -51,5 +54,8 @@ router.post('/addProducts', adminController.addProducts);
 router.post('/couponsCreate', isAdminLogin, adminController.couponsCreate);
 router.post('/removeCoupon/:id', isAdminLogin, adminController.removeCoupon);
 router.post('/removeProductImage/:productId', isAdminLogin, adminController.removeProductImage);
+router.post('/addProductOffer', isAdminLogin, adminController.addProductOffer);
+router.post('/updateProductOfferStatus/:productId', isAdminLogin, adminController.updateProductOfferStatus);
+router.post('/removeProductOffer/:offerId', isAdminLogin, adminController.removeProductOffer);
 
 module.exports = router;
