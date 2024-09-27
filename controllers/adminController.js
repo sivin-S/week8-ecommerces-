@@ -9,6 +9,7 @@ const Checkout = require("../model/checkoutSchema");
 const Coupon = require("../model/couponSchema");
 const mongoose = require("mongoose");
 const ProductOffer = require("../model/productOfferSchema");
+const CategoryOffer = require("../model/categoryOfferSchema");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -142,9 +143,158 @@ async function productOffers(req, res) {
 }
 
 
-async function categoryOffers(req, res){
+async function categoryOffers(req, res) {
+    try {
+        const categories = await Category.find({});
+        
+        const itemsPerPage = 5;
+        const page = parseInt(req.query.page) || 1;
 
+        const totalOffers = await CategoryOffer.countDocuments({ endDate: { $gt: new Date() } });
+        const totalPages = Math.ceil(totalOffers / itemsPerPage);
+
+        const categoryOffers = await CategoryOffer.find({ endDate: { $gt: new Date() } })
+            .populate('categoryId')
+            .skip((page - 1) * itemsPerPage)
+            .limit(itemsPerPage);
+
+        console.log("categoryOffers >>>>>>>>>>" ,categoryOffers);
+
+        const categoriesWithActiveOffers = await CategoryOffer.distinct('categoryId', { endDate: { $gt: new Date() } });
+
+        const categoriesForSelect = categories.map(category => ({
+            ...category.toObject(),
+            hasActiveOffer: categoriesWithActiveOffers.some(id => id.equals(category._id))
+        }));
+
+        res.render('categoryOfferAdminPage.ejs', { 
+            categories: categoriesForSelect, 
+            categoryOffers,
+            currentPage: page,
+            totalPages,
+            itemsPerPage
+        });
+    } catch (err) {
+        console.log(err);
+        res.redirect('/admin');
+    }
 }
+
+
+async function addCategoryOffer(req, res) {
+    try {
+        const { offerName, categoryId, discountPercentage, startDate, endDate, isActive } = req.body;
+        
+        console.log("Received data for addCategoryOffer:", req.body);
+
+        if (!offerName || !categoryId || !discountPercentage || !startDate || !endDate) {
+            console.log("Missing required fields:", { offerName, categoryId, discountPercentage, startDate, endDate });
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        const category = await Category.findById(categoryId);
+        if (!category) {
+            console.log("Category not found for ID:", categoryId);
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        const existingOffer = await CategoryOffer.findOne({ 
+            categoryId: categoryId,
+            endDate: { $gt: new Date() }
+        });
+
+        if (existingOffer) {
+            console.log("Category already has an active offer:", existingOffer);
+            return res.status(400).json({ success: false, message: 'This category already has an active offer' });
+        }
+
+        const newOffer = new CategoryOffer({
+            offerName,
+            categoryId,
+            discountPercentage: Number(discountPercentage),
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            isActive: isActive !== undefined ? isActive : true
+        });
+
+        await newOffer.save();
+
+        category.discountPercentage = Number(discountPercentage);
+        category.offerApplied = true;
+        await category.save();
+
+       
+        const products = await Product.find({ category: categoryId });
+
+        for (let product of products) {
+           
+            const productOffer = await ProductOffer.findOne({
+                productId: product._id,
+                endDate: { $gt: new Date() }
+            });
+
+            if (productOffer) {
+                
+                if (Number(discountPercentage) > productOffer.offerPercentage) {
+                   
+                    await ProductOffer.findByIdAndDelete(productOffer._id);
+                    product.offerHasApplied = true;
+                    product.discountedPrice = product.price * (1 - Number(discountPercentage) / 100);
+                } else {
+                    
+                    continue;
+                }
+            } else {
+              
+                product.offerHasApplied = true;
+                product.discountedPrice = product.price * (1 - Number(discountPercentage) / 100);
+            }
+
+            await product.save();
+        }
+
+        console.log("Category offer added successfully:", newOffer);
+        res.json({ success: true, message: 'Category offer added successfully', offer: newOffer });
+    } catch (error) {
+        console.error('Error adding category offer:', error);
+        res.status(500).json({ success: false, message: 'Failed to add category offer', error: error.message });
+    }
+}
+
+async function removeCategoryOffer(req, res) {
+    try {
+        const offerId = req.params.offerId;
+        const offer = await CategoryOffer.findByIdAndDelete(offerId);
+        
+        if (offer) {
+            const category = await Category.findById(offer.categoryId);
+            if (category) {
+                category.discountPercentage = 0;
+                category.offerApplied = false;
+                await category.save();
+
+                await Product.updateMany(
+                    { category: offer.categoryId },
+                    { 
+                        $set: { 
+                            offerHasApplied: false,
+                            discountedPrice: null
+                        }
+                    }
+                );
+            }
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: 'Offer not found' });
+        }
+    } catch (error) {
+        console.error('Error removing offer:', error);
+        res.json({ success: false, message: 'Server error' });
+    }
+}
+
+
+
 
 
 // function to get order details fetch "ajax method"
@@ -686,12 +836,13 @@ async function removeCoupon(req, res) {
 
 // ... existing code ...
 
-
 async function addProductOffer(req, res) {
     try {
         const { offerName, productId, offerPercentage, startDate, endDate, isActive } = req.body;
         
-        if (!offerName || !productId || !offerPercentage || !startDate) {
+        console.log("addProductOffer >>>>>>>>>>>>>>>>>>>>",req.body);
+
+        if (!offerName || !productId || !offerPercentage || !startDate || !endDate) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
@@ -700,13 +851,22 @@ async function addProductOffer(req, res) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
+        const categoryOffer = await CategoryOffer.findOne({
+            categoryId: product.category,
+            endDate: { $gt: new Date() }
+        });
+
+        if (categoryOffer && Number(categoryOffer.discountPercentage) >= Number(offerPercentage)) {
+            return res.status(400).json({ success: false, message: 'A better category offer already exists' });
+        }
+
         const discountAmount = (product.price * offerPercentage) / 100;
         const discountedPrice = product.price - discountAmount;
 
         const newOffer = new ProductOffer({
             offerName,
             productId,
-            offerPercentage,
+            offerPercentage: Number(offerPercentage),
             startDate,
             endDate,
             isActive
@@ -714,7 +874,7 @@ async function addProductOffer(req, res) {
 
         await newOffer.save();
 
-        product.discountedPrice = discountedPrice;
+        product.discountedPrice = Number(discountedPrice.toFixed(2));
         product.offerHasApplied = true;
 
         await product.save();
@@ -839,5 +999,9 @@ module.exports = {
     productOffers,
     categoryOffers,
     addProductOffer,
-    updateProductOfferStatus
+    updateProductOfferStatus,
+    addCategoryOffer,
+
+    removeCategoryOffer,
+    categoryOffers
 };

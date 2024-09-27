@@ -136,7 +136,7 @@
                                       <td><%= offer.offerName %></td>
                                       <td><%= offer.productId.name %></td>
                                       <td>$<%= offer.productId.price.toFixed(2) %></td>
-                                      <td>$<%= offer.productId.discountedPrice ? offer.productId.discountedPrice.toFixed(2) : 'N/A' %></td>
+                                      <td>$<%= offer.productId.discountedPrice ? offer.productId.discountedPrice.toFixed(2) : (offer.productId.price * (1 - offer.offerPercentage / 100)).toFixed(2) %></td>
                                       <td><%= offer.offerPercentage %>%</td>
                                       <td>
                                           <button onclick="removeOffer('<%= offer._id %>', '<%= offer.productId._id %>')" 
@@ -146,7 +146,7 @@
                                       </td>
                                   </tr>
                               <% }); %>
-                          </tbody>
+                            </tbody>
                         </table>
                     </div>
                     <nav aria-label="Page navigation">
@@ -166,7 +166,7 @@
 
     <!-- Add Offer Modal -->
     <div class="modal fade" id="addOfferModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+      <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="addOfferModalLabel">Add New Offer</h1>
@@ -189,7 +189,7 @@
                           value="<%= product._id %>" 
                           <%= product.offerHasApplied ? 'disabled' : '' %>
                         >
-                          <%= product.name %><%= product.offerHasApplied ? ' - Already applied -' : '' %>
+                          <%= product.name %> - <%= product.gender %>  <%= product.offerHasApplied ? ' - Already applied category offer' : '' %>
                         </option>
                       <% }); %>
                   </select>
@@ -219,15 +219,29 @@
 
     <script>
 
+function initializeModal() {
+  const offerNameInput = document.getElementById('offerName');
+  if (!offerNameInput.value.trim()) {
+    offerNameInput.value = generateRandomOfferName();
+  }
+}
+
 function generateRandomOfferName() {
   const adjectives = ['Super', 'Mega', 'Fantastic', 'Incredible', 'Amazing'];
   const nouns = ['Discount', 'Deal', 'Savings', 'Offer', 'Sale'];
   const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-  const randomName = `${randomAdjective} ${randomNoun}`;
-  
-  document.getElementById('offerName').value = randomName;
+  return `${randomAdjective} ${randomNoun}`;
 }
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  var addOfferModal = document.getElementById('addOfferModal');
+  addOfferModal.addEventListener('show.bs.modal', function (event) {
+    initializeModal();
+  });
+});
 
 
     function removeOffer(offerId, productId) {
@@ -281,18 +295,30 @@ function generateRandomOfferName() {
 
 function validateAndSubmit() {
   const offerNameInput = document.getElementById('offerName');
-  const offerName = offerNameInput.value.trim();
-  offerNameInput.value = offerName || generateRandomOfferName();
+  let offerName = offerNameInput.value.trim();
+  
+  if (!offerName) {
+    offerName = generateRandomOfferName();
+    offerNameInput.value = offerName;
+  }
+
+  
+
+
+
+  
   const productSelect = document.getElementById('productSelect');
   const offerPercentage = document.getElementById('offerPercentage').value;
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
 
+ 
+
   if (validator.isEmpty(offerName)) {
     Swal.fire({
       icon: 'error',
       title: 'Validation Error',
-      text: 'Offer name cannot be empty or just spaces'
+      text: 'Offer name cannot be empty'
     });
     return;
   }
@@ -325,18 +351,18 @@ function validateAndSubmit() {
     return;
   }
 
-  if (!validator.isEmpty(endDate) && !validator.isAfter(endDate, startDate)) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Validation Error',
-      text: 'End date must be after the start date'
-    });
+  if (!endDate) {
+    Swal.fire('Error', 'End date is required.', 'error');
     return;
   }
 
+  if (new Date(endDate) <= new Date(startDate)) {
+    Swal.fire('Error', 'End date must be after the start date.', 'error');
+    return;
+  }
   
   const formData = {
-    offerName: offerNameInput.value,
+    offerName: offerName,
     productId: productSelect.value,
     offerPercentage: parseInt(offerPercentage),
     startDate: new Date(startDate),

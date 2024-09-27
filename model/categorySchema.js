@@ -12,6 +12,16 @@ const categorySchema = new mongoose.Schema({
         enum: ['mens', 'womens'],
         trim: true
     },
+    discountPercentage: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    offerApplied: {
+        type: Boolean,
+        default: false
+    },
     productCount: {
         type: Number,
         default: 0

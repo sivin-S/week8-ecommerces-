@@ -57,5 +57,8 @@ router.post('/removeProductImage/:productId', isAdminLogin, adminController.remo
 router.post('/addProductOffer', isAdminLogin, adminController.addProductOffer);
 router.post('/updateProductOfferStatus/:productId', isAdminLogin, adminController.updateProductOfferStatus);
 router.post('/removeProductOffer/:offerId', isAdminLogin, adminController.removeProductOffer);
+router.post('/addCategoryOffer', isAdminLogin, adminController.addCategoryOffer);
+router.post('/removeCategoryOffer/:offerId', isAdminLogin, adminController.removeCategoryOffer);
+
 
 module.exports = router;
