@@ -794,7 +794,8 @@ async function addProducts(req, res) {
 async function couponsCreate(req, res) {
     console.log('couponsCreate >>>>>>>>>>>>>>>>>>>>',req.body);
     try {
-        const { couponCode, offerPrice, minPurchaseAmount, expiryDate } = req.body;
+        const { couponCode, offerPrice, minPurchaseAmount, startDate, expiryDate } = req.body;
+
 
         if (!couponCode || couponCode.trim() === '') {
             return res.status(400).json({ success: false, message: 'Coupon code is required' });
@@ -806,12 +807,14 @@ async function couponsCreate(req, res) {
              return res.status(400).json({ success: false, message: 'A coupon with this code already exists' });
          }
  
+       
          const newCoupon = new Coupon({
-             couponCode,
-             offerPrice,
-             minPurchaseAmount,
-             expiryDate
-         });
+            couponCode,
+            offerPrice,
+            minPurchaseAmount,
+            startDate,
+            expiryDate
+        });
  
          await newCoupon.save();
         

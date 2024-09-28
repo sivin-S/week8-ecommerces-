@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Cart = require("../model/cartSchema");
 const { Product } = require("../model/productSchema");
+const Coupon = require("../model/couponSchema");
 
 exports.getCart = async (req, res) => {
   try {
@@ -126,6 +127,55 @@ exports.addToCart = async (req, res) => {
     res.redirect('/');
   }
 };
+
+
+
+
+
+exports.applyCoupon = async (req, res) => {
+    try {
+        const { couponCode, totalAmount } = req.body;
+        const coupon = await Coupon.findOne({ couponCode });
+
+        if (!coupon) {
+            return res.status(404).json({ success: false, message: 'Coupon not found' });
+        }
+
+        const currentDate = new Date();
+        if (currentDate < new Date(coupon.startDate)) {
+            return res.status(400).json({ success: false, message: 'This coupon is not yet active' });
+        }
+
+        if (currentDate > new Date(coupon.expiryDate)) {
+            return res.status(400).json({ success: false, message: 'This coupon has expired' });
+        }
+
+        if (totalAmount < coupon.minPurchaseAmount) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} not met`
+            });
+        }
+
+  
+        const discountedPrice = totalAmount - coupon.offerPrice;
+
+        return res.json({
+            success: true,
+            message: 'Coupon applied successfully',
+            discountedPrice,
+            discount: coupon.offerPrice
+        });
+
+    } catch (error) {
+        console.error('Error applying coupon:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while applying the coupon' });
+    }
+};
+
+
+
+
 
 
 // remove product from cart

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const couponSchema = new mongoose.Schema({
     couponCode: {
         type: String,
@@ -16,6 +17,10 @@ const couponSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
+    },
+    startDate: {
+        type: Date,
+        required: true
     },
     expiryDate: {
         type: Date,

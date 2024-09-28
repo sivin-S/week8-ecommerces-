@@ -174,6 +174,7 @@
                                 <tr>
                                     <th>Coupon Code</th>
                                     <th>Discount</th>
+                                    <th>Start Date</th>
                                     <th>Expiry Date</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -184,6 +185,7 @@
                                 <tr data-coupon-id="<%= coupon._id %>">
                                     <td><%= coupon.couponCode %></td>
                                     <td><%= coupon.offerPrice %></td>
+                                    <td><%= new Date(coupon.startDate).toLocaleDateString() %></td>
                                     <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
                                     <td><span class="<%= coupon.status ? 'text-success' : 'text-danger' %>"><%= coupon.status ? 'Active' : 'Expired' %></span></td>
                                     <td><button class="btn btn-danger btn-sm delete-coupon">Delete</button></td>
@@ -230,6 +232,10 @@
                         <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" placeholder="Enter Minimum Price">
                     </div>
                     <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                    <div class="mb-3">
                         <label for="expiryDate" class="form-label">Expiry Date</label>
                         <input type="date" class="form-control" id="expiryDate" name="expiryDate">
                     </div>
@@ -268,6 +274,7 @@
             const couponData = {
                 couponCode: document.getElementById('couponCode').value,
                 offerPrice: document.getElementById('offerPrice').value,
+                startDate: document.getElementById('startDate').value,
                 expiryDate: document.getElementById('expiryDate').value,
                 minPurchaseAmount: document.getElementById('minPurchaseAmount').value
             };
@@ -289,6 +296,7 @@
 
 var couponCode = document.getElementById('couponCode').value;
 var offerPrice = document.getElementById('offerPrice').value;
+var startDate = document.getElementById('startDate').value;
 
 var minPurchaseAmount = document.getElementById('minPurchaseAmount').value;
 var expiryDate = document.getElementById('expiryDate').value;
@@ -319,6 +327,13 @@ if (!validator.isInt(minPurchaseAmount, { min: 0 })) {
 
 }
 
+ 
+if (!validator.isDate(startDate)) {
+        Swal.fire('Error', 'Invalid Start Date', 'error');
+        return;
+    }
+    
+
 
 if (!validator.isDate(expiryDate)) {
 
@@ -328,19 +343,37 @@ if (!validator.isDate(expiryDate)) {
 
 }
 
- const formattedExpiryDate = new Date(expiryDate).toISOString();
+const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const startDateObj = new Date(startDate);
+    const expiryDateObj = new Date(expiryDate);
+
+    if (startDateObj < currentDate) {
+        Swal.fire('Error', 'Start Date must be today or in the future', 'error');
+        return;
+    }
+
+    if (expiryDateObj <= startDateObj) {
+        Swal.fire('Error', 'Expiry Date must be after the Start Date', 'error');
+        return;
+    }
+
+
+const formattedStartDate = new Date(startDate).toISOString();
+const formattedExpiryDate = new Date(expiryDate).toISOString();
  
- createCoupon(couponCode, offerPrice, minPurchaseAmount, formattedExpiryDate);
+ createCoupon(couponCode, offerPrice, minPurchaseAmount, formattedStartDate, formattedExpiryDate);
 
 }
 
 
 
-function createCoupon(couponCode, offerPrice, minPurchaseAmount, expiryDate) {
+function createCoupon(couponCode, offerPrice, minPurchaseAmount, startDate, expiryDate) {
     const couponDatas = {
         couponCode: couponCode,
         offerPrice: parseFloat(offerPrice),
         minPurchaseAmount: parseFloat(minPurchaseAmount),
+        startDate: startDate,
         expiryDate: expiryDate
     };
 

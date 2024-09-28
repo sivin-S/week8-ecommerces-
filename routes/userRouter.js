@@ -75,4 +75,7 @@ router.post("/addAddress", isUserLogin, checkUserBlocked, userController.addAddr
 router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.updateCheckoutStatus);
 router.post("/signup", authController.signup);
 
+
+router.post('/apply-coupon', cartController.applyCoupon);
+
 module.exports = router;

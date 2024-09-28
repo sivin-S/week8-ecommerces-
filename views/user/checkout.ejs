@@ -307,83 +307,64 @@
 
         
 
-
     applyCouponBtn.addEventListener('click', function() {
-      const couponCode = couponInput.value.trim();
-      if (couponCode) {
-       
-        fetch('/validate-coupon', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-           body: JSON.stringify({ 
-            couponCode: couponCode,
-            totalAmount: parseFloat(originalPriceInput.value)
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          const originalPrice = parseFloat(originalPriceInput.value);
-          if (data.valid) {
+  const couponCode = couponInput.value.trim();
+  const totalAmount = parseFloat(originalPriceInput.value);
+  if (couponCode) {
+    fetch('/apply-coupon', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        couponCode: couponCode,
+        totalAmount: totalAmount
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        applyCouponBtn.style.display = 'none';
+        removeCouponBtn.style.display = 'inline-block';
 
-            applyCouponBtn.style.display = 'none';
-            removeCouponBtn.style.display = 'inline-block';
+        couponDiscount.textContent = `: -₹${data.discount.toFixed(2)}`;
+        totalPriceElement.textContent = `₹${data.discountedPrice.toFixed(2)}`;
+        discountedPriceInput.value = data.discountedPrice.toFixed(2);
+        payButton.disabled = false;
 
-            const discountAmount = data.offerPrice;
-            const discountedPrice = originalPrice - discountAmount;
+        document.getElementById('appliedCouponCode').value = couponCode;
 
-            if (originalPrice >= data.minPurchaseAmount) {
-              couponDiscount.textContent = `: -₹${discountAmount.toFixed(2)}`;
-              totalPriceElement.textContent = `₹${discountedPrice.toFixed(2)}`;
-              discountedPriceInput.value = discountedPrice.toFixed(2);
-              payButton.disabled = false;
-
-              document.getElementById('appliedCouponCode').value = couponCode;
-
-
-              Swal.fire({
-                icon: 'success',
-                title: 'Coupon Applied',
-                text: `You saved ₹${discountAmount.toFixed(2)}!`,
-              });
-            } else {
-              const amountNeeded = data.minPurchaseAmount - originalPrice;
-              Swal.fire({
-                icon: 'warning',
-                title: 'Minimum Purchase Not Met',
-                html: `This coupon requires a minimum purchase of ₹${data.minPurchaseAmount}.<br>
-                       Your current total is ₹${originalPrice}.<br>
-                       Add ₹${amountNeeded.toFixed(2)} more to your cart to use this coupon.`,
-              });
-              resetCouponState();
-            }
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Invalid Coupon',
-              text: data.message || 'The coupon code you entered is not valid.',
-            });
-            resetCouponState();
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Unable to apply coupon. Please try again.',
-          });
-          resetCouponState();
+        Swal.fire({
+          icon: 'success',
+          title: 'Coupon Applied',
+          text: `You saved ₹${data.discount.toFixed(2)}!`,
         });
       } else {
         Swal.fire({
-          icon: 'warning',
-          title: 'Empty Coupon',
-          text: 'Please enter a coupon code.',
+          icon: 'error',
+          title: 'Coupon Error',
+          text: data.message,
         });
+        resetCouponState();
       }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Unable to apply coupon. Please try again.',
+      });
+      resetCouponState();
     });
+  } else {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Empty Coupon',
+      text: 'Please enter a coupon code.',
+    });
+  }
+});
 
 
     
