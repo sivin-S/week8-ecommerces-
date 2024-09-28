@@ -258,7 +258,8 @@
                             <input type="hidden" name="variantSize" id="selectedSize" value="<%= product.variants[0]?.size %>">
                             <input type="hidden" name="variantColor" id="selectedColor" value="<%= product.variants[0]?.color %>">
                             <input type="hidden" name="variantImageUrls" id="selectedImageUrls" value="<%= product.variants[0]?.imageUrls.join(',') %>">
-                            <input type="hidden" name="price" id="selectedPrice" value="<%= product.price %>">
+							<input type="hidden" name="price" id="selectedPrice" value="<%= product.offerHasApplied ? product.discountedPrice : product.price %>">
+                          
 
 
 							<h3><%=product?.name %></h3>

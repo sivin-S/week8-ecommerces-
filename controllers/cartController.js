@@ -105,6 +105,11 @@ exports.addToCart = async (req, res) => {
         return res.redirect('/cart');
       }
 
+      const priceToUse = product.discountedPrice && product.discountedPrice < product.price
+      ? product.discountedPrice
+      : product.price;
+
+
       cart.items.push({
         product: productId,
         productName: productName,
@@ -114,7 +119,7 @@ exports.addToCart = async (req, res) => {
           size: variantSize,
           imageUrls: variantImageUrls ? variantImageUrls.split(',') : []
         },
-        price: product?.price
+        price: priceToUse
       });
     }
 

@@ -167,7 +167,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <h5>₹<%=data.product.price %></h5>
+                                        <h5>₹<%= data.price %></h5>
                                     </td>
                                     <td>
                                         <div class="product_count">
@@ -184,7 +184,8 @@
                                         </div>
                                     </td>                                    
                                     <td>
-                                        <h5 class="item-total">₹<%=data.product.price %></h5>
+                                        <h5 class="item-total">₹<%= (data.price * data.quantity).toFixed(2) %></h5>
+
                                     </td>
                                     <td>
                                         <button class="btn"  onclick="removeItem(<%= index %>)" style="color:red;border: 1px solid red;padding: 12px 20px;background-color: transparent;">
