@@ -262,7 +262,23 @@
 
 
 							<h3><%=product?.name %></h3>
-							<h2>₹<%=product?.price %></h2>
+							<div class=" w-100 d-flex">
+								<% if (product.offerHasApplied) { %>
+								   <h1 style="color: #ff6c00;">
+									 ₹<%= product.discountedPrice %>
+									</h1>
+								  <del class="px-3">₹<%= product.price %></del>
+								  <small class="text-success ml-2"><%= Math.round((product.price - product.discountedPrice) / product.price * 100) %>% off</small>
+								<% } else { %>
+								<h1 style="color: #ff6c00;">
+									₹<%= product.price %>
+								</h1>  
+								<% } %>
+								</div>
+							  <ul class="list">
+								<li><a class="active" href="#"><span>Category</span> : <%= product.category.name %></a></li>
+								<li><a href="#"><span>Availibility</span> : In Stock</a></li>
+							  </ul>
 							<ul style="line-height: 2;">
 								<li>color : <span id="displayColor"><%=product.variants[0]?.color  %></span></li>
 							<li>size : <span id="displaySize"> <%=product.variants[0]?.size  %></span></li>
@@ -382,10 +398,17 @@
                 </a>
                 <div class="product-details">
                     <h6><%= product.name %></h6>
-                    <div class="price">
-                        <h6>₹<%= product.price %></h6>
-                        <h6 class="l-through">₹<%= product.price + 5000 %></h6>
-                    </div>
+					<div class="price">
+						<% if(product?.offerHasApplied){ %>
+						<h6>₹<%= product?.discountedPrice %></h6>
+						<span>
+							<h6 class="l-through">₹<%= product?.price %></h6>
+							<%=product?.category?.discountPercentage%>% off
+						</span>
+						<% }else{ %>
+						<h6>₹<%= product?.price %></h6>
+						<% } %>
+					</div>
                     <!-- <div class="prd-bottom">
                         <a href="/addToCart/<%# = encodeURIComponent(product._id) %>" class="social-info">
                             <span class="ti-bag"></span>
@@ -749,6 +772,17 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 
             initializeZoom();
 
+			const filterForm = document.forms['filterForm'];
+    const filterButton = document.getElementById('filterButton');
+    const carouselInner = document.querySelector('.carousel-inner');
+    const priceElement = document.querySelector('.s_product_text h2');
+    const colorElement = document.getElementById('displayColor');
+    const sizeElement = document.getElementById('displaySize');
+    const displayStock = document.getElementById('displayStock');
+    const selectedSize = document.getElementById('selectedSize');
+    const selectedColor = document.getElementById('selectedColor');
+    const selectedImageUrls = document.getElementById('selectedImageUrls');
+
 
 
 
@@ -842,104 +876,159 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
     });
   
 
-    const filterForm = document.forms['filterForm'];
-    const filterButton = document.getElementById('filterButton');
-    const carouselInner = document.querySelector('.carousel-inner');
-    const priceElement = document.querySelector('.s_product_text h2');
-    const colorElement = document.getElementById('displayColor');
-    const sizeElement = document.getElementById('displaySize');
-    const displayStock = document.getElementById('displayStock');
-    const selectedSize = document.getElementById('selectedSize');
-    const selectedColor = document.getElementById('selectedColor');
-    const selectedImageUrls = document.getElementById('selectedImageUrls');
-
+   
     document.getElementById('selectedPrice').value = <%= product.price %>;
 
     filterButton.addEventListener('click', function(event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        const formData = new FormData(filterForm);
-        const colorSelected = formData.get('variantColor');
-        const sizeSelected = formData.get('size');
+    const formData = new FormData(filterForm);
+    const colorSelected = formData.get('variantColor');
+    const sizeSelected = formData.get('size');
 
-        if (!colorSelected || !sizeSelected) {
+    if (!colorSelected || !sizeSelected) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Please select both color and size.',
+        });
+        return;
+    }
+
+    const queryString = new URLSearchParams(formData).toString();
+
+    console.log('Query string:', queryString);
+
+    fetch('/filterVariant?' + queryString)
+        .then(response => response.json())
+        .then(data => {
+			console.log('Server response:', data)
+            if (data.variants && data.variants.length > 0) {
+                updateProductDetails(data.variants[0]);
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No variants found',
+                    text: 'No variants found for the selected criteria. Try different one.',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
             Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: 'Please select both color and size.',
-                    });
-            return;
-        }
-
-        const queryString = new URLSearchParams(formData).toString();
-
-        fetch('/filterVariant?' + queryString)
-            .then(response => response.json())
-            .then(data => {
-                if (data.variants && data.variants.length > 0) {
-                    updateProductDetails(data.variants[0]);
-                } else {
-                    Swal.fire({
-                                icon: 'info',
-                                title: 'No variants found',
-                                text: 'No variants found for the selected criteria. Try different one.',
-                            });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-				Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'An error occurred while filtering variants',
-                        });
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while filtering variants',
             });
+        });
 
-        document.getElementById('sst').value = 1;
-        currentQuantity = 1;
+    document.getElementById('sst').value = 1;
+    currentQuantity = 1;
+});
+	
+
+function updateProductDetails(variant) {
+    console.log('Updating product details with variant:', variant);
+
+    if (!carouselInner) {
+        console.error('carouselInner element not found');
+        return;
+    }
+
+    carouselInner.innerHTML = '';
+
+    variant.imageUrls.forEach((url, index) => {
+        const item = document.createElement('div');
+        item.classList.add('carousel-item');
+        if (index === 0) {
+            item.classList.add('active');
+        }
+        const img = document.createElement('img');
+        img.classList.add('d-block', 'w-100', 'zoom-img');
+        img.src = url;
+        img.alt = 'Product Image';
+        item.appendChild(img);
+        carouselInner.appendChild(item);
     });
 
-    function updateProductDetails(variant) {
-        carouselInner.innerHTML = '';
-
-        variant.imageUrls.forEach((url, index) => {
-            const item = document.createElement('div');
-            item.classList.add('carousel-item');
-            if (index === 0) {
-                item.classList.add('active');
-            }
-            const img = document.createElement('img');
-            img.classList.add('d-block', 'w-100', 'zoom-img');
-            img.src = url;
-            img.alt = 'Product Image';
-            item.appendChild(img);
-            carouselInner.appendChild(item);
-        });
-
-        priceElement.textContent = '₹' + variant.price;
-        document.getElementById('selectedPrice').value = variant.price; 
-        colorElement.innerHTML = `<b>${variant.color}</b>`;
-        sizeElement.innerHTML = `<b>${variant.size}</b>`;
-        displayStock.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
-
-        selectedSize.value = variant.size;
-        selectedColor.value = variant.color;
-        selectedImageUrls.value = variant.imageUrls.join(',');
-
-        currentStock = variant.stock;
-
-		initializeZoom();
-
-
-        $('.s_Product_carousel').slick('unslick');
-        $('.s_Product_carousel').slick({
-            dots: true,
-            infinite: true,
-            speed: 300,
-            slidesToShow: 1,
-            adaptiveHeight: true
-        });
+	const priceContainer = document.querySelector('.s_product_text .w-100.d-flex');
+    if (!priceContainer) {
+        console.error('priceContainer not found');
+    } else {
+        if (variant.offerHasApplied) {
+            priceContainer.innerHTML = `
+                <h1 style="color: #ff6c00;">₹${variant.discountedPrice}</h1>
+                <del class="px-3">₹${variant.price}</del>
+                <small class="text-success ml-2">${Math.round((variant.price - variant.discountedPrice) / variant.price * 100)}% off</small>
+            `;
+        } else {
+            priceContainer.innerHTML = `
+                <h1 style="color: #ff6c00;">₹${variant.price}</h1>
+            `;
+        }
     }
+
+    if (!document.getElementById('selectedPrice')) {
+        console.error('selectedPrice element not found');
+    } else {
+        document.getElementById('selectedPrice').value = variant.offerHasApplied ? variant.discountedPrice : variant.price;
+    }
+
+    if (!colorElement) {
+        console.error('colorElement not found');
+    } else {
+        colorElement.innerHTML = `<b>${variant.color}</b>`;
+    }
+
+    if (!sizeElement) {
+        console.error('sizeElement not found');
+    } else {
+        sizeElement.innerHTML = `<b>${variant.size}</b>`;
+    }
+
+    if (!displayStock) {
+        console.error('displayStock element not found');
+    } else {
+        displayStock.innerHTML = `<span>Availability</span>: ${variant.stock > 0 ? 'In Stock' : 'Out of Stock'} <span>${variant.stock}</span>`;
+    }
+
+    if (!selectedSize) {
+        console.error('selectedSize element not found');
+    } else {
+        selectedSize.value = variant.size;
+    }
+
+    if (!selectedColor) {
+        console.error('selectedColor element not found');
+    } else {
+        selectedColor.value = variant.color;
+    }
+
+    if (!selectedImageUrls) {
+        console.error('selectedImageUrls element not found');
+    } else {
+        selectedImageUrls.value = variant.imageUrls.join(',');
+    }
+
+    currentStock = variant.stock;
+
+    initializeZoom();
+
+    // if ($('.s_Product_carousel').length) {
+    //     $('.s_Product_carousel').slick('unslick');
+    //     $('.s_Product_carousel').slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 300,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // } else {
+    //     console.error('s_Product_carousel element not found');
+    // }
+
+	$('#productCarousel').carousel();
+}
 
     const addToCartForm = document.getElementById('addToCartForm');
 

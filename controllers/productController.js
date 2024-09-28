@@ -13,6 +13,8 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find({ category: { $in: nonDeletedCategoryIds } })
       .populate('category');
 
+      console.log("products ==>"+ products);
+
     res.setHeader("Cache-Control", "no-store");
     res.render("index.ejs", { products });
   } catch (error) {
@@ -55,45 +57,71 @@ exports.getProductDetails = async (req, res) => {
 // filtering variants
 
 exports.filterVariant = async (req, res) => {
-  console.log('Query Parameters:', req.query); 
+  console.log('Query Parameters:', req.query);
 
   try {
-      const { productId, variantColor, size } = req.query;
+    const { productId, variantColor, size } = req.query;
 
-      const product = await Product.findById(productId);
+    if (!productId) {
+      return res.status(400).json({ message: 'Product ID is required' });
+    }
 
-      if (!product) {
-          return res.status(404).json({ message: 'Product not found' });
-      }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: 'Invalid Product ID' });
+    }
 
-      let filteredVariants = product.variants;
+    const product = await Product.findById(productId);
 
-      if (variantColor) {
-          filteredVariants = filteredVariants.filter(v => v.color === variantColor);
-      }
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
 
-      if (size) {
-          filteredVariants = filteredVariants.filter(v => v.size === size);
-      }
+    console.log('Product found:', product.name);
+    console.log('Variants:', JSON.stringify(product.variants, null, 2));
 
-      if (filteredVariants.length === 0) {
-          return res.json({ message: 'No variants found for the selected criteria' });
-      }
+    let filteredVariants = product.variants;
 
-      res.json({ 
-          variants: filteredVariants.map(v => ({
-              ...v.toObject(),
-              price: product.price,
-              name: product.name,
-              description: product.description
-          }))
-      });
+    if (variantColor) {
+      console.log('Filtering by color:', variantColor);
+      filteredVariants = filteredVariants.filter(v => v.color === variantColor);
+    }
+
+    if (size) {
+      console.log('Filtering by size:', size);
+      filteredVariants = filteredVariants.filter(v => v.size === size);
+    }
+
+    console.log('Filtered variants:', JSON.stringify(filteredVariants, null, 2));
+
+    if (filteredVariants.length === 0) {
+      return res.json({ message: 'No variants found for the selected criteria' });
+    }
+
+    const response = {
+      variants: filteredVariants.map(v => ({
+        ...v.toObject(),
+        price: product.price,
+        name: product.name,
+        description: product.description,
+        offerHasApplied: product.offerHasApplied,
+        discountedPrice: product.discountedPrice
+      }))
+    };
+
+    console.log('Response:', JSON.stringify(response, null, 2));
+
+    res.json(response);
 
   } catch (error) {
-      console.error("Error filtering variants:", error);
-      res.status(500).json({ message: 'An error occurred while filtering variants' });
+    console.error("Error filtering variants:", error);
+    res.status(500).json({ 
+      message: 'An error occurred while filtering variants', 
+      error: error.message,
+      stack: error.stack
+    });
   }
 };
+
 
 
 
