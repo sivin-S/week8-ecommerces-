@@ -403,6 +403,7 @@
   const paymentMethod = form.querySelector(
     'input[name="paymentMethod"]:checked'
   );
+  
 
   if (!address) {
     Swal.fire({
@@ -456,24 +457,25 @@
   headers: {
     'Content-Type': 'application/json',
   },
-  body: JSON.stringify(Object.fromEntries(formData))
-})
-.then(response => {
-  console.log("Response status:", response.status);
-  return response.json().then(data => ({status: response.status, body: data}));
+  body: JSON.stringify({
+    address: address.value,
+    paymentMethod: paymentMethod.value,
+    discountedPrice: discountedPriceInput.value,
+    appliedCoupon: document.getElementById('appliedCouponCode').value
   })
-  .then(({status, body}) => {
-  console.log("Response body:", body);
-  if (status === 200 && body.success) {
+})
+.then(response => response.json())
+.then(data => {
+  if (data.success) {
     Swal.fire({
       icon: 'success',
       title: 'Checkout Successful',
-      text: body.message,
+      text: data.message,
     }).then(() => {
       window.location.href = '/orderhistory';
     });
   } else {
-    throw new Error(body.message || 'An error occurred during checkout');
+    throw new Error(data.message || 'An error occurred during checkout');
   }
 })
 .catch(error => {

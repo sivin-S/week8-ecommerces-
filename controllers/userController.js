@@ -401,6 +401,8 @@ exports.checkout = async (req, res) => {
         
         const { address: addressId, paymentMethod, discountedPrice, appliedCoupon } = req.body;
 
+        
+
         console.log("Extracted data:", { addressId, paymentMethod, discountedPrice, appliedCoupon });
 
         if (!addressId) {
@@ -417,6 +419,45 @@ exports.checkout = async (req, res) => {
 
         console.log("Cart:", cart);
 
+
+
+        
+      
+        let totalAmount = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+      
+        let discount = 0;
+        if (appliedCoupon) {
+            const coupon = await Coupon.findOne({ couponCode: appliedCoupon });
+            if (coupon && coupon.status && new Date() <= coupon.expiryDate) {
+                if (totalAmount >= coupon.minPurchaseAmount) {
+                    discount = coupon.offerPrice;
+                    totalAmount -= discount;
+                } else {
+                    return res.status(400).json({ success: false, message: 'Minimum purchase amount for coupon not met' });
+                }
+            } else {
+                return res.status(400).json({ success: false, message: 'Invalid or expired coupon' });
+            }
+        }
+
+     
+
+
+       
+        if (Math.abs(totalAmount - parseFloat(discountedPrice)) > 0.01) { 
+            return res.status(400).json({ success: false, message: 'Price mismatch. Please try again.' });
+        }
+
+
+
+
+
+
+
+
+
+
         for (const item of cart.items) {
             const product = await Product.findById(item.product._id);
             const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
@@ -424,19 +465,14 @@ exports.checkout = async (req, res) => {
             if (!variant || variant.stock < item.quantity) {
                 return res.status(400).json({ success: false, message: `Not enough stock for ${product.name} (${item.variant.color}, ${item.variant.size})` });
             }
-        }
-
-        for (const item of cart.items) {
-            const product = await Product.findById(item.product._id);
-            const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
             
             variant.stock -= item.quantity;
             await product.save();
         }
 
-        const shippingCost = 0; // Assuming free shipping, adjust if needed
-        const totalPrice = parseFloat(discountedPrice) + shippingCost;
 
+
+       
         const checkout = new Checkout({
             user: userId,
             cart: cart,
@@ -453,9 +489,10 @@ exports.checkout = async (req, res) => {
             paymentMethod: paymentMethod,
             paymentStatus: 'Pending',
             orderStatus: 'Processing',
-            shippingCost: shippingCost,
-            totalPrice: totalPrice,
-            appliedCoupon: appliedCoupon
+          
+            totalPrice: totalAmount,
+            appliedCoupon: appliedCoupon,
+            discount: discount
         });
 
         await checkout.save();

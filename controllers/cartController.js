@@ -10,8 +10,9 @@ exports.getCart = async (req, res) => {
    
     let quantityUpdated = false;
     let itemsToRemove = [];
+    let priceUpdated = false;
 
-    // Check and update stock for each item in the cart
+   
     for (let item of cart.items) {
       const product = await Product.findById(item.product._id);
       const variant = product.variants.find(v => v.size === item.variant.size && v.color === item.variant.color);
@@ -24,15 +25,34 @@ exports.getCart = async (req, res) => {
           item.quantity = variant.stock;
           quantityUpdated = true;
         }
+
+
+        const currentPrice = product.discountedPrice && product.discountedPrice < product.price
+        ? product.discountedPrice
+        : product.price;
+
+        if (item.price !== currentPrice) {
+          item.price = currentPrice;
+          priceUpdated = true;
+        }
+
+
+
+
       }
     }
     
-    if (quantityUpdated) {
+    if (quantityUpdated || priceUpdated) {
       // Remove items with zero stock
       cart.items = cart.items.filter(item => !itemsToRemove.includes(item._id));
       
       await cart.save();
-      req.flash('warning', 'Some item quantities have been updated due to stock changes.');
+      if (quantityUpdated) {
+        req.flash('warning', 'Some item quantities have been updated due to stock changes.');
+      }
+      if (priceUpdated) {
+        req.flash('info', 'Some item prices have been updated.');
+      }
     }
 
     res.render("cart.ejs", { cart });
@@ -87,6 +107,10 @@ exports.addToCart = async (req, res) => {
         item.variant.color === variantColor
     );
 
+    const priceToUse = product.discountedPrice && product.discountedPrice < product.price
+      ? product.discountedPrice
+      : product.price;
+
     if (existingItemIndex > -1) {
       const existingItem = cart.items[existingItemIndex];
       const newQuantity = existingItem.quantity + parseInt(qty);
@@ -98,6 +122,7 @@ exports.addToCart = async (req, res) => {
       }
 
       existingItem.quantity = newQuantity;
+      existingItem.price = priceToUse; 
     } else {
       if (parseInt(qty) > selectedVariant?.stock) {
         req.flash('error', `Only ${selectedVariant?.stock} items available in stock`);
