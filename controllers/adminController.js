@@ -10,6 +10,7 @@ const Coupon = require("../model/couponSchema");
 const mongoose = require("mongoose");
 const ProductOffer = require("../model/productOfferSchema");
 const CategoryOffer = require("../model/categoryOfferSchema");
+const { checkout } = require("../routes/adminRouter");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -320,6 +321,72 @@ async function getOrderDetails(req, res) {
 }
 
 
+// sales report 
+
+async function getSalesReport(req, res) {
+    try {
+        const salesData = await Checkout.find()
+            .populate('user', '_id')
+            .populate('cart.items.product', '_id');
+
+        console.log("Sales Data:", JSON.stringify(salesData, null, 2));
+
+        res.render('salesReport.ejs', { salesData: salesData || [] });
+    } catch (error) {
+        console.error(error);
+        res.redirect('/admin');
+    }
+};
+
+async function filterSalesReport(req, res) {
+    try {
+        const { filterType, startDate, endDate } = req.body;
+        let query = {};
+
+        switch (filterType) {
+            case 'day':
+                query.createdAt = { $gte: new Date(new Date().setHours(0,0,0,0)) };
+                break;
+            case 'week':
+                query.createdAt = { $gte: new Date(new Date().setDate(new Date().getDate() - 7)) };
+                break;
+            case 'month':
+                query.createdAt = { $gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) };
+                break;
+            case 'year':
+                query.createdAt = { $gte: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) };
+                break;
+            case 'custom':
+                query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+                break;
+        }
+
+        const salesData = await Checkout.find(query).populate('user', '_id').populate('cart.items.product', '_id');
+        res.json(salesData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -334,16 +401,16 @@ function paymentMethods(req, res) {
     }
 }
 
-// Function to render the sales report page
-function salesReport(req, res) {
-    // res.render('report.ejs');
-    try {
-        res.render('report.ejs');
-    } catch (err) {
-        console.log(err);
-        res.redirect('/admin');
-    }
-}
+// // Function to render the sales report page
+// function salesReport(req, res) {
+//     // res.render('report.ejs');
+//     try {
+//         res.render('salesReport.ejs');
+//     } catch (err) {
+//         console.log(err);
+//         res.redirect('/admin');
+//     }
+// }
 
 // Function to render the coupons history page
 async function couponsHistory(req, res) {
@@ -978,7 +1045,7 @@ module.exports = {
     toggleUserState,
     orderList,
     paymentMethods,
-    salesReport,
+    // salesReport,
     couponsHistory,
     categories,
     softDeleteProduct,
@@ -1004,6 +1071,8 @@ module.exports = {
     addProductOffer,
     updateProductOfferStatus,
     addCategoryOffer,
+    getSalesReport,
+    filterSalesReport,
 
     removeCategoryOffer,
     categoryOffers

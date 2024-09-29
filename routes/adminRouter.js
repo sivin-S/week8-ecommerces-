@@ -28,7 +28,7 @@ router.get('/refreshCouponList', isAdminLogin, adminController.refreshCouponList
 // router.get('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.get('/orderList', isAdminLogin, adminController.orderList);
 router.get('/paymentMethods', isAdminLogin, adminController.paymentMethods);
-router.get('/salesReport', isAdminLogin, adminController.salesReport);
+// router.get('/salesReport', isAdminLogin, adminController.salesReport);
 router.get('/couponsHistory', isAdminLogin, adminController.couponsHistory);
 router.get('/categories', isAdminLogin, adminController.categories);
 router.get('/softDeleteCategory/:id', isAdminLogin, adminController.softDeleteCategory);
@@ -40,7 +40,7 @@ router.get('/logout', adminController.logout);
 router.get('/orderDetails/:id', isAdminLogin, adminController.getOrderDetails);
 router.get('/productOffers', isAdminLogin, adminController.productOffers);
 router.get('/categoryOffers', isAdminLogin, adminController.categoryOffers);
-
+router.get('/salesReport', isAdminLogin, adminController.getSalesReport);
 
 
 router.post('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
@@ -59,7 +59,7 @@ router.post('/updateProductOfferStatus/:productId', isAdminLogin, adminControlle
 router.post('/removeProductOffer/:offerId', isAdminLogin, adminController.removeProductOffer);
 router.post('/addCategoryOffer', isAdminLogin, adminController.addCategoryOffer);
 router.post('/removeCategoryOffer/:offerId', isAdminLogin, adminController.removeCategoryOffer);
-
+router.post('/filterSalesReport', isAdminLogin, adminController.filterSalesReport);
 
 
 module.exports = router;
