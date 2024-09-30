@@ -207,7 +207,7 @@
                                             <!-- cancellation  btn -->
                                             <td>
                                                 <form action="/admin/checkOutStatus" method="post">
-                                                    <select name="orderStatus" onchange="updateOrderStatus(this,'<%= data.user?._id %>', '<%= data._id %>')" class="form-select">
+                                                    <select name="orderStatus" onchange="updateOrderStatus(this,'<%= data.user?._id %>', '<%= data._id %>')" class="form-select" data-original-status="<%= data.orderStatus %>">
                                                         <option value="Processing" <%= data.orderStatus === 'Processing' ? 'selected' : '' %>>Processing</option>
                                                         <option value="Delivered" <%= data.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                                         <option value="Cancelled" <%= data.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
@@ -459,65 +459,70 @@ const rowsPerPage = 5;
         }
 
         function updateOrderStatus(selectElement, userId, orderId) {
-           const newStatus = selectElement.value;
-           
-           fetch('/admin/checkOutStatus',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({orderStatus:newStatus,userId:userId,orderId:orderId})
-           }).then((response=> response.json()))
-           .then((data)=>{
-            if(data.success){
-                // console.log("data >>>",data);
-                const statusElement = document.getElementById(`orderStatus-${orderId}`);
-                if (statusElement) {
-                    statusElement.textContent = data.updatedCheckout.orderStatus;
-                    console.log(`Updated DOM for order ${orderId}`);
+    const newStatus = selectElement.value;
+    const oldStatus = selectElement.getAttribute('data-original-status');
+
+    if (newStatus === oldStatus) {
+        return;
+    }
+
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to change the order status from "${oldStatus}" to "${newStatus}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, change it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/admin/checkOutStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderStatus: newStatus, userId: userId, orderId: orderId })
+            }).then((response => response.json()))
+            .then((data) => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Updated!',
+                        text: 'Order status updated successfully!',
+                        icon: 'success',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                    selectElement.setAttribute('data-original-status', newStatus);
+                    const orderStatusCell = selectElement.closest('tr').querySelector('#orderStatus');
+                    if (orderStatusCell) {
+                        orderStatusCell.textContent = newStatus;
+                    }
                 } else {
-                    console.log(`Could not find DOM element for order ${orderId}`);
+                    // throw new Error('Failed to update order status');
+                    console.log('Failed to update order status');
                 }
-
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to update order status!',
+                    icon: 'error',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
               
-
-                swal.fire({
-                    // icon:'success',
-                    title:'Order status updated successfully!',
-                    timer:1000,
-                    timerProgressBar:true,
-                    showConfirmButton:false,
-                    didOpen: () => {
-                        const progressBar = Swal.getHtmlContainer().querySelector('.swal2-timer-progress-bar');
-                        progressBar.style.backgroundColor = '#dc3545'; 
-                    }
-
-                })
-            }else{
-                swal.fire({
-                    // icon:'error',
-                    title:'Failed to update order status!',
-                    timer:1000,
-                    timerProgressBar:true,
-                    showConfirmButton:false,
-                })
-            }
-           })
-           .catch((error)=>{
-            console.log("error >>>",error);
-            swal.fire({
-                    // icon:'error',
-                    title:'Failed to update order status!',
-                    timer:1000,
-                    timerProgressBar:true,
-                    showConfirmButton:false,
-                    didOpen: () => {
-                        const progressBar = Swal.getHtmlContainer().querySelector('.swal2-timer-progress-bar');
-                        progressBar.style.backgroundColor = '#dc3545'; 
-                    }
-                })
-           })
+                selectElement.value = oldStatus;
+            });
+        } else {
+      
+            selectElement.value = oldStatus;
         }
+    });
+}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
