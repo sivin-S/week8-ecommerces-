@@ -104,15 +104,16 @@ const checkoutSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-        default: 'Pending'
+        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
+         default: 'Processing'
     },
-    previousOrderStatus: {
-        type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-        default: 'Pending'
-    }
-    ,
+   
+  previousOrderStatus: {
+    type: String,
+    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
+    default: null
+  },
+    
     shippingCost: { 
         type: Number,
          default: 0 

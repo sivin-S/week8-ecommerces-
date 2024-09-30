@@ -207,10 +207,9 @@
                                             <!-- cancellation  btn -->
                                             <td>
                                                 <form action="/admin/checkOutStatus" method="post">
-                                                    <select name="orderStatus" onchange="updateOrderStatus(this,'<%= data.user?._id %>')" class="form-select">
+                                                    <select name="orderStatus" onchange="updateOrderStatus(this,'<%= data.user?._id %>', '<%= data._id %>')" class="form-select">
                                                         <option value="Processing" <%= data.orderStatus === 'Processing' ? 'selected' : '' %>>Processing</option>
-                                                        <!-- <option value="Shipped" <%= data.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option> -->
-                                                        <!-- <option value="Delivered" <%= data.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option> -->
+                                                        <option value="Delivered" <%= data.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                                         <option value="Cancelled" <%= data.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
                                                     </select>      
                                                 </form>
@@ -418,6 +417,7 @@ const rowsPerPage = 5;
 
                         const variant = item.variant;
 
+                       
                         const productInfoHtml = `
                            
                            
@@ -428,7 +428,8 @@ const rowsPerPage = 5;
                             
                           <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
         <label for="productName${index}" class="form-label border-0 w-100">product name :</label>
-        <input type="text" class="form-control border-0 w-100" id="productName${index}" value="${item.productName}" readonly style="color:#4d859c;">
+       
+        <input type="text" class="form-control border-0 w-100" id="productName${index}" value="${item.product.name}" readonly style="color:#4d859c;">
     </div>
 
     <div class="mb-3 d-flex border-0 align-items-center justify-content-center">
@@ -456,19 +457,26 @@ const rowsPerPage = 5;
                 });
         }
 
-        function updateOrderStatus(selectElement, orderId) {
+        function updateOrderStatus(selectElement, userId, orderId) {
            const newStatus = selectElement.value;
            fetch('/admin/checkOutStatus',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({orderStatus:newStatus,userId:orderId})
+            body:JSON.stringify({orderStatus:newStatus,userId:userId,orderId:orderId})
            }).then((response=> response.json()))
            .then((data)=>{
             if(data.success){
                 // console.log("data >>>",data);
                 document.getElementById('orderStatus').textContent = data.updatedCheckout.orderStatus;
+                const statusElement = document.getElementById(`orderStatus-${orderId}`);
+            if (statusElement) {
+                statusElement.textContent = data.updatedCheckout.orderStatus;
+                console.log(`Updated DOM for order ${orderId}`);
+            } else {
+                console.log(`Could not find DOM element for order ${orderId}`);
+            }
                 swal.fire({
                     // icon:'success',
                     title:'Order status updated successfully!',

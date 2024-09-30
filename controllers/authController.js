@@ -4,6 +4,8 @@ const passport = require("passport");
 const User = require("../model/dbUserSchema");
 const sendMail = require("../mailer");
 const Address = require("../model/addressSchema");
+const Checkout = require("../model/checkoutSchema");
+const { Product } = require("../model/productSchema");
 
 const generateOtp = () => {
   return crypto.randomBytes(3).toString("hex");
@@ -61,6 +63,24 @@ exports.login = async (req, res) => {
     res.status(500).render("login");
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 exports.signup = async (req, res) => {
   try {

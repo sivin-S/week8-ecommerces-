@@ -605,11 +605,11 @@ async function addCategory(req, res) {
 
 // Function to update the checkout status
 async function checkOutStatus(req, res) {
-    // console.log(req.body);
+    console.log("checkOutStatus >>>",req.body);
     try {
-        const { orderStatus, userId } = req.body;
+        const { orderStatus, userId ,orderId} = req.body;
 
-        const checkout = await Checkout.findOne({ user: userId });
+        const checkout = await Checkout.findOne({ user: userId ,_id:orderId});
         if (!checkout) {
             // return res.status(404).send('Checkout not found');
             // req.flash('error', "Checkout not found");
@@ -624,7 +624,17 @@ async function checkOutStatus(req, res) {
         // console.log(cart.orderStatus);
         // req.flash('success', "Order status updated to " + cart?.orderStatus + " successfully!");
         // res.redirect('/admin/orders');
-        res.json({success:true,message:"Order status updated successfully!",updatedCheckout});
+        console.log("Updated checkout:", updatedCheckout);
+        // res.json({success:true,message:"Order status updated successfully!",updatedCheckout});
+        res.json({
+            success: true, 
+            message: "Order status updated successfully!", 
+            updatedCheckout: {
+                _id: updatedCheckout._id,
+                orderStatus: updatedCheckout.orderStatus,
+                previousOrderStatus: updatedCheckout.previousOrderStatus
+            }
+        });
     } catch (err) {
         console.log(err);
        

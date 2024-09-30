@@ -1,4 +1,3 @@
-// userController.js
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const User = require("../model/dbUserSchema");
@@ -8,6 +7,7 @@ const Checkout = require("../model/checkoutSchema");
 const Cart = require("../model/cartSchema");
 const { Product } = require("../model/productSchema");
 const Coupon = require("../model/couponSchema");
+const Transaction = require("../model/transactionSchema");
 
 exports.getProfile = async (req, res) => {
     try {
@@ -518,6 +518,76 @@ exports.loginUserPage = (req, res)=> {
 
 
 
+exports.getWallet = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const user = await User.findById(userId).populate('wallet.transactions');
+        res.render('wallet.ejs', { user });
+    } catch (error) {
+        console.error('Error fetching wallet:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch wallet' });
+    }
+}
+
+
+
+exports.returnOrder = async (req, res) => {
+    
+    try {
+        const orderId = req.params.orderId;
+        const order = await Checkout.findById(orderId).populate('user').populate('cart.items.product');
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        if (order.orderStatus !== 'Delivered') {
+            return res.status(400).json({ success: false, message: 'Order cannot be returned' });
+        }
+
+      
+        order.previousOrderStatus = order.orderStatus;
+        order.orderStatus = 'Returned';
+
+    
+        for (const item of order.cart.items) {
+            const product = await Product.findById(item.product._id);
+            if (product) {
+                const variant = product.variants.find(v => v.color === item.variant.color && v.size === item.variant.size);
+                if (variant) {
+                    variant.stock += item.quantity;
+                }
+                await product.save();
+            }
+        }
+
+       
+        const user = order.user;
+        user.wallet.balance += order.totalPrice;
+        
+        const transaction = new Transaction({
+            user: user._id,
+            amount: order.totalPrice,
+            type: order.paymentMethod,
+            description: `Refund for order ${order._id}`
+        });
+        await transaction.save();
+        
+        user.wallet.transactions.push(transaction._id);
+        await user.save();
+
+        await user.save();
+        await order.save();
+
+        res.json({ success: true, message: 'Order returned successfully' });
+    } catch (error) {
+        console.error('Error returning order:', error);
+        res.status(500).json({ success: false, message: 'Failed to return order' });
+    }
+}
+
+
+
 
 
 
@@ -630,6 +700,7 @@ exports.addAddress = async (req, res) => {
 };
 
 exports.updateCheckoutStatus = async (req, res) => {
+    console.log("checkout status >>>",req.body);
     try {
         const { orderStatus } = req.body;
         await Checkout.updateOne({ user: req.session.userId }, { $set: { orderStatus } });

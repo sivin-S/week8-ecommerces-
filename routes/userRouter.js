@@ -22,6 +22,9 @@ router.use(express.urlencoded({ extended: true }));
 router.get("/auth/google", authController.googleAuth);
 router.get("/auth/google/callback", authController.googleAuthCallback);
 
+
+router.get('/wallet', isUserLogin, checkUserBlocked, userController.getWallet);
+
 // Google auth end
 router.get("/", productController.getProducts);
 router.get("/productDetails/:id", productController.getProductDetails);
@@ -74,6 +77,9 @@ router.post("/reset-password", authController.resetPassword);
 router.post("/addAddress", isUserLogin, checkUserBlocked, userController.addAddress);
 router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.updateCheckoutStatus);
 router.post("/signup", authController.signup);
+
+router.post('/returnOrder/:orderId', isUserLogin, checkUserBlocked, userController.returnOrder);
+
 
 
 router.post('/apply-coupon', cartController.applyCoupon);
