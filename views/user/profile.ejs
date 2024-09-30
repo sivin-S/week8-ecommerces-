@@ -566,6 +566,26 @@
 
 
 
+ const walletBtn = document.getElementById('walletBtn');
+    const walletModal = new bootstrap.Modal(document.getElementById('walletModal'));
+    
+    walletBtn.addEventListener('click', function() {
+       
+        fetch('/getWalletBalance')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('walletBalance').textContent = data.balance.toFixed(2);
+                    walletModal.show();
+                } else {
+                    Swal.fire('Error', 'Failed to fetch wallet balance', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'An error occurred while fetching the wallet balance', 'error');
+            });
+    });
 
 
 
@@ -605,7 +625,9 @@
                                         <li class="breadcrumb-item"><a href="/">Home</a></li>
                                         <li class="breadcrumb-item active" aria-current="page">Profile</li>
                                     </ol>
-                                    <button class="btn">Wallet</button>
+                                    <button class="btn" id="walletBtn"
+                                     style="background-color: #ff9000;color: #fff;border: 1px solid #ff9000;outline: none;"
+                                    >Wallet</button>
                                 </nav>
                             </div>
                             <div class="row rowMod-1 flex-column rounded-4">
@@ -897,6 +919,25 @@
             </div>
         </div>
     </div>
+
+    <!-- wallet modal  -->
+    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="walletModalLabel">Your Wallet</h5>
+              <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+            </div>
+            <div class="modal-body">
+              <p>Your current balance: $<span id="walletBalance">0.00</span></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 </body>
 

@@ -516,18 +516,28 @@ exports.loginUserPage = (req, res)=> {
     }
 }
 
-
-
-exports.getWallet = async (req, res) => {
+exports.getWalletBalance = async (req, res) => {
     try {
         const userId = req.session.userId;
         const user = await User.findById(userId).populate('wallet.transactions');
-        res.render('wallet.ejs', { user });
+        res.json({ success: true, balance: user.wallet.balance });
     } catch (error) {
         console.error('Error fetching wallet:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch wallet' });
     }
 }
+
+
+// exports.getWallet = async (req, res) => {
+//     try {
+//         const userId = req.session.userId;
+//         const user = await User.findById(userId).populate('wallet.transactions');
+//         res.render('wallet.ejs', { user });
+//     } catch (error) {
+//         console.error('Error fetching wallet:', error);
+//         res.status(500).json({ success: false, message: 'Failed to fetch wallet' });
+//     }
+// }
 
 
 

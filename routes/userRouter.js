@@ -23,7 +23,8 @@ router.get("/auth/google", authController.googleAuth);
 router.get("/auth/google/callback", authController.googleAuthCallback);
 
 
-router.get('/wallet', isUserLogin, checkUserBlocked, userController.getWallet);
+// router.get('/wallet', isUserLogin, checkUserBlocked, userController.getWallet);
+router.get('/getWalletBalance', isUserLogin, checkUserBlocked, userController.getWalletBalance);
 
 // Google auth end
 router.get("/", productController.getProducts);
