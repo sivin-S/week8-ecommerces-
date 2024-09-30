@@ -617,9 +617,19 @@ async function checkOutStatus(req, res) {
             // return res.redirect('/admin/orders');
         }
 
-
-        checkout.previousOrderStatus = checkout.orderStatus;
+        const previousStatus = checkout.orderStatus;
+        checkout.previousOrderStatus = previousStatus;
         checkout.orderStatus = orderStatus;
+
+
+       
+         if (previousStatus === "Cancelled" && orderStatus === "Delivered") {
+            checkout.canBeReturned = false; 
+        } else if (orderStatus === "Delivered") {
+            checkout.canBeReturned = true; 
+        }
+
+
         const updatedCheckout = await checkout.save();
         // console.log(cart.orderStatus);
         // req.flash('success', "Order status updated to " + cart?.orderStatus + " successfully!");

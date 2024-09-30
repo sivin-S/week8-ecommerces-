@@ -48,6 +48,10 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    canBeReturned: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
