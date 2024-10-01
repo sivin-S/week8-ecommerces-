@@ -188,7 +188,16 @@ exports.applyCoupon = async (req, res) => {
         }
 
   
-        const discountedPrice = totalAmount - coupon.offerPrice;
+        let discountedPrice = totalAmount - coupon.offerPrice;
+
+        if (discountedPrice < 0) {
+          return res.status(400).json({
+              success: false,
+              message: 'Coupon discount exceeds the total amount'
+          });
+      }
+
+      discountedPrice = Math.max(0, discountedPrice);
 
         return res.json({
             success: true,

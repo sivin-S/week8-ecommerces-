@@ -169,11 +169,12 @@
                     style="outline-color: #4D869C !important;"
                     >
                     <div class="table-responsive mt-3">
-                        <table class="table table-hover" id="couponTable" style="color: #4D869C;">
+                        <table class="table table-hover text-center" id="couponTable" style="color: #4D869C;">
                             <thead>
                                 <tr>
                                     <th>Coupon Code</th>
                                     <th>Discount</th>
+                                    <th>Minimum Purchase Amount</th>
                                     <th>Start Date</th>
                                     <th>Expiry Date</th>
                                     <th>Status</th>
@@ -185,6 +186,7 @@
                                 <tr data-coupon-id="<%= coupon._id %>">
                                     <td><%= coupon.couponCode %></td>
                                     <td><%= coupon.offerPrice %></td>
+                                    <td><%= coupon.minPurchaseAmount %></td>
                                     <td><%= new Date(coupon.startDate).toLocaleDateString() %></td>
                                     <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
                                     <td><span class="<%= coupon.status ? 'text-success' : 'text-danger' %>"><%= coupon.status ? 'Active' : 'Expired' %></span></td>

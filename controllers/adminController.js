@@ -472,29 +472,23 @@ async function categories(req, res) {
 
 async function getCoupons(req, res) {
     try {
-        const coupons = await Coupon.find();
         const currentDate = new Date();
+        const coupons = await Coupon.find({ expiryDate: { $gt: currentDate } });
     
-        const updatedCoupons = coupons.map(coupon => {
-          if (coupon.expiryDate < currentDate && coupon.status) {
-            coupon.status = false;
-            coupon.save();
-          }
-          return {
+        const updatedCoupons = coupons.map(coupon => ({
             _id: coupon._id,
             couponCode: coupon.couponCode,
             offerPrice: coupon.offerPrice,
             minPurchaseAmount: coupon.minPurchaseAmount,
             expiryDate: coupon.expiryDate,
             status: coupon.status
-          };
-        });
+        }));
     
         res.json(updatedCoupons);
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching coupons:', error);
         res.status(500).json({ success: false, message: 'Error fetching coupons' });
-      }
+    }
 }
 
 
@@ -937,6 +931,10 @@ async function couponsCreate(req, res) {
          const existingCoupon = await Coupon.findOne({ couponCode });
          if (existingCoupon) {
              return res.status(400).json({ success: false, message: 'A coupon with this code already exists' });
+         }
+
+         if(offerPrice > minPurchaseAmount){
+            return res.status(400).json({ success: false, message: 'Offer price cannot be greater than minimum purchase amount' });
          }
  
        

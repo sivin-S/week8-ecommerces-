@@ -91,17 +91,23 @@
             </div>
 
             <div class=" mt-2 d-flex align-items-center" style="width: 100%;height: 80px;overflow-x: auto;">
-                <% coupon.forEach((coupon) => { %>
-                 <div class="mx-3 py-3 text-center rounded shadow" style="width: 152px;font-size: 1.5rem;">
-                  <span><b><%= coupon.couponCode %></b></span>
-                 </div>
+              <% if(coupons && coupons.length > 0 && cart[0]?.totalAmount) { %>
+                <% coupons.forEach((couponItem) => { %>
+                  <% if (couponItem.minPurchaseAmount <= cart[0].totalAmount) { %>
+                    <div class="mx-3 py-3 text-center rounded shadow" style="width: 152px;font-size: 1.5rem;">
+                      <span><b><%= couponItem.couponCode %></b></span>
+                    </div>
+                  <% } %>
                 <% }) %>
+              <% } %>
             </div>
 
             <input type="text" id="couponInput" placeholder="Enter coupon code" />
 <button type="button" id="applyCouponBtn" class="tp_btn">Apply Coupon</button>
 <button type="button" id="removeCouponBtn" class="tp_btn" style="display: none;">Remove Coupon</button>
           </div>
+
+          
           <div class="billing_details">
             <div class="row">
               <div class="col-lg-8 border shadow-sm p-4">
@@ -243,7 +249,7 @@
                       <label for="f-option6">Razorpay </label>
                     </div>
                   </div>
-                  <button type="submit" class="primary-btn">Pay</button>
+                  <button type="submit" class="btn rounded primary-btn">Pay</button>
                 </div>
               </div>
             </div>

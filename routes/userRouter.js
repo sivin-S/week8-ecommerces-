@@ -62,7 +62,7 @@ router.post("/sendOtp", authController.sendOtp);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resetOtp", authController.resetOtp);
 router.post("/login", authController.login);
-router.post("/validate-coupon", userController.validateCoupon);
+// router.post("/validate-coupon", userController.validateCoupon);
 
 router.post("/removeProductFromCart", isUserLogin, checkUserBlocked, cartController.removeProductFromCart);
 
