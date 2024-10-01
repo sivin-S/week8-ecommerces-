@@ -137,6 +137,7 @@
                 aria-label="Default select example"
                 name="brand"
               >
+                <option value="">Brand</option>
                 <option value="nike">Nike</option>
                 <option value="puma">Puma</option>
                 <option value="adidas">Adidas</option>
@@ -150,6 +151,7 @@
                 name="category"
                 id="category"
               >
+                <option value="">Category</option>
                 <% if (Array.isArray(categories) && categories.length > 0) { %> <%
                 categories.forEach(function(category, index) { %> <% 
                   if(category) { %>
@@ -163,10 +165,10 @@
             </div>
             <div class="mb-3 px-3">
               <label for="description" class="form-label">Description</label>
-              <textarea
+              <textarea style="resize: none;"
                 class="form-control"
                 id="description"
-                rows="3"
+                rows="10"
                 name="descriptionOfProduct"
               ></textarea>
             </div>
@@ -437,6 +439,8 @@
             const price = form.price.value.trim();
             const description = form.descriptionOfProduct.value.trim();
             const gender = form.gender.value.trim();
+            const brand = form.brand.value.trim();
+            const category = form.category.value.trim();
 
             if (validator.isEmpty(productName)) {
               Swal.fire(
@@ -453,6 +457,16 @@
                 "Price must be a valid number",
                 "error"
               );
+              return;
+            }
+
+            if (validator.isEmpty(brand)) {
+              Swal.fire("Validation Error", "Brand is required", "error");
+              return;
+            }
+
+            if (validator.isEmpty(category)) {
+              Swal.fire("Validation Error", "Category is required", "error");
               return;
             }
            
