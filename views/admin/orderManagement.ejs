@@ -178,7 +178,7 @@
                                 </tr>
                             </thead>
                             <tbody class="">
-                                <% if(checkOut){ %>
+                                <% if(checkOut && checkOut.length > 0){ %>
                                     <% checkOut.sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt))%>
                                    <% checkOut.forEach(function(data,index){ %>
                                         <tr>
@@ -223,13 +223,23 @@
                                         </tr>
                                       
                                         <% })%>
-                                            <% }%>
+                                            <% }else{%>
+                                                <tr>
+                                                    <td colspan="7" class="text-center">
+                                                        No orders found
+                                                    </td>
+                                                </tr>
+                                            <%}%>
                             </tbody>
                         </table>
                     </div>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center" id="pagination">
-                            <!--  Pagination items will be inserted here by js -->
+                            <% for(let i=1;i<=totalPages;i++){ %>
+                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="/admin/orders?page=<%= i %>&limit=<%= limit %>"><%= i %></a>
+                                </li>
+                            <% } %>
                         </ul>
                     </nav>
                 </div>
@@ -313,7 +323,7 @@
 
 
 
-const rowsPerPage = 5;
+const rowsPerPage = 3;
     const table = document.getElementById('orderTable');
     const pagination = document.getElementById('pagination');
     const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');

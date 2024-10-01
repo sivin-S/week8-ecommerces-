@@ -31,10 +31,28 @@ async function dashboard(req, res) {
     }
 }
 
+// product management
 async function products(req, res) {
     try {
-        const productData = await Product.find({}).populate('category');
-        res.render('productManagement.ejs', { productData });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 2;
+        const skip = (page - 1) * limit;
+
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const productData = await Product.find({})
+            .skip(skip)
+            .limit(limit)
+            .populate('category');
+
+        console.log("productData >>>>>>>>>>>>>>>>>>>", productData);
+        res.render('productManagement.ejs', { 
+            productData,
+            currentPage: page,
+            totalPages,
+            limit
+        });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
@@ -415,10 +433,24 @@ function paymentMethods(req, res) {
 // Function to render the coupons history page
 async function couponsHistory(req, res) {
     try {
-         const coupons = await Coupon.find({});
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 3;
+        const skip = (page - 1) * limit;
 
+        const totalCoupons = await Coupon.countDocuments({});
+        const totalPages = Math.ceil(totalCoupons / limit);
+
+         const coupons = await Coupon.find()
+                        .skip(skip)
+                        .limit(limit)
+                        .sort({ createdAt: -1 });
           console.log("coupon >>>>>>>>>>>>>>>>",coupons);
-        res.render('couponsHistory.ejs', { coupons });
+        res.render('couponsHistory.ejs', { 
+            coupons,
+            currentPage: page,
+            totalPages,
+            limit
+         });
 
     } catch (err) {
         console.log(err);
@@ -513,11 +545,24 @@ async function softDeleteCategory(req, res) {
 // Function to render the order status page
 async function orders(req, res) {
     try {
-        const checkOut = await Checkout.find({})
-        .populate("user")
-        .populate("cart.items.0.product")
-        .sort({ createdAt: -1 });
-        res.render('orderManagement.ejs', { checkOut });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+    
+        const totalCheckOut = await Checkout.countDocuments();
+        const totalPages = Math.ceil(totalCheckOut / limit);
+    
+        const checkOut = await Checkout.find()
+          .sort({ updatedAt: -1 })
+          .skip(skip)
+          .limit(limit);
+    
+        res.render('orderManagement.ejs', {
+          checkOut: checkOut,
+          currentPage: page,
+          totalPages: totalPages,
+          limit: limit
+        });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');

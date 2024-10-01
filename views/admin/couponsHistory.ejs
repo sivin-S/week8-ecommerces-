@@ -195,7 +195,29 @@
                         </table>
                         <nav aria-label="Coupon table navigation">
                             <ul class="pagination justify-content-center" id="pagination">
-                                <!-- Pagination  -->
+                                <ul class="pagination">
+                                   
+                                    <% if(currentPage>=1){%>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%=currentPage-1%>&limit=<%=limit%>" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+
+                                    <%}%>
+                                    <% for(let i = 1; i <= totalPages; i++){ %>
+                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                            <a class="page-link" href="?page=<%= i %>&limit=<%=limit%>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                                    <% if(currentPage<totalPages){%>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%=currentPage+1%>&limit=<%=limit%>" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    <%}%>
+                                </ul>
                             </ul>
                         </nav>
                     </div>
@@ -287,6 +309,19 @@
 
 
 });
+
+
+
+function loadPage(page,limit){
+    fetch(`/admin/couponsHistory?page=${page}&limit=${limit}`)
+    .then(response => response.text())
+    .then(data => {
+        
+    });
+}
+
+
+
 
   
 

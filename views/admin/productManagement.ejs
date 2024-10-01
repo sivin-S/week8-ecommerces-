@@ -233,10 +233,41 @@
                                 <% }) %>
                             </tbody>
                         </table>
-                        <div class="pagination  d-flex justify-content-center">
-                            <button class="btn " id="prevPage" onclick="prevPage()">Previous</button>
-                            <button class="btn " id="nextPage" onclick="nextPage()">Next</button>
-                        </div>
+                        <nav aria-label="Product pagination">
+                            <ul class="pagination justify-content-center">
+                                <% if (currentPage > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>&limit=<%= limit %>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                <% } else { %>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                                    </li>
+                                <% } %>
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                        <a class="page-link" href="/admin/products?page=<%= i %>&limit=<%= limit %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                
+                                <% if (currentPage < totalPages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>&limit=<%= limit %>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                <% } else { %>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
 
                     </div>
                     
@@ -260,6 +291,8 @@
 
     <script>
 
+        // front side pagination.....................
+
 const rowsPerPage = 2;
     let currentPage = 1;
     const tableBody = document.getElementById('productTableBody');
@@ -277,36 +310,36 @@ const rowsPerPage = 2;
         document.getElementById('nextPage').classList.toggle('disabled', currentPage === totalPages);
     }
 
-    function prevPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            displayRows();
-        }
-    }
+    document.getElementById('prevPage').addEventListener('click', () => {
+       window.location.href = `/admin/products?page=${currentPage - 1}&limit=${limit}`;
+    });
 
-    function nextPage() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayRows();
-        }
-    }
+    document.getElementById('nextPage').addEventListener('click', () => {
+        window.location.href = `/admin/products?page=${currentPage + 1}&limit=${limit}`;
+    });
 
+    
     displayRows();
 
     function searchTable() {
-        const input = document.getElementById('productSearch');
-        const filter = input.value.toLowerCase();
-        const rows = tableBody.getElementsByTagName('tr');
+    const input = document.getElementById('productSearch');
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('productTable');
+    const tr = table.getElementsByTagName('tr');
 
-        for (let i = 0; i < rows.length; i++) {
-            const productName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
-            if (productName.indexOf(filter) > -1) {
-                rows[i].style.display = '';
+    for (let i = 1; i < tr.length; i++) {
+        const td = tr[i].getElementsByTagName('td')[1];
+        if (td) {
+            const txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = '';
             } else {
-                rows[i].style.display = 'none';
+                tr[i].style.display = 'none';
             }
         }
     }
+}
+
 
     document.getElementById('offerSelect').addEventListener('change', function() {
     var selectedOption = this.value;
