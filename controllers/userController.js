@@ -37,15 +37,44 @@ exports.createRazorpayOrder = async (req, res) => {
   };
 
 
-exports.getWalletHistory = async(req,res)=>{
-    try{
+  exports.getWalletHistory = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const skip = (page - 1) * limit;
         const userId = req.session.userId;
-        const user = await User.findById(userId).populate('wallet.transactions');
-        console.log("user wallet transactions >>>>> ",user.wallet);
-        res.json({success:true,wallet:user.wallet});
-    }catch(error){
+
+        const user = await User.findById(userId).populate({
+            path: 'wallet.transactions',
+            options: {
+                sort: { date: -1 },
+                skip: skip,
+                limit: limit
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const totalTransactions = user.wallet.transactions.length;
+        const totalPages = Math.ceil(totalTransactions / limit);
+
+        const walletData = {
+            balance: user.wallet.balance,
+            transactions: user.wallet.transactions
+        };
+
+        res.json({
+            success: true,
+            wallet: walletData,
+            currentPage: page,
+            totalPages: totalPages,
+            totalTransactions: totalTransactions
+        });
+    } catch (error) {
         console.log(error);
-        res.status(500).json({success:false,message:"Failed to fetch wallet history"});
+        res.status(500).json({ success: false, message: "Failed to fetch wallet history" });
     }
 }
 

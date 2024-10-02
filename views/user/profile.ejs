@@ -518,6 +518,11 @@
               <!-- Wallet history will be populated here -->
             </tbody>
           </table>
+          <nav aria-label="Wallet history pagination">
+            <ul class="pagination justify-content-center" id="paginationContainer">
+                <!-- Pagination links will be inserted here -->
+            </ul>
+        </nav>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
@@ -849,7 +854,7 @@
             });
 
 
-            // Edit Profile functionality
+        
 
             const editProfileBtn = document.getElementById('editProfileBtn');
             const saveProfileBtn = document.createElement('button');
@@ -886,7 +891,7 @@
                 const profileInputs = document.querySelectorAll('.colMod-2 input:not([name="email"]), .colMod-2 select');
                 const updatedData = {};
                 let isValid = true;
-// Clear all previous error messages
+
                 clearErrors(document.querySelector('form[action="/updateProfile"]'));
 
 
@@ -988,50 +993,69 @@
 
     // wallet history modal
     
-    
+    const paginationContainer = document.getElementById('paginationContainer');
+    const tableBody = document.getElementById('walletHistoryTableBody');
+    let currentPage = 1;
+const itemsPerPage = 4;
 
-    walletHistoryBtn.addEventListener('click', function() {
-            fetch('/getWalletHistory')
-                .then(response => response.json())
-                .then(data => {
-                    console.log("transactions >>>>> ",data.wallet);
-                  
-                    if (data.success && Array.isArray(data.wallet.transactions)) {
-                const tableBody = document.getElementById('walletHistoryTableBody');
-                console.log("tableBody >>>>> ",tableBody);
-                tableBody.innerHTML = '';
-                
-                data.wallet.transactions.forEach(transaction => {
-                       
-                        console.log("transaction >>>>> ",transaction);
-                        const row = document.createElement('tr');
-                        console.log("row >>>>> ",row);
-                        row.innerHTML = `
-                            <td>${new Date(transaction.date).toLocaleString()}</td>
-                            <td>${transaction.type}</td>
-                            <td>$${transaction.amount?.toFixed(2)}</td>
-                            <td>$${data.wallet.balance?.toFixed(2)}</td>
-                        `;
-                         const tableRow = tableBody.appendChild(row);
-                         console.log("tableRow >>>>> ",tableRow);
-                    
-                });
-                
-                walletModal.hide(); 
-                walletHistoryModal.show();
-            }else {
-                        Swal.fire('Error', 'Failed to fetch wallet history', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error', 'An error occurred while fetching the wallet history', 'error');
-                });
+function fetchWalletHistory(page) {
+    fetch(`/getWalletHistory?page=${page}&limit=${itemsPerPage}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && Array.isArray(data.wallet.transactions)) {
+                displayWalletHistory(data);
+                displayPagination(data.totalPages, page);
+            } else {
+                Swal.fire('Error', 'Failed to fetch wallet history', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'An error occurred while fetching the wallet history', 'error');
         });
+}
 
 
+function displayWalletHistory(data) {
+    console.log("data >>>>> ",data);
+    tableBody.innerHTML = '';
+    data.wallet.transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(transaction.date).toLocaleString()}</td>
+            <td>${transaction.type}</td>
+            <td>$${transaction.amount?.toFixed(2)}</td>
+            <td>$${data.wallet.balance?.toFixed(2)}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
 
 
+        function displayPagination(totalPages, currentPage) {
+    paginationContainer.innerHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLink = document.createElement('a');
+        pageLink.href = '#';
+        pageLink.textContent = i;
+        pageLink.classList.add('page-link');
+        if (i === currentPage) {
+            pageLink.classList.add('active');
+        }
+        pageLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            fetchWalletHistory(i);
+        });
+        paginationContainer.appendChild(pageLink);
+    }
+}
+ 
+// 
+walletHistoryBtn.addEventListener('click', function() {
+    fetchWalletHistory(currentPage);
+    walletModal.hide();
+    walletHistoryModal.show();
+});
 
 
 
