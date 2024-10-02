@@ -37,6 +37,19 @@ exports.createRazorpayOrder = async (req, res) => {
   };
 
 
+exports.getWalletHistory = async(req,res)=>{
+    try{
+        const userId = req.session.userId;
+        const user = await User.findById(userId).populate('wallet.transactions');
+        console.log("user wallet transactions >>>>> ",user.wallet);
+        res.json({success:true,wallet:user.wallet});
+    }catch(error){
+        console.log(error);
+        res.status(500).json({success:false,message:"Failed to fetch wallet history"});
+    }
+}
+
+
 exports.getProfile = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.email }).populate('addresses');

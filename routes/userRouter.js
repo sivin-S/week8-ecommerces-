@@ -39,6 +39,7 @@ router.get("/orderhistory", isUserLogin, checkUserBlocked, userController.getOrd
 router.get("/orderhistory/details/:id", isUserLogin, checkUserBlocked, userController.getOrderOneHistory);
 router.get("/cancelOrder/:id", isUserLogin, checkUserBlocked, userController.getOrderCancel);
 router.get("/shop", productController.getShop);
+router.get('/getWalletHistory', isUserLogin, checkUserBlocked, userController.getWalletHistory);
 
 router.get("/filterVariant", productController.filterVariant);
 

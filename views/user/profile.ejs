@@ -141,14 +141,409 @@
             margin-top: 5px;
         }
     </style>
+</head>
+
+<body>
+
+    <div class="main">
+        <!-- flash message  -->
+        <% if (locals.successMessage && locals.successMessage.length> 0) { %>
+            <div id="successAlert" class="alert alert-success" role="alert"
+                style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
+                <%= locals.successMessage %>
+            </div>
+            <% } %>
+
+                <% if (locals.errorMessage && locals.errorMessage.length> 0) { %>
+                    <div id="errorAlert" class="alert alert-danger" role="alert"
+                        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
+                        <%= locals.errorMessage %>
+                    </div>
+                    <% } %>
+
+
+                        <div class="container-fluid containerMod d-flex align-items-center justify-content-center">
+                            <div style="position: absolute;top: 0;left: 100px;top: 50px;">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                                    </ol>
+                                    <button class="btn" id="walletBtn"
+                                     style="background-color: #ff9000;color: #fff;border: 1px solid #ff9000;outline: none;"
+                                    >Wallet</button>
+                                </nav>
+                            </div>
+                            <div class="row rowMod-1 flex-column rounded-4">
+                                
+                                    <div class="col-6 colMod-2 w-100">
+                                        <form action="/updateProfile" method="post">
+                                        <div class="form-floating mb-3 form-floatingOne">
+                                            <input type="text" id="name" name="username" value="<%=userData?.username%>"
+                                                class="form-control shadow-none" placeholder="name" disabled
+                                                style="background-color: #fff;">
+                                            <label for="name">
+                                                <p>Name</p>
+                                            </label>
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div class="form-floating mb-3 form-floatingOne">
+                                            <input type="hidden" name="email" value="<%=userData?.email %>">
+                                            <input type="email" id="email" name="email" value="<%=userData?.email %>"
+                                                class="form-control shadow-none" placeholder="email" disabled
+                                                style="background-color: #fff;">
+                                            <label for="email">
+                                                <p>Email address</p>
+                                            </label>
+                                        </div>
+
+
+                                        <div class="form-floating mb-3 form-floatingFour">
+                                            <input type="number" name="age" id="age" value="<%=userData?.age %>"
+                                                class="form-control shadow-none" disabled placeholder="age">
+                                            <label for="age">
+                                                <p>Age</p>
+                                            </label>
+                                            <div class="error-message"></div>
+                                        </div>
+
+                                        <div class="form-floating mb-3 form-floatingFour  p-0" >
+                                          <div class="" style="    line-height: 0px;">
+                                           
+                                                <p>Gender</p>
+                                            </label>
+                                            <select name="gender" id="gender" class="form-select py-3" disabled style="background-color: #fff;border: 1px solid #ff9000;outline: none;color: #ff9000;">
+                                                <option value="male" <%=userData?.gender.toLowerCase()==='male'
+                                                    ? 'selected' : '' %>>Male</option>
+                                                <option value="female" <%=userData?.gender.toLowerCase()==='female'
+                                                    ? 'selected' : '' %>>Female</option>
+                                                <option value="other" <%=userData?.gender.toLowerCase()==='other'
+                                                    ? 'selected' : '' %>>Other</option>
+                                            </select>
+                                          </div>
+                                           
+                                            <div class="error-message"></div>
+
+                                           
+                                        </div>
+                                      </form>
+
+
+                                        <div class="form-floating mb-3 form-floatingFour">
+                                            <button class="w-100 py-3 rounded" data-bs-toggle="modal"
+                                                data-bs-target="#addressModal"
+                                                style="border: 1px solid #ff9000;outline: none;color: #ff9000;background-color: #fff;">
+                                                Address
+                                            </button>
+                                        </div>
+                                    </div>
+                               
+
+                                <div class="col-6 colMod-3 w-100 mb-3 mt-3 d-flex justify-content-evenly mt-2">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#resetPassword">Reset Password</button>
+                                    <button class="btn btn-warning" id="editProfileBtn">Edit Profile</button>
+                                    <a href="/logout" class="btn btn-danger">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+    </div>
+
+    <!-- multiple address edit address modal -->
+    <div class="modal fade" id="addressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-capitalize text-secondary" id="addressModalLabel">Addresses</h1>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <!-- looping address -->
+                    <% userData.addresses.forEach((address, index)=> { %>
+                        <form action="/editAddress" method="post">
+                            <div class="address-item mb-4 border border shadow-sm p-4">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="text-capitalize text-secondary"> <b>Address</b>
+                                        <%= index + 1 %>
+                                    </h5>
+                                    <div>
+
+                                        <!-- <form action="/deleteAddress" method="post">
+                                        <input type="hidden" value="<%=address._id%>" name="addressId">
+                                        <button type="submit" class="btn btn-sm btn-danger delete-address">Delete</button>
+                                    </form> -->
+                                        <button type="button" class="btn btn-sm btn-danger delete-address"
+                                            data-address-id="<%=address._id%>">Delete</button>
+                                        <button type="submit"
+                                            class="btn btn-sm btn-primary edit-address px-5">Save</button>
+                                    </div>
+
+                                </div>
+                                <div class="py-3 row">
+                                    <input type="hidden" class="py-3 mb-3 rounded shadow" value="<%=index%>"
+                                        name="index">
+                                    <label for="username">username</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.username %>"
+                                        name="username" placeholder="username">
+                                    <div class="error-message"></div>
+                                    <label for="state">state</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>"
+                                        name="state" placeholder="state">
+                                    <div class="error-message"></div>
+                                    <label for="zip">zip</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>"
+                                        name="zip" placeholder="zip">
+                                    <div class="error-message"></div>
+                                    <label for="phone">phone</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>"
+                                        name="phone" placeholder="phone">
+                                    <div class="error-message"></div>
+                                    <label for="locality">locality</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>"
+                                        name="locality" placeholder="locality">
+                                    <div class="error-message"></div>
+                                    <label for="country">country</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>"
+                                        name="country" placeholder="country">
+                                    <div class="error-message"></div>
+                                    <label for="landmark">landmark</label>
+                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>"
+                                        name="landmark" placeholder="landmark">
+                                    <div class="error-message"></div>
+                                </div>
+                            </div>
+                        </form>
+                        <% }) %>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addAddressModal">Add Address</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- add address model -->
+    <div class="modal fade" id="addAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form action="/addAddress" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addAddressModalLabel">Add Address</h1>
+                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                    </div>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="address-item mb-3 border p-4 shadow-sm">
+                            <div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="text" id="username" class="form-control shadow-none" name="username"
+                                        placeholder="username">
+                                    <label for="username">
+                                        <p>username</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <!-- email hidden  -->
+                                    <input type="hidden" name="email" value="<%= userData?.email %>">
+
+                                    <input type="number" name="phone" id="phone" class="form-control shadow-none"
+                                        placeholder="number"  min="0">
+                                    <label for="phone">
+                                        <p>phone</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="number" id="zip" class="form-control shadow-none" name="zip"
+                                        placeholder="zip"  min="0">
+                                    <label for="zip">
+                                        <p>zip</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="text" name="locality" id="locality" class="form-control shadow-none"
+                                        placeholder="locality" >
+                                    <label for="locality">
+                                        <p>locality</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="text" name="state" id="state" class="form-control shadow-none"
+                                        placeholder="state" >
+                                    <label for="state">
+                                        <p>state</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="text" name="country" id="country" class="form-control shadow-none"
+                                        placeholder="country">
+                                    <label for="country">
+                                        <p>country</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="form-floating mb-3">
+
+                                    <input type="text" name="landmark" id="landmark" class="form-control shadow-none"
+                                        placeholder="landmark">
+                                    <label for="landmark">
+                                        <p>landmark</p>
+                                    </label>
+                                    <div class="error-message"></div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Address</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- reset password modal -->
+    <div class="modal fade" id="resetPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="resetPasswordLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="resetPasswordLabel">Reset Password</h1>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body">
+                    <form action="/resetPassword" method="post">
+                        <div class="form-floating mb-3">
+                            
+                            <input type="password" name="currentPassword" class="form-control shadow-none"
+                                placeholder="Current Password" required>
+                            <label for="currentPassword">
+                                <p>Current Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            
+                            <input type="password" name="newPassword" class="form-control shadow-none"
+                                placeholder="New Password" required>
+                            <label for="newPassword">
+                                <p>New Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-floating mb-3">
+                           
+                            <input type="password" name="confirmPassword" class="form-control shadow-none"
+                                placeholder="Confirm Password" required>
+                            <label for="confirmPassword">
+                                <p>Confirm Password</p>
+                            </label>
+                            <div class="error-message"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Reset Password</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- wallet modal  -->
+    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content"
+          style="background-color: #fff;
+          border: 1.5px solid #ff9000;">
+            <div class="modal-header">
+              <h5 class="modal-title" id="walletModalLabel" style="color: #ff9000;">Your Wallet</h5>
+              <button type="button" class="btn ms-auto" id="walletHistoryBtn"
+              style="
+              background-color: #ff9000;
+              color: #fff;
+              border: 1px solid #ff9000;
+              outline: none;"
+              >Wallet history</button>
+            </div>
+            <div class="modal-body">
+              <p>Your current balance: $<span id="walletBalance">0.00</span></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              style="background-color: #ff9000;
+              color: #fff;
+              border: 1px solid #ff9000;
+              outline: none;"
+              >Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+<!-- Wallet History Modal -->
+<div class="modal fade" id="walletHistoryModal" tabindex="-1" aria-labelledby="walletHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="background-color: #fff; border: 1.5px solid #ff9000;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="walletHistoryModalLabel" style="color: #ff9000;">Wallet History</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody id="walletHistoryTableBody">
+              <!-- Wallet history will be populated here -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+          style="background-color: #ff9000; color: #fff; border: 1px solid #ff9000; outline: none;">
+          Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
 
 
-    <!-- script  -->
+
+
+      
+      
+
+        <!-- script  -->
     <script defer>
+        
         document.addEventListener('DOMContentLoaded', function () {
+            // wallet history modal
+            const walletHistoryBtn = document.getElementById('walletHistoryBtn');
+        const walletHistoryModal = new bootstrap.Modal(document.getElementById('walletHistoryModal'));
             // addAddressModal
             let addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
             let addAddressModal = new bootstrap.Modal(document.getElementById('addAddressModal'));
@@ -590,353 +985,64 @@
 
 
 
+
+    // wallet history modal
+    
+    
+
+    walletHistoryBtn.addEventListener('click', function() {
+            fetch('/getWalletHistory')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("transactions >>>>> ",data.wallet);
+                  
+                    if (data.success && Array.isArray(data.wallet.transactions)) {
+                const tableBody = document.getElementById('walletHistoryTableBody');
+                console.log("tableBody >>>>> ",tableBody);
+                tableBody.innerHTML = '';
+                
+                data.wallet.transactions.forEach(transaction => {
+                       
+                        console.log("transaction >>>>> ",transaction);
+                        const row = document.createElement('tr');
+                        console.log("row >>>>> ",row);
+                        row.innerHTML = `
+                            <td>${new Date(transaction.date).toLocaleString()}</td>
+                            <td>${transaction.type}</td>
+                            <td>$${transaction.amount?.toFixed(2)}</td>
+                            <td>$${data.wallet.balance?.toFixed(2)}</td>
+                        `;
+                         const tableRow = tableBody.appendChild(row);
+                         console.log("tableRow >>>>> ",tableRow);
+                    
+                });
+                
+                walletModal.hide(); 
+                walletHistoryModal.show();
+            }else {
+                        Swal.fire('Error', 'Failed to fetch wallet history', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'An error occurred while fetching the wallet history', 'error');
+                });
+        });
+
+
+
+
+
+
+
+
+
+
+
             // dom event ending
 
         });
     </script>
-
-
-
-</head>
-
-<body>
-
-    <div class="main">
-        <!-- flash message  -->
-        <% if (locals.successMessage && locals.successMessage.length> 0) { %>
-            <div id="successAlert" class="alert alert-success" role="alert"
-                style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
-                <%= locals.successMessage %>
-            </div>
-            <% } %>
-
-                <% if (locals.errorMessage && locals.errorMessage.length> 0) { %>
-                    <div id="errorAlert" class="alert alert-danger" role="alert"
-                        style="position: absolute;top: 0;right: 0;z-index: 50;left: 0;">
-                        <%= locals.errorMessage %>
-                    </div>
-                    <% } %>
-
-
-                        <div class="container-fluid containerMod d-flex align-items-center justify-content-center">
-                            <div style="position: absolute;top: 0;left: 100px;top: 50px;">
-                                <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
-                                    </ol>
-                                    <button class="btn" id="walletBtn"
-                                     style="background-color: #ff9000;color: #fff;border: 1px solid #ff9000;outline: none;"
-                                    >Wallet</button>
-                                </nav>
-                            </div>
-                            <div class="row rowMod-1 flex-column rounded-4">
-                                
-                                    <div class="col-6 colMod-2 w-100">
-                                        <form action="/updateProfile" method="post">
-                                        <div class="form-floating mb-3 form-floatingOne">
-                                            <input type="text" id="name" name="username" value="<%=userData?.username%>"
-                                                class="form-control shadow-none" placeholder="name" disabled
-                                                style="background-color: #fff;">
-                                            <label for="name">
-                                                <p>Name</p>
-                                            </label>
-                                            <div class="error-message"></div>
-                                        </div>
-                                        <div class="form-floating mb-3 form-floatingOne">
-                                            <input type="hidden" name="email" value="<%=userData?.email %>">
-                                            <input type="email" id="email" name="email" value="<%=userData?.email %>"
-                                                class="form-control shadow-none" placeholder="email" disabled
-                                                style="background-color: #fff;">
-                                            <label for="email">
-                                                <p>Email address</p>
-                                            </label>
-                                        </div>
-
-
-                                        <div class="form-floating mb-3 form-floatingFour">
-                                            <input type="number" name="age" id="age" value="<%=userData?.age %>"
-                                                class="form-control shadow-none" disabled placeholder="age">
-                                            <label for="age">
-                                                <p>Age</p>
-                                            </label>
-                                            <div class="error-message"></div>
-                                        </div>
-
-                                        <div class="form-floating mb-3 form-floatingFour  p-0" >
-                                          <div class="" style="    line-height: 0px;">
-                                           
-                                                <p>Gender</p>
-                                            </label>
-                                            <select name="gender" id="gender" class="form-select py-3" disabled style="background-color: #fff;border: 1px solid #ff9000;outline: none;color: #ff9000;">
-                                                <option value="male" <%=userData?.gender.toLowerCase()==='male'
-                                                    ? 'selected' : '' %>>Male</option>
-                                                <option value="female" <%=userData?.gender.toLowerCase()==='female'
-                                                    ? 'selected' : '' %>>Female</option>
-                                                <option value="other" <%=userData?.gender.toLowerCase()==='other'
-                                                    ? 'selected' : '' %>>Other</option>
-                                            </select>
-                                          </div>
-                                           
-                                            <div class="error-message"></div>
-
-                                           
-                                        </div>
-                                      </form>
-
-
-                                        <div class="form-floating mb-3 form-floatingFour">
-                                            <button class="w-100 py-3 rounded" data-bs-toggle="modal"
-                                                data-bs-target="#addressModal"
-                                                style="border: 1px solid #ff9000;outline: none;color: #ff9000;background-color: #fff;">
-                                                Address
-                                            </button>
-                                        </div>
-                                    </div>
-                               
-
-                                <div class="col-6 colMod-3 w-100 mb-3 mt-3 d-flex justify-content-evenly mt-2">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#resetPassword">Reset Password</button>
-                                    <button class="btn btn-warning" id="editProfileBtn">Edit Profile</button>
-                                    <a href="/logout" class="btn btn-danger">Logout</a>
-                                </div>
-                            </div>
-                        </div>
-    </div>
-
-    <!-- multiple address edit address modal -->
-    <div class="modal fade" id="addressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="addressModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-capitalize text-secondary" id="addressModalLabel">Addresses</h1>
-                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                </div>
-                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                    <!-- looping address -->
-                    <% userData.addresses.forEach((address, index)=> { %>
-                        <form action="/editAddress" method="post">
-                            <div class="address-item mb-4 border border shadow-sm p-4">
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="text-capitalize text-secondary"> <b>Address</b>
-                                        <%= index + 1 %>
-                                    </h5>
-                                    <div>
-
-                                        <!-- <form action="/deleteAddress" method="post">
-                                        <input type="hidden" value="<%=address._id%>" name="addressId">
-                                        <button type="submit" class="btn btn-sm btn-danger delete-address">Delete</button>
-                                    </form> -->
-                                        <button type="button" class="btn btn-sm btn-danger delete-address"
-                                            data-address-id="<%=address._id%>">Delete</button>
-                                        <button type="submit"
-                                            class="btn btn-sm btn-primary edit-address px-5">Save</button>
-                                    </div>
-
-                                </div>
-                                <div class="py-3 row">
-                                    <input type="hidden" class="py-3 mb-3 rounded shadow" value="<%=index%>"
-                                        name="index">
-                                    <label for="username">username</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.username %>"
-                                        name="username" placeholder="username">
-                                    <div class="error-message"></div>
-                                    <label for="state">state</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.state %>"
-                                        name="state" placeholder="state">
-                                    <div class="error-message"></div>
-                                    <label for="zip">zip</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.zip %>"
-                                        name="zip" placeholder="zip">
-                                    <div class="error-message"></div>
-                                    <label for="phone">phone</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.phone %>"
-                                        name="phone" placeholder="phone">
-                                    <div class="error-message"></div>
-                                    <label for="locality">locality</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.locality %>"
-                                        name="locality" placeholder="locality">
-                                    <div class="error-message"></div>
-                                    <label for="country">country</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.country %>"
-                                        name="country" placeholder="country">
-                                    <div class="error-message"></div>
-                                    <label for="landmark">landmark</label>
-                                    <input type="text" class="py-3 mb-3 rounded shadow" value="<%= address?.landmark %>"
-                                        name="landmark" placeholder="landmark">
-                                    <div class="error-message"></div>
-                                </div>
-                            </div>
-                        </form>
-                        <% }) %>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#addAddressModal">Add Address</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- add address model -->
-    <div class="modal fade" id="addAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="addAddressModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <form action="/addAddress" method="post">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="addAddressModalLabel">Add Address</h1>
-                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                    </div>
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        <div class="address-item mb-3 border p-4 shadow-sm">
-                            <div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="text" id="username" class="form-control shadow-none" name="username"
-                                        placeholder="username">
-                                    <label for="username">
-                                        <p>username</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <!-- email hidden  -->
-                                    <input type="hidden" name="email" value="<%= userData?.email %>">
-
-                                    <input type="number" name="phone" id="phone" class="form-control shadow-none"
-                                        placeholder="number"  min="0">
-                                    <label for="phone">
-                                        <p>phone</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="number" id="zip" class="form-control shadow-none" name="zip"
-                                        placeholder="zip"  min="0">
-                                    <label for="zip">
-                                        <p>zip</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="text" name="locality" id="locality" class="form-control shadow-none"
-                                        placeholder="locality" >
-                                    <label for="locality">
-                                        <p>locality</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="text" name="state" id="state" class="form-control shadow-none"
-                                        placeholder="state" >
-                                    <label for="state">
-                                        <p>state</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="text" name="country" id="country" class="form-control shadow-none"
-                                        placeholder="country">
-                                    <label for="country">
-                                        <p>country</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-                                <div class="form-floating mb-3">
-
-                                    <input type="text" name="landmark" id="landmark" class="form-control shadow-none"
-                                        placeholder="landmark">
-                                    <label for="landmark">
-                                        <p>landmark</p>
-                                    </label>
-                                    <div class="error-message"></div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Add Address</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- reset password modal -->
-    <div class="modal fade" id="resetPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="resetPasswordLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="resetPasswordLabel">Reset Password</h1>
-                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                </div>
-                <div class="modal-body">
-                    <form action="/resetPassword" method="post">
-                        <div class="form-floating mb-3">
-                            
-                            <input type="password" name="currentPassword" class="form-control shadow-none"
-                                placeholder="Current Password" required>
-                            <label for="currentPassword">
-                                <p>Current Password</p>
-                            </label>
-                            <div class="error-message"></div>
-                        </div>
-                        <div class="form-floating mb-3">
-                            
-                            <input type="password" name="newPassword" class="form-control shadow-none"
-                                placeholder="New Password" required>
-                            <label for="newPassword">
-                                <p>New Password</p>
-                            </label>
-                            <div class="error-message"></div>
-                        </div>
-                        <div class="form-floating mb-3">
-                           
-                            <input type="password" name="confirmPassword" class="form-control shadow-none"
-                                placeholder="Confirm Password" required>
-                            <label for="confirmPassword">
-                                <p>Confirm Password</p>
-                            </label>
-                            <div class="error-message"></div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Reset Password</button>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- wallet modal  -->
-    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="walletModalLabel">Your Wallet</h5>
-              <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-            </div>
-            <div class="modal-body">
-              <p>Your current balance: $<span id="walletBalance">0.00</span></p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
 
 
 </body>
