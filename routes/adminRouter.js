@@ -43,6 +43,7 @@ router.get('/categoryOffers', isAdminLogin, adminController.categoryOffers);
 router.get('/salesReport', isAdminLogin, adminController.getSalesReport);
 
 
+
 router.post('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);
 router.post('/softDeleteProduct/:id', isAdminLogin, adminController.softDeleteProduct);
 router.post('/category/add', isAdminLogin, adminController.addCategory);

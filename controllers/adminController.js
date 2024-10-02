@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const ProductOffer = require("../model/productOfferSchema");
 const CategoryOffer = require("../model/categoryOfferSchema");
 const { checkout } = require("../routes/adminRouter");
+const Transaction = require("../model/transactionSchema");
 
 // Ensure the uploads/img directory exists
 const uploadDir = path.join(__dirname, "../uploads", "img");
@@ -564,10 +565,13 @@ async function orders(req, res) {
 }
 
 // Function to render the transaction history page
-function transactionHistory(req, res) {
-    // res.render('transactionHistory.ejs');
+async function transactionHistory(req, res) {
+    
     try{
-        res.render('transactionHistory.ejs');
+        const transactions = await Transaction.find().sort({ date: -1 });
+        console.log("transactions >>>>> ",transactions);
+
+        res.render('admin/transactionHistory', { transactions });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
@@ -576,7 +580,7 @@ function transactionHistory(req, res) {
 
 // Function to render the notifications page
 function notifications(req, res) {
-    // res.render('notification.ejs');
+  
     try{
         res.render('notification.ejs');
     } catch (err) {

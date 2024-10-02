@@ -481,7 +481,7 @@
               >Wallet history</button>
             </div>
             <div class="modal-body">
-              <p>Your current balance: $<span id="walletBalance">0.00</span></p>
+              <p>Your current balance: ₹<span id="walletBalance">0.00</span></p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
@@ -1017,15 +1017,16 @@ function fetchWalletHistory(page) {
 
 
 function displayWalletHistory(data) {
-    console.log("data >>>>> ",data);
+    let runningBalance = data.wallet.balance;
     tableBody.innerHTML = '';
     data.wallet.transactions.forEach(transaction => {
         const row = document.createElement('tr');
+        runningBalance -= transaction.amount;
         row.innerHTML = `
             <td>${new Date(transaction.date).toLocaleString()}</td>
             <td>${transaction.type}</td>
-            <td>$${transaction.amount?.toFixed(2)}</td>
-            <td>$${data.wallet.balance?.toFixed(2)}</td>
+            <td>₹${transaction.amount?.toFixed(2)}</td>
+            <td>₹${runningBalance.toFixed(2)}</td>
         `;
         tableBody.appendChild(row);
     });
