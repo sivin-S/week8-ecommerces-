@@ -120,10 +120,10 @@
 
 	<!--================Table Box Area =================-->
 	<section class="login_box_area section_gap">
-		 <div class="container">
-      <div class="row" style="overflow: auto; height: 700px;">
+	<div class="container">
+      <div class="row shadow py-3" style="overflow: auto; min-height: 500px;">
        
-		<% if(checkOut){ %>
+		<% if(checkOut && checkOut.length > 0){ %>
 			<% checkOut.forEach((details,index)=>{ %>
 				<% details.cart.items.forEach((item,index)=>{ %>
 				<div class="card mx-auto shadow rounded-4 m-3 p-3 border   row flex-column" style="width: 680px;height: 370px;">
@@ -153,16 +153,65 @@
 						<p class="card-text">Discount: ₹0</p>
 						<p class="card-text"><b>Total: ₹ <%=details.totalPrice%></b> </p>
 						<p class="card-text"><b>Status :  <%=details.orderStatus%>  </b> </p>
+						<p class="card-text"><b>Purchased Date :  <%=new Date(details.createdAt).toDateString() %>  </b> </p>
 						<a href="/orderhistory/details/<%=encodeURIComponent(details._id)%>" class="btn btn-primary mt-2" style="padding: 0.500em 10em;">Details</a>
 					  </div>
 				   </div>
 				  </div>
 				<% }) %>
 		<%  })%>
+
+		<!-- pagination -->
+		<div class="row  w-100 justify-content-center">
+			<nav aria-label="Page navigation example">
+			  <ul class="pagination">
+				<% if (totalPages > 3) { %>
+				  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+					<a class="page-link" href="/orderhistory?page=<%= currentPage - 1 %>" aria-label="Previous">
+					  <span aria-hidden="true">&laquo;</span>
+					  <span class="sr-only">Previous</span>
+					</a>
+				  </li>
+				<% } %>
+		  
+				<% 
+				  let startPage = Math.max(1, currentPage - 1);
+				  let endPage = Math.min(startPage + 2, totalPages);
+				  if (endPage - startPage < 2) startPage = Math.max(1, endPage - 2);
+				%>
+		  
+				<% for(let i = startPage; i <= endPage; i++) { %>
+				  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+					<a class="page-link" href="/orderhistory?page=<%= i %>"><%= i %></a>
+				  </li>
+				<% } %>
+		  
+				<% if (totalPages > 3) { %>
+				  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+					<a class="page-link" href="/orderhistory?page=<%= currentPage + 1 %>" aria-label="Next">
+					  <span aria-hidden="true">&raquo;</span>
+					  <span class="sr-only">Next</span>
+					</a>
+				  </li>
+				<% } %>
+			  </ul>
+			</nav>
+		  </div>
+
+
+		<%  }else{ %>
+			<div class="w-100 align-items-center justify-content-center d-flex">
+				<h1 style="color:#ff6c00">No Order Found 🥲</h1>
+			</div>
 		<%  }%>
         
+
       </div>
+	  
+		
+	 
    </div>
+  
 	</section>
 	<!--================End Table Box Area =================-->
 

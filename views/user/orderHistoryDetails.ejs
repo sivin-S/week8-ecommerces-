@@ -9,6 +9,35 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
      <!--  -->
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <style>
+        body{
+            box-shadow: inset 1px 2px 20px 20px #ff9500 !important;
+            background-color: rgba(255, 186, 0, 0.7) !important;
+        }
+        .addressContainer{
+            box-shadow: inset 7px -9px 20px 8px #ff9500 !important;
+        }
+
+        .itemsContainer{
+            box-shadow: inset 7px -9px 20px 8px #ff9500 !important;
+        }
+
+        b {
+            color: #fff;
+        }
+
+       
+        .itemsContainer {
+    box-shadow: inset 7px -9px 20px 8px #ff9500 !important;
+    overflow-x: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+}
+
+.itemsContainer::-webkit-scrollbar {
+    display: none; 
+}
+     </style>
 
 </head>
 <body>
@@ -17,14 +46,16 @@
    <div class="container  d-flex flex-column justify-content-center" style="height: 100vh;">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/orderhistory" style="text-decoration: none;">Order History</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+          <li class="breadcrumb-item"><a href="/orderhistory" 
+            style="text-decoration: none;color: #fff ;font-weight: bold;"
+            >Order History</a></li>
+          <li class="breadcrumb-item active" aria-current="page" ><b style="color: #ff9500">Order Details</b></li>
         </ol>
       </nav>
        <div class="row" style="height: 500px;">
            <div class="col-6 p-3">
             <h3>Order Address</h3>
-            <div class="border rounded shadow h-75 p-4">
+            <div class="rounded h-75 p-4 border-danger addressContainer">
               <p><b>Name: <%=checkout.address.username %> </b></p>
               <p><b>phone: <%=checkout.address.phone %> </b></p>
               <p><b>country: <%=checkout.address.country %>  </b></p>
@@ -35,14 +66,15 @@
             </div>
            </div>
            <div class="col-6 d-flex align-items-center" style="height: 500px;">
-             <div class="row shadow rounded p-3 " style="height: 400px;">
+             <div class="row  rounded p-3 itemsContainer" style="height: 400px;">
 
-                <div class=" d-flex" style="overflow-x: scroll;">
+                <div class=" d-flex align-iteems justify-content-center itemsContainer" style="overflow-x: auto;">
 
                
             <% checkout.cart.items.forEach((item, index) => { %>
                
-                    <div class="mx-3 p-3 col-6 border shadow-sm rounded d-flex" style="height: 200px;">
+                    <div class="mx-3 p-3 col-6   shadow-sm rounded d-flex " 
+                    style="height: 200px; box-shadow: 8px 7px 15px 0px #ffff !important;border: 1px solid #ffff">
                         <div class="col-4 h-100">
                             <% 
                             const variant = item.product.variants.find(variant => variant?.color === item.variant?.color);
@@ -53,11 +85,11 @@
                                 <img class="img-fluid mt-4 rounded-3" src="" class="card-img-top" alt="No Image Available">
                             <% } %>
                         </div>
-                        <div class="px-4 mt-3" style="line-height: 1;">
-                            <p><%= item?.productName %></p>
-                            <p>quantity: <%= item?.quantity %></p>
-                            <p>color: <%= item.variant?.color %></p>
-                            <p>size: <%= item.variant?.size %></p>
+                        <div class="px-4 mt-3" style="line-height: 1;color: #fff;">
+                            <p><b><%= item?.product.name %></b></p>
+                            <p><b>quantity: <%= item?.quantity %></b></p>
+                            <p><b>color: <%= item.variant?.color %></b></p>
+                            <p><b>size: <%= item.variant?.size %></b></p>
                         </div>
                     </div>
                    
@@ -67,11 +99,11 @@
                  <div class="" style="height: 100px;">
                     
                     <div class="col-3 w-100" style="height: 50px;">
-                        <p style="float: right;padding-right: 50px;margin-top: 12px;">Total: ₹ <%= checkout.totalPrice %></p>
+                        <p style="float: right;padding-right: 50px;margin-top: 12px;"><b style="color: #fff;">Total: ₹ <%= checkout.totalPrice %></b></p>
                     </div>
                     <div class="col-3 w-100 d-flex justify-content-between align-items-center px-5" style="height: 50px;">
                         <div>
-                            <p class="mt-3">Order Status: <%= checkout.orderStatus %></p>
+                            <p class="mt-3"><b>Order Status: <%= checkout.orderStatus %></b></p>
                         </div>
                         <div>
                             <% if (checkout.orderStatus === "Processing") { %>

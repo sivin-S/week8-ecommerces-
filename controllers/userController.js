@@ -254,7 +254,22 @@ exports.removeFromWishlist = async (req, res) => {
 
 exports.getOrderHistory = async (req, res) => {
     try {
-        const checkOut = await Checkout.find({})
+        const userId = req.session.userId;
+        // console.log("userId >>>>>>>>>>>>>>>>>>>>>>>>",userId);
+        const page = parseInt(req.query.page) || 1;
+        const limit = 1;
+        const skip = (page - 1) * limit;
+
+        const totalOrders = await Checkout.countDocuments({user: req.session.userId});
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        // console.log("totalPages >>>>>>>>>>>>>>>>>>>>>>>>",totalPages);
+
+
+        const checkOut = await Checkout.find({user: userId})
+            .skip(skip)
+            .sort({createdAt: -1})
+            .limit(limit)
             .populate('user')
             .populate('address')
             .populate({
@@ -266,7 +281,11 @@ exports.getOrderHistory = async (req, res) => {
     //    console.log(checkOut);
        
        
-        res.render("orderHistory.ejs", { checkOut });
+        res.render("orderHistory.ejs", { 
+            checkOut ,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (err) {
         console.log(err);
         res.redirect("/orderhistory");
