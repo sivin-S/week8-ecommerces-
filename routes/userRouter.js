@@ -73,7 +73,7 @@ router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-otp", authController.verifyOTP);
 router.post("/reset-password", authController.resetPassword);
 
-
+router.post("/createRazorpayOrder", isUserLogin, checkUserBlocked, userController.createRazorpayOrder);
 
 router.post("/addAddress", isUserLogin, checkUserBlocked, userController.addAddress);
 router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.updateCheckoutStatus);
