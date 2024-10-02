@@ -63,4 +63,8 @@ router.post('/removeCategoryOffer/:offerId', isAdminLogin, adminController.remov
 router.post('/filterSalesReport', isAdminLogin, adminController.filterSalesReport);
 
 
+router.delete('/deleteTransaction/:id',isAdminLogin,adminController.deleteTransaction);
+
+
+
 module.exports = router;

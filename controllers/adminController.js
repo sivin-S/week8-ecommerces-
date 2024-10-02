@@ -357,6 +357,21 @@ async function getSalesReport(req, res) {
     }
 };
 
+
+async function deleteTransaction(req, res) {
+    try {
+        const result = await Transaction.findByIdAndDelete(req.params.id);
+        if (result) {
+          res.json({ success: true });
+        } else {
+          res.json({ success: false });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Server error' });
+      }
+}
+
 async function filterSalesReport(req, res) {
     try {
         const { filterType, startDate, endDate } = req.body;
@@ -571,7 +586,7 @@ async function transactionHistory(req, res) {
         const transactions = await Transaction.find().sort({ date: -1 });
         console.log("transactions >>>>> ",transactions);
 
-        res.render('admin/transactionHistory', { transactions });
+        res.render('transactionHistory.ejs', { transactions });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
@@ -1140,7 +1155,7 @@ module.exports = {
     addCategoryOffer,
     getSalesReport,
     filterSalesReport,
-
+    deleteTransaction,
     removeCategoryOffer,
     categoryOffers
 };

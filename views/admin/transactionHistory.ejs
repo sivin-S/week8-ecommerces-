@@ -169,26 +169,34 @@
                             <thead>
                                 <tr>
                                     <th>No.</th>
-                                    <th>Recipient</th>
-                                    <th>Product ID</th>
                                     <th>Date</th>
+                                    <th>User</th>
+                                    <th>Payment Method</th>
                                     <th>Paid Amount</th>
-                                    <th>Quantity</th>
-                                    <th>Status (Pending/Success)</th>
+                                   
                                     <th>Options</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr>
-                                    <td>1</td>
-                                    <td><img src="/mnt/data/Transaction history.png" alt="Image" width="50"></td>
-                                    <td>Null</td>
-                                    <td>Null</td>
-                                    <td><span class="badge">FAILED</span></td>
-                                    <td>Null</td>
-                                    <td>Null</td>
-                                    <td><button class="btn btn-outline-danger">Clear All</button></td>
-                                </tr> -->
+                                <% if (transactions && transactions.length > 0) { %>
+                                    <% transactions.forEach((transaction, index) => { %>
+                                        <tr>
+                                            <td><%= index + 1 %></td>
+                                            <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                                            <td><%= transaction.user%></td>
+                                            <td><%= transaction.type %></td>
+                                            <td><%= transaction.amount %></td>
+                                            
+                                            <td>
+                                                <button class="btn btn-outline-danger" id="removeTransaction" data-transaction-id="<%= transaction._id %>">Remove</button>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" class="text-center">No transactions found</td>
+                                    </tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
@@ -224,7 +232,67 @@
         window.location.href = selectedOption;
     }
 });
+
+
+// delete transaction
+
+function removeTransaction(transactionId){
+   swal.fire({
+     title: 'Are you sure?',
+     text: "You won't be able to revert this!",
+     icon: 'warning',
+     showCancelButton: true,
+     confirmButtonColor: '#3085d6',
+     cancelButtonColor: '#d33',
+     confirmButtonText: 'Yes, delete it!'
+   }).then((result) => {
+    if(result.isConfirmed){
+        fetch(`/admin/deleteTransaction/${transactionId}`,
+        {
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json',
+                'Accept':'application/json'
+            }
+        })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success){
+                swal.fire({
+                    title:'Deleted!',
+                    text:'Transaction has been deleted',
+                    icon:'success'
+                }).then(()=>{
+                    // location.reload();
+                    document.querySelector(`[data-transaction-id="${transactionId}"]`).closest('tr').remove();
+
+                })
+            }
+        })
+
+        .catch(err=>{
+            swal.fire({
+                title:'Error!',
+                text:'Failed to delete transaction',
+                icon:'error'
+            })
+        })
+
+    }
+   })
+}
+
+document.querySelectorAll('#removeTransaction').forEach(button => {
+  button.addEventListener('click', function() {
+    const transactionId = this.getAttribute('data-transaction-id');
+    removeTransaction(transactionId);
+  });
+});
+
+
+
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
