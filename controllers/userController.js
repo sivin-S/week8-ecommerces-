@@ -239,10 +239,29 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.getWishlist = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+    const userId = new mongoose.Types.ObjectId(req.session.userId);
     try {
-        const userId = new mongoose.Types.ObjectId(req.session.userId);
-        const products = await Wishlist.findOne({ user: userId }).populate("items.product");
-        res.render("wishList.ejs", { products });
+        
+        const wishlist = await Wishlist.findOne({ user: userId }).populate({
+            path: "items.product",
+            options: {
+                skip: skip,
+                limit: limit
+            }
+        });
+      
+        const totalItems = await Wishlist.countDocuments({ user: userId });
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.render('wishList.ejs', {
+      products: wishlist,
+      currentPage: page,
+      totalPages: totalPages,
+      limit: limit
+    });
     } catch (error) {
         console.error("Error retrieving wishlist:", error);
         res.redirect("/wishlist");
@@ -299,7 +318,7 @@ exports.getOrderHistory = async (req, res) => {
         const userId = req.session.userId;
         // console.log("userId >>>>>>>>>>>>>>>>>>>>>>>>",userId);
         const page = parseInt(req.query.page) || 1;
-        const limit = 1;
+        const limit = 3;
         const skip = (page - 1) * limit;
 
         const totalOrders = await Checkout.countDocuments({user: req.session.userId});
@@ -421,50 +440,63 @@ exports.getCheckout = async (req, res) => {
 
 
 
-// exports.validateCoupon = async (req, res) => {
-//     try {
-//         const { couponCode, totalAmount } = req.body;
-//         const currentDate = new Date();
-//         const coupon = await Coupon.findOne({ 
-//             couponCode: couponCode,
-//             expiryDate: { $gt: currentDate },
-//             status: true
-//         });
 
-//         if (!coupon) {
-//             return res.json({ valid: false, message: 'Invalid coupon code' });
-//         }
 
+
+
+exports.applyCoupon = async (req, res) => {
+    console.log("applyCoupon >>>>>>>>>>>>>>>>>>>>>>>>", req.body);
+    try {
+        const { couponCode, totalAmount } = req.body;
+        const coupon = await Coupon.findOne({ couponCode });
+
+        console.log("coupon >>>>>>>>>>>>>>>>>>>>>>>>",coupon);
+
+        if (!coupon) {
+            return res.status(404).json({ success: false, message: 'Coupon not found' });
+        }
+
+        const currentDate = new Date();
+        if (currentDate < new Date(coupon.startDate)) {
+            return res.status(400).json({ success: false, message: 'This coupon is not yet active' });
+        }
+
+        if (currentDate > new Date(coupon.expiryDate)) {
+            return res.status(400).json({ success: false, message: 'This coupon has expired' });
+        }
+
+        if (totalAmount < coupon.minPurchaseAmount) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} not met`
+            });
+        }
+
+
+
+          // offerPrice is in (%) reminder  
+          const discountPercentage = coupon.offerPrice;
+          const discountAmount = (totalAmount * discountPercentage) / 100;
+          let discountedPrice = totalAmount - discountAmount;
+  
+          discountedPrice = Math.max(0, discountedPrice);
+  
+          return res.json({
+              success: true,
+              message: 'Coupon applied successfully',
+              discountedPrice,
+              discount: discountAmount
+          });
+  
        
 
-//         if (totalAmount < coupon.minPurchaseAmount) {
-//             return res.json({
-//                 valid: false,
-//                 message: `This coupon requires a minimum purchase of ₹${coupon.minPurchaseAmount}`,
-//                 minPurchaseAmount: coupon.minPurchaseAmount
-//             });
-//         }
+      
 
-
-//         return res.json({
-//             valid: true,
-//             offerPrice: coupon.offerPrice,
-//             minPurchaseAmount: coupon.minPurchaseAmount
-//         });
-
-//     } catch (error) {
-//         console.error('Error validating coupon:', error);
-//         res.status(500).json({ valid: false, message: 'An error occurred while validating the coupon' });
-//     }
-// };
-
-
-
-
-
-
-
-
+    } catch (error) {
+        console.error('Error applying coupon:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while applying the coupon' });
+    }
+};
 
 
 

@@ -122,7 +122,7 @@
 	<section class="login_box_area section_gap">
 		<div class="container">
 			<div class="row justify-content-center">
-				<div class="col-lg-9 table-responsive">
+				<div class="col-auto table-responsive" style="width: 820px;height: 350px; overflow-y: auto;">
 					<table class="table w-100 h-100">
 						<thead>
 						  <tr>
@@ -130,7 +130,9 @@
 							<th scope="col" class="px-3">Product</th>
 							<th scope="col" class="px-3">Price</th>
 							<th scope="col" class="px-3">Status</th>
-							<th scope="col" class="px-3"><input type="search" id="search_input_table" class="form-control w-75" placeholder="Search"></th>
+						
+						
+							<th scope="col" class="px-3 mx-auto"><input type="search" id="search_input_table" class="form-control w-75" placeholder="Search"></th>
 						  </tr>
 						</thead>
 						<tbody id="table-body">
@@ -173,6 +175,37 @@
 						
 					  </table>
 				</div>
+			</div>
+			<div class="row  justify-content-center">
+			
+
+<!-- pagination -->
+<nav aria-label="Page navigation">
+	<ul class="pagination justify-content-center">
+	  <!-- Previous button -->
+	  <% if (currentPage > 1) { %>
+		<li class="page-item">
+		  <a class="page-link" href="/wishlist?page=<%= currentPage - 1 %>&limit=<%= limit %>">Previous</a>
+		</li>
+	  <% } else { %>
+		<li class="page-item disabled">
+		  <span class="page-link">Previous</span>
+		</li>
+	  <% } %>
+	  
+	  <!-- Next button -->
+	  <% if (currentPage < totalPages) { %>
+		<li class="page-item">
+		  <a class="page-link" href="/wishlist?page=<%= currentPage + 1 %>&limit=<%= limit %>">Next</a>
+		</li>
+	  <% } else { %>
+		<li class="page-item disabled">
+		  <span class="page-link">Next</span>
+		</li>
+	  <% } %>
+	</ul>
+  </nav>
+
 			</div>
 		</div>
 	</section>

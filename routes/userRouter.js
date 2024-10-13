@@ -84,6 +84,6 @@ router.post('/returnOrder/:orderId', isUserLogin, checkUserBlocked, userControll
 
 
 
-router.post('/apply-coupon', cartController.applyCoupon);
+router.post('/apply-coupon', userController.applyCoupon);
 
 module.exports = router;

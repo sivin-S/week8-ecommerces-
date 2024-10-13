@@ -435,16 +435,7 @@ function paymentMethods(req, res) {
     }
 }
 
-// // Function to render the sales report page
-// function salesReport(req, res) {
-//     // res.render('report.ejs');
-//     try {
-//         res.render('salesReport.ejs');
-//     } catch (err) {
-//         console.log(err);
-//         res.redirect('/admin');
-//     }
-// }
+
 
 // Function to render the coupons history page
 async function couponsHistory(req, res) {
@@ -952,9 +943,11 @@ async function couponsCreate(req, res) {
              return res.status(400).json({ success: false, message: 'A coupon with this code already exists' });
          }
 
-         if(offerPrice > minPurchaseAmount){
-            return res.status(400).json({ success: false, message: 'Offer price cannot be greater than minimum purchase amount' });
+         if(offerPrice < 0 || offerPrice > 100){
+            return res.status(400).json({ success: false, message: 'Offer discount must be between 0% and 100%' });
          }
+
+       
  
        
          const newCoupon = new Coupon({

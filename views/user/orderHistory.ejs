@@ -121,21 +121,21 @@
 	<!--================Table Box Area =================-->
 	<section class="login_box_area section_gap">
 	<div class="container">
-      <div class="row shadow py-3" style="overflow: auto; min-height: 500px;">
+      <div class="row shadow py-3" style="overflow: auto;height: 600px;position: relative;">
        
 		<% if(checkOut && checkOut.length > 0){ %>
 			<% checkOut.forEach((details,index)=>{ %>
 				<% details.cart.items.forEach((item,index)=>{ %>
-				<div class="card mx-auto shadow rounded-4 m-3 p-3 border   row flex-column" style="width: 680px;height: 370px;">
+				<div class="shadow rounded-4 m-3 p-3  row d-flex " style="width: 100%;height: 300px;">
 					
 
 
-					<div class="col-4 h-100">
+					<div class="col-auto w-100">
 						<% 
 						const variant = item.product.variants.find(variant => variant?.color === item.variant?.color);
 						if (variant && variant.imageUrls && variant.imageUrls.length > 0) {
 						%>
-							<img class="img-fluid mt-4 rounded-3" src="<%= variant?.imageUrls[0] %>" class="card-img-top" alt="Product Image">
+							<img class="img-fluid mt-4 rounded-3" src="<%= variant?.imageUrls[0] %>" class="card-img-top" alt="Product Image" style="height: 69px;">
 						<% } else { %>
 							<img class="img-fluid mt-4 rounded-3" src="" class="card-img-top" alt="No Image Available">
 						<% } %>
@@ -145,16 +145,21 @@
 
 
 
-				   <div class="col-12">
-					<div class="card-body" style="line-height: 1.3;width: 400px;">
-						<h5 class="card-title"><b><%=item?.productName%></b></h5>
-						<p class="card-title">Payment Method: <b><%=details?.paymentMethod%></b> </p>
-						<p class="card-text">quantity:<b><%=item?.quantity%></b></p>
-						<p class="card-text">Discount: ₹0</p>
-						<p class="card-text"><b>Total: ₹ <%=details.totalPrice%></b> </p>
-						<p class="card-text"><b>Status :  <%=details.orderStatus%>  </b> </p>
-						<p class="card-text"><b>Purchased Date :  <%=new Date(details.createdAt).toDateString() %>  </b> </p>
+				   <div class="col-auto  w-100 h-50">
+					<div class="p-0 d-flex align-items-center justify-content-evenly" style="line-height: 1.1;">
+						<div class="col-auto w-50">
+						    <h5 class=""><b><%=item?.productName%></b></h5>
+						   <p class="">Payment Method: <b><%=details?.paymentMethod%></b> </p>
+						   <p class="">quantity:<b><%=item?.quantity%></b></p>
+						   <p class="">Discount: ₹0</p>	
+						</div>
+						<div class="col-auto  w-50">
+							<p class=""><b>Total: ₹ <%=details.totalPrice%></b> </p>
+						<p class=""><b>Status :  <%=details.orderStatus%>  </b> </p>
+						<p class=""><b>Purchased Date :  <%=new Date(details.createdAt).toDateString() %>  </b> </p>
 						<a href="/orderhistory/details/<%=encodeURIComponent(details._id)%>" class="btn btn-primary mt-2" style="padding: 0.500em 10em;">Details</a>
+						</div>
+						
 					  </div>
 				   </div>
 				  </div>
@@ -162,10 +167,10 @@
 		<%  })%>
 
 		<!-- pagination -->
-		<div class="row  w-100 justify-content-center">
+		<div class="d-flex w-100 justify-content-center " style="position: sticky;bottom: 0;z-index: 30;background-color: #ffff;">
 			<nav aria-label="Page navigation example">
 			  <ul class="pagination">
-				<% if (totalPages > 3) { %>
+				<% if (totalPages > 1) { %>
 				  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
 					<a class="page-link" href="/orderhistory?page=<%= currentPage - 1 %>" aria-label="Previous">
 					  <span aria-hidden="true">&laquo;</span>
@@ -186,7 +191,7 @@
 				  </li>
 				<% } %>
 		  
-				<% if (totalPages > 3) { %>
+				<% if (totalPages > 1) { %>
 				  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
 					<a class="page-link" href="/orderhistory?page=<%= currentPage + 1 %>" aria-label="Next">
 					  <span aria-hidden="true">&raquo;</span>

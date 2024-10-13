@@ -160,7 +160,7 @@
                 <div class="bg-white p-4 rounded shadow-sm" style="color: #4D869C !important;">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2>Coupons</h2>
-                        <!-- /admin/couponsCreate -->
+                       
                         
                             <button  data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn" style="border: 1px solid #4D869C;color: #4D869C;">Create Coupon</button>
                         
@@ -248,8 +248,8 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="offerPrice" class="form-label">Offer Price</label>
-                        <input type="number" class="form-control" id="offerPrice" name="offerPrice" placeholder="Enter Offer Price">
+                        <label for="offerPrice" class="form-label">Offer Discount</label>
+                        <input type="number" class="form-control" id="offerPrice" name="offerPrice" placeholder="Enter Offer Discount in %">
                     </div>
                     <div class="mb-3">
                         <label for="minPurchaseAmount" class="form-label">Minimum Price</label>
@@ -311,18 +311,6 @@
 
 
 });
-
-
-
-function loadPage(page,limit){
-    fetch(`/admin/couponsHistory?page=${page}&limit=${limit}`)
-    .then(response => response.text())
-    .then(data => {
-        
-    });
-}
-
-
 
 
   
@@ -432,6 +420,7 @@ function createCoupon(couponCode, offerPrice, minPurchaseAmount, startDate, expi
            
             refreshCouponList();
             clearModalFields();
+            window.location.reload();
         } else {
             Swal.fire('Error', data.message, 'error');
         }

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Cart = require("../model/cartSchema");
 const { Product } = require("../model/productSchema");
-const Coupon = require("../model/couponSchema");
+
 
 exports.getCart = async (req, res) => {
   try {
@@ -160,90 +160,6 @@ exports.addToCart = async (req, res) => {
 
 
 
-
-
-exports.applyCoupon = async (req, res) => {
-    try {
-        const { couponCode, totalAmount } = req.body;
-        const coupon = await Coupon.findOne({ couponCode });
-
-        if (!coupon) {
-            return res.status(404).json({ success: false, message: 'Coupon not found' });
-        }
-
-        const currentDate = new Date();
-        if (currentDate < new Date(coupon.startDate)) {
-            return res.status(400).json({ success: false, message: 'This coupon is not yet active' });
-        }
-
-        if (currentDate > new Date(coupon.expiryDate)) {
-            return res.status(400).json({ success: false, message: 'This coupon has expired' });
-        }
-
-        if (totalAmount < coupon.minPurchaseAmount) {
-            return res.status(400).json({ 
-                success: false, 
-                message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} not met`
-            });
-        }
-
-  
-        let discountedPrice = totalAmount - coupon.offerPrice;
-
-        if (discountedPrice < 0) {
-          return res.status(400).json({
-              success: false,
-              message: 'Coupon discount exceeds the total amount'
-          });
-      }
-
-      discountedPrice = Math.max(0, discountedPrice);
-
-        return res.json({
-            success: true,
-            message: 'Coupon applied successfully',
-            discountedPrice,
-            discount: coupon.offerPrice
-        });
-
-    } catch (error) {
-        console.error('Error applying coupon:', error);
-        res.status(500).json({ success: false, message: 'An error occurred while applying the coupon' });
-    }
-};
-
-
-
-
-
-
-// remove product from cart
-// exports.removeProductFromCart = async (req, res) => {
-//   try {
-//     const userId = new mongoose.Types.ObjectId(req.session.userId);
-//     const productId = new mongoose.Types.ObjectId(req.params.productId);
-//     const userCart = await Cart.findOne({ user: userId });
-//     const cart = await Cart.findOne({ user: userId }).populate("items.product");
-//     if (!userCart) {
-//       // return res.status(404).render("cart.ejs", { cartProducts: null, error: "Cart not found" });
-//       req.flash('error', 'Cart not found');
-//       return res.redirect('/');
-//     }
-//     userCart.items = userCart.items.filter((item) => {
-//       if (!item.product.equals(productId)) {
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     });
-//     await userCart.save();
-//     res.redirect('/cart');
-//   } catch (error) {
-//     console.error("Error removing product from cart:", error);
-//     req.flash('error', 'Please try again.');
-//     res.redirect('/cart');
-//   }
-// };
 
 
 exports.removeProductFromCart = async (req, res) => {
