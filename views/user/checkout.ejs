@@ -240,6 +240,7 @@
     document.addEventListener('DOMContentLoaded', function () {
 
       const form = document.getElementById('checkoutForm');
+      const codRadio = document.querySelector('input[name="paymentMethod"][value="COD"]');
       const applyCouponBtn = document.getElementById('applyCouponBtn');
       const couponInput = document.getElementById('couponInput');
       const removeCouponBtn = document.getElementById('removeCouponBtn');
@@ -333,6 +334,18 @@
         removeCouponBtn.style.display = 'none';
       }
 
+      function updateCODAvailability() {
+    const totalPrice = parseFloat(document.getElementById('discountedPrice').value);
+    
+    if (totalPrice > 1000) {
+      codRadio.disabled = true;
+      codRadio.checked = false;
+      codRadio.parentElement.style.opacity = '0.5';
+    } else {
+      codRadio.disabled = false;
+      codRadio.parentElement.style.opacity = '1';
+    }
+  }
 
 
 
@@ -502,6 +515,11 @@
 
 
 
+ updateCODAvailability();
+
+
+document.getElementById('applyCouponBtn').addEventListener('click', updateCODAvailability);
+document.getElementById('removeCouponBtn').addEventListener('click', updateCODAvailability);
 
 
 
