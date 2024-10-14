@@ -41,7 +41,7 @@ router.get('/orderDetails/:id', isAdminLogin, adminController.getOrderDetails);
 router.get('/productOffers', isAdminLogin, adminController.productOffers);
 router.get('/categoryOffers', isAdminLogin, adminController.categoryOffers);
 router.get('/salesReport', isAdminLogin, adminController.getSalesReport);
-
+router.get('/chartData', isAdminLogin, adminController.getChartData);
 
 
 router.post('/toggleUserState/:id', isAdminLogin, adminController.toggleUserState);

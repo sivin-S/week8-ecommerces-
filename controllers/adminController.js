@@ -24,13 +24,151 @@ async function dashboard(req, res) {
     try {
         const productData = await Product.find({}).populate('category');
         const user = await User.find({});
+
+        const bestSellingProducts = await Checkout.aggregate([
+            { $unwind: "$cart.items" },
+            { $group: {
+                _id: "$cart.items.product",
+                totalSold: { $sum: "$cart.items.quantity" }
+            }},
+            { $sort: { totalSold: -1 } },
+            { $limit: 5 },
+            { $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "_id",
+                as: "productDetails"
+            }},
+            { $unwind: "$productDetails" },
+            { $project: {
+                _id: 1,
+                name: "$productDetails.name",
+                totalSold: 1
+            }}
+        ]);
+
+        const bestSellingCategories = await Checkout.aggregate([
+            { $unwind: "$cart.items" },
+            { $lookup: {
+                from: "products",
+                localField: "cart.items.product",
+                foreignField: "_id",
+                as: "product"
+            }},
+            { $unwind: "$product" },
+            { $group: {
+                _id: "$product.category",
+                totalSold: { $sum: "$cart.items.quantity" }
+            }},
+            { $sort: { totalSold: -1 } },
+            { $limit: 5 },
+            { $lookup: {
+                from: "categories",
+                localField: "_id",
+                foreignField: "_id",
+                as: "categoryDetails"
+            }},
+            { $unwind: "$categoryDetails" },
+            { $project: {
+                _id: 1,
+                name: "$categoryDetails.name",
+                totalSold: 1
+            }}
+        ]);
+
+
+        const bestSellingBrands = await Checkout.aggregate([
+            { $unwind: "$cart.items" },
+            { $lookup: {
+                from: "products",
+                localField: "cart.items.product",
+                foreignField: "_id",
+                as: "product"
+            }},
+            { $unwind: "$product" },
+            { $group: {
+                _id: "$product.brand",
+                totalSold: { $sum: "$cart.items.quantity" }
+            }},
+            { $sort: { totalSold: -1 } },
+            { $limit: 5 }
+        ]);
+
         res.setHeader('Cache-Control', 'no-store');
-        res.render('adminDashboard.ejs', { productData, user });
+        res.render('adminDashboard.ejs', { 
+            productData, 
+            user, 
+            bestSellingProducts, 
+            bestSellingCategories, 
+            bestSellingBrands 
+        });
     } catch (err) {
         console.log(err);
         res.redirect('/admin');
     }
 }
+
+
+// chart data
+
+async function getChartData(req, res) {
+    try {
+        const { timeRange } = req.query;
+        let startDate, groupBy;
+
+        switch(timeRange) {
+            case 'yearly':
+                startDate = new Date(new Date().getFullYear(), 0, 1);
+                groupBy = { $year: "$createdAt" };
+                break;
+            case 'monthly':
+                startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+                groupBy = { 
+                    year: { $year: "$createdAt" },
+                    month: { $month: "$createdAt" }
+                };
+                break;
+            case 'weekly':
+                startDate = new Date(new Date().setDate(new Date().getDate() - 7));
+                groupBy = { 
+                    year: { $year: "$createdAt" },
+                    week: { $week: "$createdAt" }
+                };
+                break;
+            default: 
+                startDate = new Date(new Date().setHours(0,0,0,0));
+                groupBy = { 
+                    year: { $year: "$createdAt" },
+                    month: { $month: "$createdAt" },
+                    day: { $dayOfMonth: "$createdAt" }
+                };
+        }
+
+        const data = await Checkout.aggregate([
+            { $match: { createdAt: { $gte: startDate } } },
+            { $group: {
+                _id: groupBy,
+                totalSales: { $sum: "$totalPrice" },
+                orderCount: { $sum: 1 }
+            }},
+            { $sort: { "_id": 1 } }
+        ]);
+
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+
+
+
+
+
+
 
 // product management
 async function products(req, res) {
@@ -1121,6 +1259,7 @@ module.exports = {
     orderList,
     paymentMethods,
     // salesReport,
+    getChartData,
     couponsHistory,
     categories,
     softDeleteProduct,

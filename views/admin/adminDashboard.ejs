@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family:  sans-serif;
@@ -86,6 +88,13 @@
            padding: 12px 12px;
            margin-top: 5px;
         }
+
+        ul{
+            list-style-type: none;
+        }
+
+       
+
     </style>
 </head>
 <body>
@@ -185,10 +194,18 @@
                 </div>
             </nav>
 
-            <!-- Main content -->
+          
             <main class="ms-sm-auto  px-md-4 main-content  p-5" style="width: 80%;">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" style="border-bottom-color: #4D869C !important;">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom me-3" style="border-bottom-color: #4D869C !important;">
                     <h1 class="h2" style="color:#4D869C">Dashboard</h1>
+                    <div class="col-auto">
+                        <select id="timeRangeFilter" class="form-select" style="width: auto;background-color: #4D869C;color: #EEF7FF;">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3 border-5">
@@ -228,69 +245,151 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3" >
+                <div class="row mt-3">
                     <div class="col-md-6">
                         <div class="card" style="color:#4D869C;border:1px solid #4D869C !important;">
                             <div class="card-body">
-                                <canvas id="chart1"></canvas>
+                                <canvas id="salesChart"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card" style="color:#4D869C;border:1px solid #4D869C !important;">
                             <div class="card-body">
-                                <canvas id="chart2"></canvas>
+                                <canvas id="ordersChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+            
 
-               
+                <div class="row mt-3 ">
+                    <div class="col-12">
+                        <table class="table table-bordered  shadow" style="border:1px solid 
+                                                   #eef7ff !important;
+                                                   background-color: #eef7ff !important;
+                                                   color: #4D869C !important;">
+                            <thead class="thead-light" style="background-color: #4D869C;color: #eef7ff;text-align: center;">
+                                <tr>
+                                    <th>Best Selling Products</th>
+                                    <th>Best Selling Categories</th>
+                                    <th>Best Selling Brands</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <ul>
+                                        <% bestSellingProducts.forEach(product => { %>
+                                            <li class="shadow  text-center py-3"><%= product.name %> - Sold: <%= product.totalSold %></li>
+                                        <% }); %>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                        <% bestSellingCategories.forEach(category => { %>
+                                            <li class="shadow  text-center py-3"><%= category.name %> - Sold: <%= category.totalSold %></li>
+                                        <% }); %>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                        <% bestSellingBrands.forEach(brand => { %>
+                                            <li class="shadow  text-center py-3"><%= brand._id %> - Sold: <%= brand.totalSold %></li>
+                                        <% }); %>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
 
             </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
     <script>
-        // Sample data for charts
-        const ctx1 = document.getElementById('chart1').getContext('2d');
-        const chart1 = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S'],
-                datasets: [{
-                    label: 'Website Views',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: 'rgba(233, 30, 99, 0.2)',
-                    borderColor: 'rgba(233, 30, 99, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+        
+        let salesChart, ordersChart;
+
+function updateCharts(timeRange) {
+    fetch(`/admin/chartData?timeRange=${timeRange}`)
+    .then(response => response.json())
+                .then(data => {
+                 
+                    if (salesChart) salesChart.destroy();
+                    salesChart = new Chart(document.getElementById('salesChart'), {
+                        type: 'line',
+                        data: {
+                            labels: data.map(item => item._id.day ? `${item._id.year}-${item._id.month}-${item._id.day}` : 
+                                             item._id.week ? `Week ${item._id.week}, ${item._id.year}` : 
+                                             item._id.month ? `${item._id.year}-${item._id.month}` : `${item._id.year}`),
+                            datasets: [{
+                                label: 'Sales',
+                                data: data.map(item => item.totalSales),
+                                borderColor: '#4D869C',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    
+                    if (ordersChart) ordersChart.destroy();
+                    ordersChart = new Chart(document.getElementById('ordersChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(item => item._id.day ? `${item._id.year}-${item._id.month}-${item._id.day}` : 
+                                             item._id.week ? `Week ${item._id.week}, ${item._id.year}` : 
+                                             item._id.month ? `${item._id.year}-${item._id.month}` : `${item._id.year}`),
+                            datasets: [{
+                                label: 'Orders',
+                                data: data.map(item => item.orderCount),
+                                backgroundColor: '#4D869C'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching chart data:', error));
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+            // Swal.fire({
+            //     title: 'Welcome to Admin Dashboard',
+            //     text: 'Today\'s date: ' + new Date().toLocaleDateString(),
+            //     icon: 'info',
+            //     confirmButtonText: 'OK'
+            // });
+
+            updateCharts('daily');
         });
 
-        const ctx2 = document.getElementById('chart2').getContext('2d');
-        const chart2 = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November'],
-                datasets: [{
-                    label: 'Daily Sales',
-                    data: [65, 59, 80, 81, 56, 55, 40, 70],
-                    fill: false,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    tension: 0.1
-                }]
-            }
+        document.getElementById('timeRangeFilter').addEventListener('change', function() {
+            updateCharts(this.value);
         });
+
+
+
+
 
         function searchTable() {
             var input, filter, table, tr, td, i, j, txtValue;
