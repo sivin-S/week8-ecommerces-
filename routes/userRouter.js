@@ -42,6 +42,7 @@ router.get("/shop", productController.getShop);
 router.get('/getWalletHistory', isUserLogin, checkUserBlocked, userController.getWalletHistory);
 
 router.get("/filterVariant", productController.filterVariant);
+router.get("/generateInvoice/:orderId", isUserLogin, checkUserBlocked, userController.generateInvoice);
 
 router.get("/checkOut", isUserLogin, checkUserBlocked, userController.getCheckout);
 router.get("/contact", isUserLogin, checkUserBlocked, (req, res) => res.render("contact.ejs"));

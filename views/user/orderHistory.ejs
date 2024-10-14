@@ -148,16 +148,17 @@
 				   <div class="col-auto  w-100 h-50">
 					<div class="p-0 d-flex align-items-center justify-content-evenly" style="line-height: 1.1;">
 						<div class="col-auto w-50">
-						    <h5 class=""><b><%=item?.productName%></b></h5>
+						    <h5 class=""><b><%=item?.product?.name%></b></h5>
 						   <p class="">Payment Method: <b><%=details?.paymentMethod%></b> </p>
 						   <p class="">quantity:<b><%=item?.quantity%></b></p>
-						   <p class="">Discount: ₹0</p>	
+						   <!-- <p class="">Discount: ₹0</p>	 -->
 						</div>
 						<div class="col-auto  w-50">
 							<p class=""><b>Total: ₹ <%=details.totalPrice%></b> </p>
 						<p class=""><b>Status :  <%=details.orderStatus%>  </b> </p>
 						<p class=""><b>Purchased Date :  <%=new Date(details.createdAt).toDateString() %>  </b> </p>
 						<a href="/orderhistory/details/<%=encodeURIComponent(details._id)%>" class="btn btn-primary mt-2" style="padding: 0.500em 10em;">Details</a>
+						<button class="btn btn-success mt-2" onclick="downloadInvoice('<%=details._id%>')">invoice</button>
 						</div>
 						
 					  </div>
@@ -256,6 +257,31 @@ Copyright &copy;&nbsp;<script>document.write(new Date().getFullYear());</script>
 
 	<!-- Script for search -->
 	<script>
+
+		function downloadInvoice(orderId){
+			window.location.href = `/generateInvoice/${orderId}`;
+			fetch(`/generateInvoice/${orderId}`)
+			.then(()=>{
+				Swal.fire({
+					title: 'Invoice generated',
+					icon: 'success',
+					showConfirmButton: false,
+					timer: 1500
+				})
+			}).catch(err=>{
+				console.log(err);
+				Swal.fire({
+					title: 'Error',
+					text: 'Failed to generate invoice',
+					icon: 'error',
+					showConfirmButton: true
+				})
+				window.location.href = '/orderhistory';
+			})
+		}
+
+
+
         document.getElementById('search_input_table').addEventListener('input', function() {
             const query = this.value.toLowerCase();
             const rows = document.querySelectorAll('#table-body tr');

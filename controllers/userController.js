@@ -10,6 +10,9 @@ const Coupon = require("../model/couponSchema");
 const Transaction = require("../model/transactionSchema");
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const PDFDocument = require('pdfkit');
+const path = require('path');
+const fs = require('fs');
 // require("dotenv").config();
 
 
@@ -585,7 +588,92 @@ exports.handleFailedPayment = async (req, res) => {
 
 
 
+exports.generateInvoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const order = await Checkout.findById(orderId)
+            .populate('cart.items.product')
+            .populate('user')
+            .populate('address');
+        //  console.log("order >>>>>>>>>>>>>>>>>>>>>>>>",order);
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
 
+        const doc = new PDFDocument();
+        const filename = `invoice-${orderId}.pdf`;
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        doc.pipe(res);
+
+       
+        const logoPath = path.join(__dirname,'../public/user/img/shopIcon.png');
+        console.log("logoPath >>>>>>>>>>>>>>>>>>>>>>>>",logoPath);
+        doc.image(logoPath, 50, 45, { width: 50 });
+
+    
+        doc.fontSize(25).text('Invoice', 100, 50,{align:'right'});
+        doc.fontSize(10)
+           .text(`Invoice Number: INV-${orderId}`, 100, 90,{align:'right'})
+           .text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`, 100, 105,{align:'right'})
+           .text(`Due Date: ${new Date(order.createdAt).toLocaleDateString()}`, 100, 120,{align:'right'});
+
+        
+        doc.text('Bill To:', 50, 150,{align:'left'} )
+           .text(order.user.username, 50, 165,{align:'left'})
+           .text(order.address.locality, 50, 180,{align:'left'})
+           .text(`${order.address.state}, ${order.address.zip}`, 50, 195,{align:'left'})
+           .text(order.address.country, 50, 210,{align:'left'});
+
+        
+        doc.text('Ship To:', 300, 150,{align: 'left'})
+           .text(order.address.username, 300, 165,{align: 'left'})
+           .text(order.address.locality, 300, 180,{align: 'left'})
+           .text(`${order.address.state}, ${order.address.zip}`, 300, 195,{align: 'left'})
+           .text(order.address.country, 300, 210,{align: 'left'});
+
+     
+           doc.rect(50, 250, 500, 20).fill('#CCCCCC');
+           doc.fillColor('#000000')
+              .text('ID', 60, 255, { align: 'center', width: 80 })
+              .text('Product', 140, 255, { align: 'center', width: 100 })
+              .text('Color', 240, 255, { align: 'center', width: 60 })
+              .text('Size', 300, 255, { align: 'center', width: 60 })
+              .text('Quantity', 360, 255, { align: 'center', width: 60 })
+              .text('Unit Price', 420, 255, { align: 'center', width: 60 })
+              .text('Amount', 480, 255, { align: 'center', width: 70 });
+
+              let y = 280;
+              order.cart.items.forEach((item, index) => {
+                  // Left align item details, right align numbers
+                  doc.text(item._id, 60, y, { align: 'left', width: 80 })
+                     .text(item.product.name, 140, y, { align: 'left', width: 100 })
+                     .text(item.variant.color, 240, y, { align: 'center', width: 60 })
+                     .text(item.variant.size, 300, y, { align: 'center', width: 60 })
+                     .text(item.quantity.toString(), 360, y, { align: 'center', width: 60 })
+                     .text(`$${item.price.toFixed(2)}`, 420, y, { align: 'right', width: 60 })
+                     .text(`$${(item.price * item.quantity).toFixed(2)}`, 480, y, { align: 'right', width: 70 });
+      
+                  y += 40;
+              });
+
+              doc.rect(370, y, 180, 20).fill('#CCCCCC');
+              doc.fillColor('#000000')
+                 .text('Total:', 380, y + 5, { align: 'left', width: 100 })
+                 .text(`$${order.totalPrice.toFixed(2)}`, 480, y + 5, { align: 'right', width: 70 });
+
+       
+                 doc.fontSize(10)
+                 .text('Thank you for your business!', 50, 700, { align: 'center' });
+
+        doc.end();
+    } catch (error) {
+        console.error('Error generating invoice:', error);
+        res.status(500).send('Error generating invoice');
+    }
+};
 
 
 
