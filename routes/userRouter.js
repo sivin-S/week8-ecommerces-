@@ -68,7 +68,7 @@ router.post("/login", authController.login);
 router.post("/removeProductFromCart", isUserLogin, checkUserBlocked, cartController.removeProductFromCart);
 
 router.post("/updateQuantity", isUserLogin, checkUserBlocked, cartController.updateQuantity);
-
+router.post('/handle-failed-payment', userController.handleFailedPayment);
 
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-otp", authController.verifyOTP);
@@ -81,6 +81,8 @@ router.post("/checkOutStatus", isUserLogin, checkUserBlocked, userController.upd
 router.post("/signup", authController.signup);
 
 router.post('/returnOrder/:orderId', isUserLogin, checkUserBlocked, userController.returnOrder);
+
+router.post('/handleReorderPayment', isUserLogin, checkUserBlocked, userController.handleReorderPayment);
 
 
 

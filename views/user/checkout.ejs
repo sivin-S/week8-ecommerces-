@@ -426,7 +426,6 @@
      
     })
     .then(data => {
-     console.log(data);
       var options = {
         "key": razorpayKeyId,
         "amount": data.amount,
@@ -440,7 +439,7 @@
         //   "address": ""
         // },
         "handler": function (response){
-       
+      
           proceedWithCheckout(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
         },
         "prefill": {
@@ -453,6 +452,56 @@
         }
       };
       var rzp1 = new Razorpay(options);
+        
+      rzp1.on('payment.failed', function (response){
+  rzp1.close();
+  Swal.fire({
+    icon: 'error',
+    title: 'Payment Failed',
+    text: 'Payment could not be processed. The order will be placed in pending status.',
+    showCancelButton: false,
+    confirmButtonText: 'OK'
+  }).then(() => {
+    handleFailedPayment(response.error.metadata.order_id);
+  });
+});
+
+function handleFailedPayment(orderId) {
+  fetch('/handle-failed-payment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ orderId: orderId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
+        window.location.href = data.redirectUrl;
+      }, 3000); 
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.message || 'An error occurred while processing the failed payment.',
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An unexpected error occurred. Please try again.',
+    });
+  });
+}
+
+
+
+
+
       rzp1.open();
     })
     .catch(error => {

@@ -9,6 +9,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
      <!--  -->
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
      <style>
         body{
             box-shadow: inset 1px 2px 20px 20px #ff9500 !important;
@@ -110,6 +111,8 @@
                                 <button class="btn btn-danger px-5" onclick="confirmCancel('<%= checkout._id %>')">Cancel</button>
                             <% } else if (checkout.orderStatus === "Delivered") { %>
                                 <button class="btn btn-primary px-5" onclick="confirmReturn('<%= checkout._id %>')">Return</button>
+                            <% } else if(checkout.orderStatus === "Pending") { %>
+                                <button class="btn btn-primary px-5" onclick="confirmReOrder('<%= checkout._id %>')">ReOrder</button>
                             <% } %>
                             
                            
@@ -124,6 +127,105 @@
 
 
    <script>
+   
+   function confirmReOrder(orderId) {
+        const amount = <%=checkout.totalPrice%>;
+        // console.log("totalPrices >>> ",totalPrices);
+        // console.log("confirmReOrder >>> ",orderId);
+        Swal.fire({
+            title: 'Reorder this order?',
+            text: 'you will be redirected to payment gateway',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, reorder it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/createRazorpayOrder',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount:amount*100})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("createRazorpayOrder >>> ",data);
+                    if(data.success){
+                        
+                        const options = {
+                           "key": '<%=process.env.RAZORPAY_KEY_ID%>',
+                           "amount": data.order.amount,
+                           "currency": data.order.currency,
+                            "name": "Y",
+                            "description": "Reorder",
+                            "order_id": data.order.id,
+                            "handler": function(response){
+                                handlePaymentSuccess(response,orderId);
+                            },
+                           "prefill":{
+                                name: '<%=checkout.address.username%>',
+                                email: '<%=checkout.address.email%>',
+                            },
+                            "theme": {
+                                color: "#3399cc"
+                            }
+                        };
+                        const rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    }else{
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while processing your request.',
+                    'error'
+                );
+            });
+    }})
+    }
+
+
+    function handlePaymentSuccess(response,orderId){
+        console.log("handlePaymentSuccess >>> ",response);
+        fetch('/handleReorderPayment',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("handlePaymentSuccess >>> ",data);
+            if(data.success){
+                Swal.fire('Success!', 'Your order has been reordered.', 'success')
+                .then(() => {
+                    window.location.href = data.redirectUrl;
+                })
+            }else{
+                Swal.fire('Error!', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire(
+                'Error!',
+                'An error occurred while processing your request.',
+                'error'
+            );
+        })
+            
+    }
 
 
 

@@ -108,7 +108,7 @@ const checkoutSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
+        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned','Pending'],
          default: 'Processing'
     },
    
@@ -152,13 +152,13 @@ checkoutSchema.pre('save', async function(next) {
             );
             if (!variant) continue;
 
-            if (this.previousOrderStatus === 'Cancelled' && this.orderStatus === 'Processing') {
-                // Decrease stock when changing from Cancelled to Processing
+            if (this.previousOrderStatus === 'Cancelled' && (this.orderStatus === 'Processing' || this.orderStatus === 'Pending')) {
+              
                 variant.stock -= item.quantity;
-            } else if (this.previousOrderStatus === 'Processing' && this.orderStatus === 'Cancelled') {
-                // Increase stock when changing from Processing to Cancelled
+              } else if ((this.previousOrderStatus === 'Processing' || this.previousOrderStatus === 'Pending') && this.orderStatus === 'Cancelled') {
+            
                 variant.stock += item.quantity;
-            }
+              }
 
             await product.save();
         }
