@@ -49,6 +49,7 @@ router.get("/contact", isUserLogin, checkUserBlocked, (req, res) => res.render("
 router.get("/profile", isUserLogin, checkUserBlocked, userController.getProfile);
 router.get("/login", preventUserAutoLogin, checkUserBlocked, userController.loginUserPage);
 router.get("/signup", (req, res) => res.render("signup.ejs"));
+
 router.get("/logout", authController.logout);
 
 router.post("/resetPassword", checkUserBlocked, isUserLogin, userController.resetPassword);
