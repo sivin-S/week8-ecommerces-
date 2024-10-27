@@ -23,14 +23,14 @@ router.get("/auth/google", authController.googleAuth);
 router.get("/auth/google/callback", authController.googleAuthCallback);
 
 
-// router.get('/wallet', isUserLogin, checkUserBlocked, userController.getWallet);
+
 router.get('/getWalletBalance', isUserLogin, checkUserBlocked, userController.getWalletBalance);
 
 // Google auth end
 router.get("/", productController.getProducts);
 router.get("/productDetails/:id", productController.getProductDetails);
 router.get("/cart", isUserLogin,checkUserBlocked, cartController.getCart);
-// router.get("/removeProductFromCart/:productId", isUserLogin,checkUserBlocked , cartController.removeProductFromCart);
+
 router.get("/emailOtpVerification", (req, res) => res.render("emailVerification.ejs"));
 router.get("/wishlist", checkUserBlocked, isUserLogin, userController.getWishlist);
 router.get("/wishlist/add/:productId", checkUserBlocked, isUserLogin, userController.addToWishlist);
@@ -65,7 +65,7 @@ router.post("/sendOtp", authController.sendOtp);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resetOtp", authController.resetOtp);
 router.post("/login", authController.login);
-// router.post("/validate-coupon", userController.validateCoupon);
+
 
 router.post("/removeProductFromCart", isUserLogin, checkUserBlocked, cartController.removeProductFromCart);
 

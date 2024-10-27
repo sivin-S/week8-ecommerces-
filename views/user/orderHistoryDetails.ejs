@@ -112,7 +112,8 @@
                             <% } else if (checkout.orderStatus === "Delivered") { %>
                                 <button class="btn btn-primary px-5" onclick="confirmReturn('<%= checkout._id %>')">Return</button>
                             <% } else if(checkout.orderStatus === "Pending") { %>
-                                <button class="btn btn-primary px-5" onclick="confirmReOrder('<%= checkout._id %>')">ReOrder</button>
+                            <%# reorder btn rename to repay .........%>
+                                <button class="btn btn-primary px-5" onclick="confirmReOrder('<%= checkout._id %>')">RePay</button>
                             <% } %>
                             
                            
@@ -188,6 +189,8 @@
             });
     }})
     }
+
+    
 
 
     function handlePaymentSuccess(response,orderId){
