@@ -31,7 +31,7 @@ exports.createRazorpayOrder = async (req, res) => {
         receipt: "order_rcptid_" + Math.random().toString(36).substring(7)
       };
       const order = await razorpay.orders.create(options);
-    //   console.log("order >>>>> ",order);
+      console.log("order >>>>> ",order);
     res.json({success:true,order})
     } catch (error) {
       console.error("Error creating Razorpay order:", error);

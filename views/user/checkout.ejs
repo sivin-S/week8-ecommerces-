@@ -434,7 +434,7 @@
      
     })
     .then(data => {
-      console.log(data);
+      console.log("fetch /createRazorPayOrder",data);
       
       var options = {
         "key": razorpayKeyId,
@@ -442,7 +442,7 @@
         "currency": "INR",
         "name": "Step Heaven",
         "description": "NO.1",
-        "order_id": data.id,
+        "order_id": data.order.id,
         // "callback_url": ,
         // "redirect":true,
         // "notes":{
@@ -452,11 +452,11 @@
       
           proceedWithCheckout(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
         },
-        "prefill": {
-          "name": "<%= user[0].username %>",
-          "email": "<%= user[0].email %>",
-          "contact": "<%= user[0].phone %>"
-        },
+        // "prefill": {
+        //   "name": "<%# = user[0].username %>",
+        //   "email": "<%# = user[0].email %>",
+        //   "contact": "<%# = user[0].phone %>"
+        // },
         "theme": {
           "color": "#3399cc"
         }
@@ -526,6 +526,12 @@ function handleFailedPayment(orderId) {
 
 
   function proceedWithCheckout(paymentId = null, orderId = null, signature = null) {
+    console.log({
+      paymentId,
+      orderId,
+      signature
+    });
+    
     const formData = new FormData(form);
     const checkoutData = {
       address: formData.get('address'),
