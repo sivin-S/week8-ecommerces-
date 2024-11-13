@@ -183,11 +183,11 @@
                                 <% user.forEach(function(user,index){ %>
                                 <tr>
                                     <td><%= index+1 %></td>
-                                    <td><%=user.username %></td>
-                                    <td><%=user.email %></td>
+                                    <td><%=user?.username %></td>
+                                    <td><%=user?.email %></td>
                                     <td><%=new Date(user.createdAt).toLocaleDateString('en-US')%> %></td>
-                                    <td><%=user.addresses[index].phone %></td>
-                                    <td><%=user.addresses[index].state %></td>
+                                    <td><%=user.addresses[index]?.phone %></td>
+                                    <td><%=user.addresses[index]?.state %></td>
                                     <td> 
                                         <button class="btn btn-primary" style="background-color: #4D869C;color: #EEF7FF;" onclick="toggleUserState('<%= user._id %>', <%= user.isBlocked %>)">
                                             <%= user.isBlocked ? 'Unblock' : 'Block' %>
