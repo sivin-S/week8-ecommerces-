@@ -616,22 +616,22 @@ exports.generateInvoice = async (req, res) => {
     
         doc.fontSize(25).text('Invoice', 100, 50,{align:'right'});
         doc.fontSize(10)
-           .text(`Invoice Number: INV-${orderId}`, 100, 90,{align:'right'})
-           .text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`, 100, 105,{align:'right'})
-           .text(`Due Date: ${new Date(order.createdAt).toLocaleDateString()}`, 100, 120,{align:'right'});
+           .text(`Invoice Number: INV-₹{orderId}`, 100, 90,{align:'right'})
+           .text(`Order Date: ₹{new Date(order.createdAt).toLocaleDateString()}`, 100, 105,{align:'right'})
+           .text(`Due Date: ₹{new Date(order.createdAt).toLocaleDateString()}`, 100, 120,{align:'right'});
 
         
         doc.text('Bill To:', 50, 150,{align:'left'} )
            .text(order.user.username, 50, 165,{align:'left'})
            .text(order.address.locality, 50, 180,{align:'left'})
-           .text(`${order.address.state}, ${order.address.zip}`, 50, 195,{align:'left'})
+           .text(`₹{order.address.state}, ₹{order.address.zip}`, 50, 195,{align:'left'})
            .text(order.address.country, 50, 210,{align:'left'});
 
         
         doc.text('Ship To:', 300, 150,{align: 'left'})
            .text(order.address.username, 300, 165,{align: 'left'})
            .text(order.address.locality, 300, 180,{align: 'left'})
-           .text(`${order.address.state}, ${order.address.zip}`, 300, 195,{align: 'left'})
+           .text(`₹{order.address.state}, ₹{order.address.zip}`, 300, 195,{align: 'left'})
            .text(order.address.country, 300, 210,{align: 'left'});
 
      
@@ -653,8 +653,8 @@ exports.generateInvoice = async (req, res) => {
                      .text(item.variant.color, 240, y, { align: 'center', width: 60 })
                      .text(item.variant.size, 300, y, { align: 'center', width: 60 })
                      .text(item.quantity.toString(), 360, y, { align: 'center', width: 60 })
-                     .text(`$${item.price.toFixed(2)}`, 420, y, { align: 'right', width: 60 })
-                     .text(`$${(item.price * item.quantity).toFixed(2)}`, 480, y, { align: 'right', width: 70 });
+                     .text(`₹${item.price.toFixed(2)}`, 420, y, { align: 'right', width: 60 })
+                     .text(`₹${(item.price * item.quantity).toFixed(2)}`, 480, y, { align: 'right', width: 70 });
       
                   y += 40;
               });
@@ -662,7 +662,7 @@ exports.generateInvoice = async (req, res) => {
               doc.rect(370, y, 180, 20).fill('#CCCCCC');
               doc.fillColor('#000000')
                  .text('Total:', 380, y + 5, { align: 'left', width: 100 })
-                 .text(`$${order.totalPrice.toFixed(2)}`, 480, y + 5, { align: 'right', width: 70 });
+                 .text(`₹${order.totalPrice.toFixed(2)}`, 480, y + 5, { align: 'right', width: 70 });
 
        
                  doc.fontSize(10)

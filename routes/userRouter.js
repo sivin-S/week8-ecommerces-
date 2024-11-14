@@ -45,10 +45,10 @@ router.get("/filterVariant", productController.filterVariant);
 router.get("/generateInvoice/:orderId", isUserLogin, checkUserBlocked, userController.generateInvoice);
 
 router.get("/checkOut", isUserLogin, checkUserBlocked, userController.getCheckout);
-router.get("/contact", isUserLogin, checkUserBlocked, (req, res) => res.render("contact.ejs"));
+router.get("/contact", isUserLogin, checkUserBlocked, (req, res) => res.render("contact"));
 router.get("/profile", isUserLogin, checkUserBlocked, userController.getProfile);
 router.get("/login", preventUserAutoLogin, checkUserBlocked, userController.loginUserPage);
-router.get("/signup", (req, res) => res.render("signup.ejs"));
+router.get("/signup", (req, res) => res.render("signUp"));
 
 router.get("/logout", authController.logout);
 
